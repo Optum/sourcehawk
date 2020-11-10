@@ -10,7 +10,29 @@ Sourcehawk is an extensible compliance as code tool which allows development tea
 compliance scans on their source code.
 
 == Installation
-Sourcehawk is available for download via a number of TODO[distributions].
+
+Sourcehawk can be installed using the installation scripts from GitHub.
+
+=== Linux
+[source,sh]
+----
+curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-linux.sh | bash
+----
+
+=== Debian
+
+You'll need to be able to `sudo` for this one.
+
+[source,sh]
+----
+curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-debian.sh | bash
+----
+
+=== Mac
+[source,sh]
+----
+curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-mac.sh | bash
+----
 
 == Usage Manuals
 Sourcehawk is available to be run as a command line tool.  The following commands
