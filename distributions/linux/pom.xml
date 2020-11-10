@@ -15,7 +15,7 @@
     <artifactId>sourcehawk-dist-linux</artifactId>
     <name>Sourcehawk Distributions Linux</name>
     <description>Sourcehawk linux executable</description>
-    <packaging>jar</packaging>
+    <packaging>pom</packaging>
 
     <properties>
         <dockerfile.fromtag/> <!-- Defined in jdk specific profile -->
