@@ -1,5 +1,4 @@
-Sourcehawk
-----------
+# Sourcehawk
 
 ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/optum/sourcehawk) 
 [![Maven Central](https://img.shields.io/maven-central/v/com.optum.sourcehawk/sourcehawk-core.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.optum.sourcehawk%22%20AND%20a:%22sourcehawk-core%22) 

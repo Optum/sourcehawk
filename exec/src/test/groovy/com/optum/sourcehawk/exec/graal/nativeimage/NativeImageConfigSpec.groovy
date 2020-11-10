@@ -23,8 +23,11 @@ class NativeImageConfigSpec extends Specification {
 
         then:
         args.contains("-H:Class=${Sourcehawk.class.name}")
+        args.contains("--no-server")
         args.contains("--enable-url-protocols=http,https")
-        args.contains("--initialize-at-build-time=ch.qos.logback,com.fasterxml.jackson,org.slf4j,org.yaml.snakeyaml,javax.xml")
+        args.contains("--initialize-at-build-time=ch.qos.logback,org.fusesource.jansi,com.fasterxml.jackson,org.slf4j,org.yaml.snakeyaml,javax")
+        args.contains("--initialize-at-build-time=com.sun.org.apache.xerces.internal.util,com.sun.org.apache.xerces.internal.impl")
+        args.contains("--initialize-at-build-time=jdk.xml.internal,com.sun.xml.internal.stream.util,com.sun.org.apache.xerces.internal.xni,com.sun.org.apache.xerces.internal.utils")
     }
 
 }

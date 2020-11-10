@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.1.7-SNAPSHOT</version>
+        <version>0.2.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>sourcehawk-bom</artifactId>

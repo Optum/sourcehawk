@@ -1,5 +1,6 @@
-# GraalVM Java 8 Base Container for Building
-FROM oracle/graalvm-ce:20.1.0-java8
+# Oracle GraalVM Java 8 Base Container
+ARG FROM_TAG=20.1.0-java8
+FROM oracle/graalvm-ce:${FROM_TAG}
 
 # Build Arguments
 ARG NAME
@@ -18,6 +19,7 @@ WORKDIR ${WORKDIR}
 # Build the native image
 RUN native-image -cp native-image.jar \
     -H:+ReportExceptionStackTraces \
+    -H:+TraceClassInitialization \
     --report-unsupported-elements-at-runtime \
     --no-fallback \
     --static

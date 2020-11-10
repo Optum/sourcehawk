@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: ['8', '11', '14']
+        java: ['8', '11']
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v1
@@ -75,10 +75,10 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
       - name: Archive Native Image JAR
-        if: success() && (matrix.java == '8')
+        if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: native-image-jar
+          name: native-image-jar-${{ matrix.java }}
           path: exec/target/*-native-image.jar
       - name: Aggregate Coverage Reports
         id: aggregate_coverage_reports
@@ -104,7 +104,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: native-image-jar
+          name: native-image-jar-8
           path: build
       - name: Rename Native Image JAR
         working-directory: build
@@ -129,34 +129,34 @@ jobs:
         with:
           name: mac-native-image
           path: build/sourcehawk
-#  build-windows-native-image:
-#    runs-on: windows-latest
-#    needs: build
-#    steps:
-#      - uses: actions/download-artifact@v2
-#        with:
-#          name: native-image-jar
-#          path: build
-#      - name: Rename Native Image JAR
-#        working-directory: build
-#        run: ren *.jar native-image.jar
-#      - name: Setup GraalVM Native Image and Visual C Build Tools
-#        run: |
-#          Invoke-RestMethod -Uri https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/graalvm-ce-java11-windows-amd64-20.1.0.zip -OutFile 'graal.zip'
-#          Expand-Archive -path 'graal.zip' -destinationpath '.'
-#          graalvm-ce-java11-20.1.0\bin\gu.cmd install native-image
-#          choco install visualstudio2017-workload-vctools
-#      - name: Build Windows Native Image
-#        if: success()
-#        shell: cmd
-#        run: |
-#          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-#          graalvm-ce-java11-20.1.0\bin\native-image -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
-#        env:
-#          JAVA_HOME: ./graalvm-ce-java11-20.1.0
-#      - name: Archive Windows Native Image
-#        if: success()
-#        uses: actions/upload-artifact@v2
-#        with:
-#          name: windows-native-image
-#          path: build/sourcehawk.exe
+  build-windows-native-image:
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: native-image-jar-11
+          path: build
+      - name: Rename Native Image JAR
+        working-directory: build
+        run: ren *.jar native-image.jar
+      - name: Setup GraalVM Native Image and Visual C Build Tools
+        run: |
+          Invoke-RestMethod -Uri https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.2.0/graalvm-ce-java11-windows-amd64-20.2.0.zip -OutFile 'graal.zip'
+          Expand-Archive -path 'graal.zip' -destinationpath '.'
+          graalvm-ce-java11-20.2.0\bin\gu.cmd install native-image
+          choco install visualstudio2017-workload-vctools
+      - name: Build Windows Native Image
+        if: success()
+        shell: cmd
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+          graalvm-ce-java11-20.2.0\bin\native-image -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
+        env:
+          JAVA_HOME: ./graalvm-ce-java11-20.2.0
+      - name: Archive Windows Native Image
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows-native-image
+          path: sourcehawk.exe

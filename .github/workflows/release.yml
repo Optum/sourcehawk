@@ -131,6 +131,34 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: gh-pages
+  build-java11:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref }}
+      - name: Setup Java and Maven
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Set Maven Project Version
+        shell: bash
+        run: |
+          RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
+          [[ "$RELEASE_VERSION" == *"-SNAPSHOT" ]] && RELEASE_VERSION="${RELEASE_VERSION%"-SNAPSHOT"}" && ./mvnw --batch-mode versions:set -D removeSnapshot || true
+          [[ "$(git tag -l $RELEASE_VERSION)" == "$RELEASE_VERSION" ]] && echo "Tag $RELEASE_VERSION already exists" && exit 1
+          echo ::set-output name=RELEASE_VERSION::$RELEASE_VERSION
+      - name: Build Maven Project
+        if: success()
+        run: ./mvnw --batch-mode install -D ci.build -D ci.release
+      - name: Archive Native Image JAR
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: native-image-jar-java11
+          path: exec/target/*-native-image.jar
   build-mac-native-image:
     runs-on: macos-latest
     needs: build
@@ -175,47 +203,47 @@ jobs:
           asset_path: build/sourcehawk
           asset_name: sourcehawk-darwin-x86_64
           asset_content_type: application/octet-stream
-#  build-windows-native-image:
-#    runs-on: windows-latest
-#    needs: build
-#    steps:
-#      - uses: actions/download-artifact@v2
-#        with:
-#          name: native-image-jar
-#          path: build
-#      - name: Rename Native Image JAR
-#        working-directory: build
-#        run: ren *.jar native-image.jar
-#      - uses: actions/download-artifact@v2
-#        with:
-#          name: release
-#          path: release
-#      - name: Expose Release Asset Upload URL
-#        id: expose_release_asset_upload_url
-#        working-directory: release
-#        run: echo ::set-output name=RELEASE_ASSET_UPLOAD_URL::$(cat release_asset_upload.url)
-#      - name: Setup GraalVM Native Image and Visual C Build Tools
-#        run: |
-#          Invoke-RestMethod -Uri https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.1.0/graalvm-ce-java11-windows-amd64-20.1.0.zip -OutFile 'graal.zip'
-#          Expand-Archive -path 'graal.zip' -destinationpath '.'
-#          graalvm-ce-java11-20.1.0\bin\gu.cmd install native-image
-#          choco install visualstudio2017-workload-vctools
-#      - name: Build Windows Native Image
-#        if: success()
-#        shell: cmd
-#        run: |
-#          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-#          graalvm-ce-java11-20.1.0\bin\native-image -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
-#        env:
-#          JAVA_HOME: ./graalvm-ce-java11-20.1.0
-#      - name: Upload Sourcehawk Windows Executable
-#        if: success()
-#        continue-on-error: true
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ steps.read_release_upload_url.outputs.upload_url }}
-#          asset_path: build/sourcehawk.exe
-#          asset_name: sourcehawk-windows-x86_64
-#          asset_content_type: application/octet-stream
+  build-windows-native-image:
+    runs-on: windows-latest
+    needs: build-java11
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          name: native-image-jar-java11
+          path: build
+      - name: Rename Native Image JAR
+        working-directory: build
+        run: ren *.jar native-image.jar
+      - uses: actions/download-artifact@v2
+        with:
+          name: release
+          path: release
+      - name: Expose Release Asset Upload URL
+        id: expose_release_asset_upload_url
+        working-directory: release
+        run: echo ::set-output name=RELEASE_ASSET_UPLOAD_URL::$(cat release_asset_upload.url)
+      - name: Setup GraalVM Native Image and Visual C Build Tools
+        run: |
+          Invoke-RestMethod -Uri https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-20.2.0/graalvm-ce-java11-windows-amd64-20.2.0.zip -OutFile 'graal.zip'
+          Expand-Archive -path 'graal.zip' -destinationpath '.'
+          graalvm-ce-java11-20.2.0\bin\gu.cmd install native-image
+          choco install visualstudio2017-workload-vctools
+      - name: Build Windows Native Image
+        if: success()
+        shell: cmd
+        run: |
+          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
+          graalvm-ce-java11-20.2.0\bin\native-image -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
+        env:
+          JAVA_HOME: ./graalvm-ce-java11-20.2.0
+      - name: Upload Sourcehawk Windows Executable
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.read_release_upload_url.outputs.upload_url }}
+          asset_path: sourcehawk.exe
+          asset_name: sourcehawk-windows-x86_64.exe
+          asset_content_type: application/octet-stream
