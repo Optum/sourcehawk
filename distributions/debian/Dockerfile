@@ -9,4 +9,4 @@ ARG DEB_FILE
 COPY ${DEBIAN_DIRECTORY} /debian/
 
 # Create the debian package
-RUN dpkg-deb --build /debian ${DEB_FILE}
+RUN chmod +x /debian/usr/local/bin/sourcehawk && dpkg-deb --build /debian ${DEB_FILE}

@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.2.1-SNAPSHOT</version>
+        <version>0.2.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -23,7 +23,6 @@
         <docker.workdir>/home/${executable.name}</docker.workdir>
         <docker.build.executable>${docker.workdir}/${executable.name}</docker.build.executable>
         <native.image>${project.build.directory}/${executable.name}</native.image>
-        <maven.install.skip>true</maven.install.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 

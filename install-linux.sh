@@ -1,13 +1,11 @@
 #!/usr/bin/env bash
 
 # Retrieve Latest Version
-GROUP_ID="com.optum.sourcehawk"
-ARTIFACT_ID="sourcehawk-dist-linux"
-VERSION=$(curl -s -H "Accept: application/json" "http://search.maven.org/solrsearch/select?q=g:$GROUP_ID%20AND%20a:$ARTIFACT_ID" | grep -Po '"latestVersion":.*?[^\\]",' | cut -d '"' -f 4)
+VERSION=$(curl -sI https://github.com/optum/sourcehawk/releases/latest | grep -i location | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r\n')
 
 # Download the binary and make it executable
 ARCH="$(uname -m)"
-DOWNLOAD_URL="https://repo1.maven.org/maven2/${GROUP_ID//.//}/$ARTIFACT_ID/$VERSION/$ARTIFACT_ID-$VERSION-$ARCH.zip"
+DOWNLOAD_URL="https://github.com/optum/sourcehawk/releases/download/$VERSION/sourcehawk-linux-$ARCH"
 INSTALL_LOCATION="/usr/local/bin"
 INSTALL_PATH="$INSTALL_LOCATION/sourcehawk"
 

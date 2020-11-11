@@ -2,6 +2,7 @@
 :doctype: book
 :toc: left
 :toclevels: 2
+:sectanchors:
 :includedir: ../../../target/generated-docs
 = >_ S O U R C E H A W K
 Brian Wyka | Christian Oestreich

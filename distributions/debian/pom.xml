@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.2.1-SNAPSHOT</version>
+        <version>0.2.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -31,6 +31,14 @@
             <type>zip</type>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.optum.sourcehawk</groupId>
+            <artifactId>sourcehawk-exec</artifactId>
+            <version>${project.version}</version>
+            <classifier>bash-completion</classifier>
+            <type>sh</type>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -40,6 +48,24 @@
             <plugin>
                 <artifactId>maven-resources-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>copy-manpages</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
+                                    <includes>
+                                        <include>${executable.name}*</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.build.directory}/debian/usr/local/share/man/man1</outputDirectory>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>default-resources</id>
                         <phase>process-resources</phase>
@@ -79,6 +105,14 @@
                                     <outputDirectory>${debian.build.directory}/usr/local/bin</outputDirectory>
                                     <destFileName>${executable.name}</destFileName>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>com.optum.sourcehawk</groupId>
+                                    <artifactId>sourcehawk-exec</artifactId>
+                                    <classifier>bash-completion</classifier>
+                                    <type>sh</type>
+                                    <outputDirectory>${debian.build.directory}/usr/share/bash-completion/completions</outputDirectory>
+                                    <destFileName>${executable.name}</destFileName>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
@@ -116,6 +150,19 @@
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
 
+                    <!-- GZIP THE MANPAGES-->
+                    <execution>
+                        <id>gzip-manpages</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${project.basedir}/gzip-manpages.sh</executable>
+                            <workingDirectory>${project.build.directory}/debian/usr/local/share/man/man1</workingDirectory>
+                        </configuration>
+                    </execution>
+
                     <!-- EXTRACT DEB PACKAGE FROM DOCKER CONTAINER TO TARGET DIRECTORY -->
                     <execution>
                         <id>extract-deb-package</id>
@@ -151,6 +198,7 @@
                             <artifacts>
                                 <artifact>
                                     <file>${project.build.directory}/${executable.name}.deb</file>
+                                    <classifier>x86_64</classifier>
                                     <type>deb</type>
                                 </artifact>
                             </artifacts>

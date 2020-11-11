@@ -1,6 +1,8 @@
 Package: ${executable.name}
 Version: ${project.version}
+Section: utils
 Architecture: amd64
-Maintainer: Brian Wyka b@optum.com
+Maintainer: Brian Wyka brian.wyka@optum.com
+Homepage: https://optum.github.io/sourcehawk
 Description: ${global.project.name}
  Watch over your source like a hawk!
