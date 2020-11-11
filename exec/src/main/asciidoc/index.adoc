@@ -3,46 +3,100 @@
 :toc: left
 :toclevels: 2
 :sectanchors:
+:numbered:
+:sectnumlevels: 2
 :includedir: ../../../target/generated-docs
+
 = >_ S O U R C E H A W K
 Brian Wyka | Christian Oestreich
 
+'''
+
+.Compliance as Code
+****
 Sourcehawk is an extensible compliance as code tool which allows development teams to automate custom
 compliance scans on their source code.
+****
+
+TIP: The following documentation is limited to using Sourcehawk cli.  For more detailed documentation on
+Sourcehawk, please visit https://optum.github.io/sourcehawk-docs/[Sourcehawk Documentation^].
 
 == Installation
 
 Sourcehawk can be installed using the installation scripts from GitHub.
 
 === Linux
-[source,sh]
+This installation only includes the binary executable.  Executable will be saved to `/usr/local/bin`
+
+==== Terminal One-Liner
+[source,sh,role="primary"]
 ----
-curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-linux.sh | bash
+curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-linux.sh | bash
 ----
+
+NOTE: Support for installation from an RPM repository will be added in a future release.
+
+==== Manual Install
+If you don't have access to `/usr/local/bin`, you will need to install manually.
+
+1. Download the `linux` binary from the https://github.com/Optum/sourcehawk/releases/latest[releases] page.
+2. Rename the binary to `sourcehawk` and add to a directory on your `PATH`, i.e. - `~/bin`, or `~/.local/bin`
 
 === Debian
+In addition to the executable binary, this installation will include bash completion scripts, and manpages.
 
-You'll need to be able to `sudo` for this one.
-
-[source,sh]
+==== Terminal One-Liner
+[source,sh,role="secondary"]
 ----
-curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-debian.sh | bash
-----
-
-=== Mac
-[source,sh]
-----
-curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-mac.sh | bash
+curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-debian.sh | bash
 ----
 
-== Usage Manuals
-Sourcehawk is available to be run as a command line tool.  The following commands
-are available.
+IMPORTANT: This requires `sudo` permissions
+
+==== Manual Install
+If you don't have `sudo` access, you may be able to install manually, it is recommended to use the linux approach documented above.
+
+=== Mac / Darwin
+This installation only includes the binary executable.  Executable will be saved to `/usr/local/bin`
+
+==== Terminal One-Liner
+[source,sh,role="secondary"]
+----
+curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-mac.sh | bash
+----
+
+NOTE: Support for installation through `homebrew` will be added in a future release.
+
+==== Manual Install
+If you don't have access to `/usr/local/bin`, you will need to install manually.
+
+1. Download the `darwin` binary from the https://github.com/Optum/sourcehawk/releases/latest[releases] page.
+2. Rename the binary to `sourcehawk` and add to a directory on your `PATH`, i.e. - `~/bin`, or `~/.local/bin`
+
+=== Windows
+
+==== Manual Install
+
+1. Download the `windows exe` binary from the https://github.com/Optum/sourcehawk/releases/latest[releases] page.
+2. Rename the binary to `sourcehawk.exe` and store it wherever you want
+3. Add an entry to your `Path` with the directory in which you put the binary
+
+CAUTION: Windows support is currently limited.  Let us know if you run into any https://github.com/Optum/sourcehawk/issues[issues]!
+
+'''
+
+== Commands
 
 include::{includedir}/sourcehawk.adoc[leveloffset=2,tag=picocli-generated-full-manpage]
 
+'''
+
 include::{includedir}/validate-config.adoc[leveloffset=2,tag=picocli-generated-full-manpage]
 
+'''
+
 include::{includedir}/scan.adoc[leveloffset=2,tag=picocli-generated-full-manpage]
+
+'''
 
 include::{includedir}/fix.adoc[leveloffset=2,tag=picocli-generated-full-manpage]
