@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.2.0-SNAPSHOT</version>
+        <version>0.2.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -30,8 +30,6 @@
         <sonar.exclusions>**/picocli/**/*.*</sonar.exclusions>
         <sonar.coverage.exclusions>**/picocli/**/*.*</sonar.coverage.exclusions>
         <sonar.cpd.exclusions>**/picocli/**/*.*</sonar.cpd.exclusions>
-
-        <jacoco.coverage.minimum>0.78</jacoco.coverage.minimum> <!-- FIXME: temp for java11 -->
 
     </properties>
 
