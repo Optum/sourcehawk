@@ -251,7 +251,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.read_release_upload_url.outputs.upload_url }}
+          upload_url: ${{ steps.expose_release_asset_upload_url.outputs.upload_url }}
           asset_path: sourcehawk.exe
           asset_name: sourcehawk-windows-x86_64.exe
           asset_content_type: application/octet-stream
