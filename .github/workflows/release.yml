@@ -192,6 +192,10 @@ jobs:
         if: success()
         working-directory: build
         run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback
+      - name: Smoke Test
+        if: success()
+        working-directory: build
+        run: ./sourcehawk help
       - name: Upload Sourcehawk Mac Executable
         if: success()
         continue-on-error: true
@@ -236,6 +240,10 @@ jobs:
           graalvm-ce-java11-20.2.0\bin\native-image -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
         env:
           JAVA_HOME: ./graalvm-ce-java11-20.2.0
+      - name: Smoke Test
+        if: success()
+        shell: cmd
+        run: sourcehawk.exe help
       - name: Upload Sourcehawk Windows Executable
         if: success()
         continue-on-error: true

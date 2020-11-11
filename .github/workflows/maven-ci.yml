@@ -1,5 +1,6 @@
 name: Maven CI
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
@@ -123,6 +124,10 @@ jobs:
         if: success()
         working-directory: build
         run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback
+      - name: Smoke Test
+        if: success()
+        working-directory: build
+        run: ./sourcehawk help
       - name: Archive Mac Native Image
         if: success()
         uses: actions/upload-artifact@v2
@@ -154,6 +159,10 @@ jobs:
           graalvm-ce-java11-20.2.0\bin\native-image -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
         env:
           JAVA_HOME: ./graalvm-ce-java11-20.2.0
+      - name: Smoke Test
+        if: success()
+        shell: cmd
+        run: sourcehawk.exe help
       - name: Archive Windows Native Image
         if: success()
         uses: actions/upload-artifact@v2
