@@ -19,9 +19,11 @@
 
     <modules>
         <module>core</module>
+        <module>aot</module>
         <module>common</module>
         <module>docker</module>
         <module>maven</module>
+        <module>registry</module>
     </modules>
 
     <build>

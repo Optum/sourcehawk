@@ -7,31 +7,41 @@
 
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
-        <artifactId>sourcehawk</artifactId>
+        <artifactId>sourcehawk-enforcer-file</artifactId>
         <version>0.2.2-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>sourcehawk-configuration</artifactId>
-    <name>Sourcehawk Configuration</name>
-    <description>Sourcehawk configuration objects</description>
+    <artifactId>sourcehawk-enforcer-file-aot</artifactId>
     <packaging>jar</packaging>
+
+    <name>Sourcehawk Enforcer File AOT</name>
+    <description>Ahead-of-time compilation for Sourcheawk file enforcers</description>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip> <!-- ONLY NEEDED FOR COMPILATION -->
+        <skipStaging>true</skipStaging>
+        <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-protocol-file</artifactId>
+            <artifactId>sourcehawk-enforcer-file-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <scope>provided</scope>
+            <groupId>com.squareup</groupId>
+            <artifactId>javapoet</artifactId>
+            <version>1.13.0</version>
+            <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.12</version>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 
@@ -45,8 +55,8 @@
                         <configuration>
                             <rules>
                                 <bannedDependencies>
-                                    <includes combine.children="append">
-                                        <include>com.fasterxml.jackson.core:*:*:*:*</include>
+                                    <includes combine.children="override">
+                                        <include>*:*:*:*:*</include>
                                     </includes>
                                 </bannedDependencies>
                             </rules>

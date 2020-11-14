@@ -64,31 +64,7 @@
         </dependency>
         <dependency>
             <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-core</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-file-core</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-file-common</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-file-docker</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-file-maven</artifactId>
+            <artifactId>sourcehawk-enforcer-file-registry</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -105,12 +81,13 @@
             <scope>compile</scope>
         </dependency>
 
-        <!-- TEST DEPENDENCIES -->
         <dependency>
-            <groupId>org.spockframework</groupId>
-            <artifactId>spock-core</artifactId>
-            <scope>test</scope>
+            <groupId>com.kjetland</groupId>
+            <artifactId>mbknor-jackson-jsonschema_2.12</artifactId>
+            <version>1.0.39</version>
         </dependency>
+
+        <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>

@@ -11,7 +11,8 @@ import java.io.InputStream;
  *
  * @author Brian Wyka
  */
-@JsonTypeInfo(use = JsonTypeInfo.Id.MINIMAL_CLASS, property = EnforcerConstants.DESERIALIZATION_TYPE_KEY) // Tell Mr. Jackson to choose implementation to deserialize
-public interface FileEnforcer extends Enforcer<InputStream> {
-
-}
+@JsonTypeInfo( // Tell Mr. Jackson to choose implementation to deserialize
+        use = JsonTypeInfo.Id.NAME,
+        property = EnforcerConstants.DESERIALIZATION_TYPE_KEY
+)
+public interface FileEnforcer extends Enforcer<InputStream> { }

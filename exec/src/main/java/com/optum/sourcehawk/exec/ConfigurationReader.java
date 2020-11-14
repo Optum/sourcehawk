@@ -7,6 +7,7 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.optum.sourcehawk.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.core.utils.StringUtils;
+import com.optum.sourcehawk.enforcer.file.FileEnforcer;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -23,6 +24,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
+import java.util.StringTokenizer;
 
 /**
  * Utility class for reading and deserialization of configuration
@@ -175,6 +177,10 @@ class ConfigurationReader {
             }
         }
         return sourcehawkConfiguration;
+    }
+
+    static FileEnforcer parseFileEnforcer(final Object fileEnforcerObject) {
+        return CONFIGURATION_DESERIALIZER.convertValue(fileEnforcerObject, FileEnforcer.class);
     }
 
 }

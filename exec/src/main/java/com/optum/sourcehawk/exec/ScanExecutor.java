@@ -7,6 +7,7 @@ import com.optum.sourcehawk.core.scan.ScanResult;
 import com.optum.sourcehawk.core.scan.Severity;
 import com.optum.sourcehawk.core.utils.FileUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
+import com.optum.sourcehawk.enforcer.file.FileEnforcerRegistry;
 import com.optum.sourcehawk.protocol.FileProtocol;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -106,7 +107,7 @@ public final class ScanExecutor {
         for (val enforcer : fileProtocol.getEnforcers()) {
             final FileEnforcer fileEnforcer;
             try {
-                fileEnforcer = ConfigurationReader.CONFIGURATION_DESERIALIZER.convertValue(enforcer, FileEnforcer.class);
+                fileEnforcer = ConfigurationReader.parseFileEnforcer(enforcer);
             } catch (final IllegalArgumentException e) {
                 fileProtocolScanResults.add(ScanResultFactory.error(fileProtocol.getRepositoryPath(), String.format("File enforcer invalid: %s", e.getMessage())));
                 continue;
