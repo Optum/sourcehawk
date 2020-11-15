@@ -10,7 +10,8 @@ import java.lang.annotation.Target;
 /**
  * An annotation used by annotation processing to identify file enforcers for code generation
  *
- * @apiNote Internal use only for annotation processing
+ * Internal use only for annotation processing
+ *
  * @author Brian Wyka
  */
 @Documented
