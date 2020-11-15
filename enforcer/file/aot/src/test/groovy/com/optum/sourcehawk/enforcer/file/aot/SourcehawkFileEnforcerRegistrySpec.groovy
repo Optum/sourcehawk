@@ -1,5 +1,6 @@
-package com.optum.sourcehawk.aot
+package com.optum.sourcehawk.enforcer.file.aot
 
+import com.optum.sourcehawk.enforcer.file.aot.SourcehawkFileEnforcerRegistry
 import spock.lang.Specification
 
 import java.lang.annotation.Documented

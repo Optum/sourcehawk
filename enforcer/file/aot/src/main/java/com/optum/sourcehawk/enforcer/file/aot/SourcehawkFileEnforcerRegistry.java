@@ -1,4 +1,4 @@
-package com.optum.sourcehawk.aot;
+package com.optum.sourcehawk.enforcer.file.aot;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

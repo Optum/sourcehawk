@@ -81,12 +81,6 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.kjetland</groupId>
-            <artifactId>mbknor-jackson-jsonschema_2.12</artifactId>
-            <version>1.0.39</version>
-        </dependency>
-
         <!-- TEST DEPENDENCIES -->
         <dependency>
             <groupId>org.reflections</groupId>
@@ -215,7 +209,7 @@
                             <arguments>
                                 <argument>--force</argument>
                                 <argument>--completionScript</argument>
-                                <argument>${project.build.directory}/${executable.name}_bash_completion.sh</argument>
+                                <argument>${project.build.directory}/${executable.name}-bash-completion.sh</argument>
                                 <argument>${executable.class}</argument>
                             </arguments>
                         </configuration>
@@ -246,7 +240,7 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/${executable.name}_bash_completion.sh</file>
+                                    <file>${project.build.directory}/${executable.name}-bash-completion.sh</file>
                                     <classifier>bash-completion</classifier>
                                     <type>sh</type>
                                 </artifact>
@@ -397,7 +391,7 @@
                                         <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk/native-image.properties</file>
                                         <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk-generated/reflect-config.json</file>
                                         <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk-generated/resource-config.json</file>
-                                        <file>${project.build.directory}/${executable.name}_bash_completion.sh</file>
+                                        <file>${project.build.directory}/${executable.name}-bash-completion.sh</file>
                                         <file>${project.parent.basedir}/gh-pages/index.html</file>
                                         <file>${project.parent.basedir}/gh-pages/stylesheets/sourcehawk.css</file>
                                         <file>${project.parent.basedir}/gh-pages/manpages/sourcehawk.1</file>

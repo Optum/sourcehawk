@@ -19,7 +19,7 @@
     <description>Ahead-of-time compilation for Sourcheawk file enforcers</description>
 
     <properties>
-        <maven.deploy.skip>true</maven.deploy.skip> <!-- ONLY NEEDED FOR COMPILATION -->
+        <jacoco.coverage.minimum>0.94</jacoco.coverage.minimum>
         <skipStaging>true</skipStaging>
         <skipNexusStagingDeployMojo>true</skipNexusStagingDeployMojo>
     </properties>
