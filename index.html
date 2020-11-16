@@ -650,7 +650,7 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 <h1>&gt;_ S O U R C E H A W K</h1>
 <div class="details">
 <span id="author" class="author">Brian Wyka | Christian Oestreich</span><br>
-<span id="revnumber">version 0.2.2</span>
+<span id="revnumber">version 0.2.3</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -659,8 +659,9 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 <ul class="sectlevel2">
 <li><a href="#_linux">1.1. Linux</a></li>
 <li><a href="#_debian">1.2. Debian</a></li>
-<li><a href="#_mac_darwin">1.3. Mac / Darwin</a></li>
-<li><a href="#_windows">1.4. Windows</a></li>
+<li><a href="#_yum">1.3. yum</a></li>
+<li><a href="#_mac_darwin">1.4. Mac / Darwin</a></li>
+<li><a href="#_windows">1.5. Windows</a></li>
 </ul>
 </li>
 <li><a href="#_commands">2. Commands</a>
@@ -783,12 +784,44 @@ This requires <code>sudo</code> permissions
 </div>
 </div>
 <div class="sect2">
-<h3 id="_mac_darwin"><a class="anchor" href="#_mac_darwin"></a>1.3. Mac / Darwin</h3>
+<h3 id="_yum"><a class="anchor" href="#_yum"></a>1.3. yum</h3>
+<div class="paragraph">
+<p>In addition to the executable binary, this installation will include bash completion scripts, and manpages.</p>
+</div>
+<div class="sect3">
+<h4 id="_terminal_one_liner_3"><a class="anchor" href="#_terminal_one_liner_3"></a>Terminal One-Liner</h4>
+<div class="listingblock secondary">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-yum.sh | bash</code></pre>
+</div>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<div class="title">Important</div>
+</td>
+<td class="content">
+This requires <code>sudo</code> permissions
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_manual_install_3"><a class="anchor" href="#_manual_install_3"></a>Manual Install</h4>
+<div class="paragraph">
+<p>If you don&#8217;t have <code>sudo</code> access, you may be able to install manually, it is recommended to use the linux approach documented above.</p>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_mac_darwin"><a class="anchor" href="#_mac_darwin"></a>1.4. Mac / Darwin</h3>
 <div class="paragraph">
 <p>This installation only includes the binary executable.  Executable will be saved to <code>/usr/local/bin</code></p>
 </div>
 <div class="sect3">
-<h4 id="_terminal_one_liner_3"><a class="anchor" href="#_terminal_one_liner_3"></a>Terminal One-Liner</h4>
+<h4 id="_terminal_one_liner_4"><a class="anchor" href="#_terminal_one_liner_4"></a>Terminal One-Liner</h4>
 <div class="listingblock secondary">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="sh">curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-mac.sh | bash</code></pre>
@@ -808,7 +841,7 @@ Support for installation through <code>homebrew</code> will be added in a future
 </div>
 </div>
 <div class="sect3">
-<h4 id="_manual_install_3"><a class="anchor" href="#_manual_install_3"></a>Manual Install</h4>
+<h4 id="_manual_install_4"><a class="anchor" href="#_manual_install_4"></a>Manual Install</h4>
 <div class="paragraph">
 <p>If you don&#8217;t have access to <code>/usr/local/bin</code>, you will need to install manually.</p>
 </div>
@@ -825,9 +858,9 @@ Support for installation through <code>homebrew</code> will be added in a future
 </div>
 </div>
 <div class="sect2">
-<h3 id="_windows"><a class="anchor" href="#_windows"></a>1.4. Windows</h3>
+<h3 id="_windows"><a class="anchor" href="#_windows"></a>1.5. Windows</h3>
 <div class="sect3">
-<h4 id="_manual_install_4"><a class="anchor" href="#_manual_install_4"></a>Manual Install</h4>
+<h4 id="_manual_install_5"><a class="anchor" href="#_manual_install_5"></a>Manual Install</h4>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1173,8 +1206,8 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.2.2<br>
-Last updated 2020-11-11 19:52:57 UTC
+Version 0.2.3<br>
+Last updated 2020-11-16 02:34:17 UTC
 </div>
 </div>
 <style>
