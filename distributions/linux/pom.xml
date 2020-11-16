@@ -200,6 +200,9 @@
                     <classifier>x86_64</classifier>
                     <defaultGroupname>${executable.name}</defaultGroupname>
                     <defaultUsername>${executable.name}</defaultUsername>
+                    <keyPassphrase/> <!-- null disables gpg signing (done later on) -->
+                    <passphraseServerId/> <!-- null disables gpg signing (done later on) -->
+                    <keyname/> <!-- null disables gpg signing (done later on) -->
                     <mappings>
                         <mapping>
                             <directory>/usr/local/bin</directory>
