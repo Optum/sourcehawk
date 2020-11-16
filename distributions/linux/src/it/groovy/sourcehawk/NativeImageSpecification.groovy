@@ -17,6 +17,6 @@ class NativeImageSpecification extends Specification {
             .getParentFile()
             .getAbsolutePath()
 
-    protected String executable = "${moduleRoot}/target/dist/sourcehawk".toString()
+    protected String executable = "${moduleRoot}/target/sourcehawk".toString()
 
 }
