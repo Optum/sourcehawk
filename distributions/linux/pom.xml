@@ -156,7 +156,7 @@
                             <arguments>
                                 <argument>${docker.image}:${project.version}</argument>
                                 <argument>${docker.build.executable}</argument>
-                                <argument>${project.build.directory}/dist</argument>
+                                <argument>${project.build.directory}</argument>
                             </arguments>
                         </configuration>
                     </execution>
