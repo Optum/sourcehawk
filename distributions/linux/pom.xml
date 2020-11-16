@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -22,7 +22,7 @@
         <docker.image>${project.artifactId}-native-image-builder</docker.image>
         <docker.workdir>/home/${executable.name}</docker.workdir>
         <docker.build.executable>${docker.workdir}/${executable.name}</docker.build.executable>
-        <native.image>${project.build.directory}/dist/${executable.name}</native.image>
+        <native.image>${project.build.directory}/${executable.name}</native.image>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
@@ -195,14 +195,14 @@
                 <configuration>
                     <group>Development/Tools</group>
                     <name>${executable.name}</name>
-                    <license>GPLv3</license>
+                    <license>GNU General Public License 3</license>
                     <needarch>true</needarch>
                     <classifier>x86_64</classifier>
                     <defaultGroupname>${executable.name}</defaultGroupname>
                     <defaultUsername>${executable.name}</defaultUsername>
-                    <keyPassphrase/> <!-- null disables gpg signing (done later on) -->
                     <passphraseServerId/> <!-- null disables gpg signing (done later on) -->
                     <keyname/> <!-- null disables gpg signing (done later on) -->
+                    <copyTo>${project.build.directory}/${executable.name}.rpm</copyTo>
                     <mappings>
                         <mapping>
                             <directory>/usr/local/bin</directory>
@@ -210,7 +210,7 @@
                             <filemode>755</filemode>
                             <sources>
                                 <source>
-                                    <location>${project.build.directory}/dist/${executable.name}</location>
+                                    <location>${project.build.directory}/${executable.name}</location>
                                 </source>
                             </sources>
                         </mapping>

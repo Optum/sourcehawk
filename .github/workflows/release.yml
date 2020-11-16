@@ -122,6 +122,17 @@ jobs:
           asset_path: ./distributions/debian/target/sourcehawk.deb
           asset_name: sourcehawk-linux-x86_64.deb
           asset_content_type: application/octet-stream
+      - name: Upload Sourcehawk RPM Package
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./distributions/linux/target/sourcehawk.rpm
+          asset_name: sourcehawk-linux-x86_64.rpm
+          asset_content_type: application/octet-stream
       - name: Publish Github Pages
         if: success()
         continue-on-error: true

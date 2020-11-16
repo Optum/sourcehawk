@@ -56,6 +56,20 @@ IMPORTANT: This requires `sudo` permissions
 ==== Manual Install
 If you don't have `sudo` access, you may be able to install manually, it is recommended to use the linux approach documented above.
 
+=== yum
+In addition to the executable binary, this installation will include bash completion scripts, and manpages.
+
+==== Terminal One-Liner
+[source,sh,role="secondary"]
+----
+curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-yum.sh | bash
+----
+
+IMPORTANT: This requires `sudo` permissions
+
+==== Manual Install
+If you don't have `sudo` access, you may be able to install manually, it is recommended to use the linux approach documented above.
+
 === Mac / Darwin
 This installation only includes the binary executable.  Executable will be saved to `/usr/local/bin`
 
