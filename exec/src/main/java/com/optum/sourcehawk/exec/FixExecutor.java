@@ -94,7 +94,7 @@ public final class FixExecutor {
         for (val enforcer : fileProtocol.getEnforcers()) {
             final Optional<FileResolver> fileResolverOptional;
             try {
-                fileResolverOptional = convertToFileResolver(ConfigurationReader.CONFIGURATION_DESERIALIZER.convertValue(enforcer, FileEnforcer.class));
+                fileResolverOptional = convertToFileResolver(ConfigurationReader.MAPPER.convertValue(enforcer, FileEnforcer.class));
             } catch (final IllegalArgumentException e) {
                 return FixResultFactory.error(fileProtocol.getRepositoryPath(), String.format("File enforcer invalid: %s", e.getMessage()));
             }

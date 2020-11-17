@@ -24,7 +24,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Optional;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 /**
  * Utility class for reading and deserialization of configuration
@@ -38,7 +37,7 @@ class ConfigurationReader {
     /**
      * The object mapper which is used to deserialize the configuration from file
      */
-    final ObjectMapper CONFIGURATION_DESERIALIZER = new YAMLMapper()
+    final ObjectMapper MAPPER = new YAMLMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .setPropertyNamingStrategy(new PropertyNamingStrategy.KebabCaseStrategy());
 
@@ -49,7 +48,7 @@ class ConfigurationReader {
      * @return the configuration
      */
     SourcehawkConfiguration parseConfiguration(final InputStream inputStream) throws IOException {
-        return CONFIGURATION_DESERIALIZER.readValue(inputStream, SourcehawkConfiguration.class);
+        return MAPPER.readValue(inputStream, SourcehawkConfiguration.class);
     }
 
     /**
@@ -59,7 +58,7 @@ class ConfigurationReader {
      * @return the configuration
      */
     SourcehawkConfiguration parseConfiguration(final Path configurationFilePath) throws IOException {
-        return CONFIGURATION_DESERIALIZER.readValue(Files.newInputStream(configurationFilePath), SourcehawkConfiguration.class);
+        return parseConfiguration(Files.newInputStream(configurationFilePath));
     }
 
     /**
@@ -146,7 +145,7 @@ class ConfigurationReader {
      */
     private Optional<SourcehawkConfiguration> deserialize(final InputStream inputStream) {
         try {
-            return Optional.of(CONFIGURATION_DESERIALIZER.readValue(inputStream, SourcehawkConfiguration.class));
+            return Optional.of(MAPPER.readValue(inputStream, SourcehawkConfiguration.class));
         } catch (final IOException e) {
             log.error("Error reading configuration file", e);
             return Optional.empty();
@@ -159,28 +158,28 @@ class ConfigurationReader {
      * @param sourcehawkConfigurations the list of configurations to merge
      * @return the merged configurations
      */
-    public SourcehawkConfiguration merge(final Set<SourcehawkConfiguration> sourcehawkConfigurations) {
+    private SourcehawkConfiguration merge(final Set<SourcehawkConfiguration> sourcehawkConfigurations) {
         SourcehawkConfiguration sourcehawkConfiguration = SourcehawkConfiguration.of(new LinkedHashSet<>(), new HashSet<>());
-        if (CollectionUtils.isNotEmpty(sourcehawkConfigurations)) {
-            if (sourcehawkConfigurations.size() == 1) {
+        if (CollectionUtils.isEmpty(sourcehawkConfigurations)) {
+            return sourcehawkConfiguration;
+        }
+        if (sourcehawkConfigurations.size() == 1) {
                 return Optional.ofNullable(sourcehawkConfigurations.iterator().next())
                         .orElseThrow(() -> new ConfigurationException("No sourcehawk file could be located or serialized"));
-            } else {
-                for (val configuration : sourcehawkConfigurations) {
-                    try {
-                        sourcehawkConfiguration = CONFIGURATION_DESERIALIZER.readerForUpdating(sourcehawkConfiguration)
-                                .readValue(CONFIGURATION_DESERIALIZER.writeValueAsString(configuration), SourcehawkConfiguration.class);
-                    } catch (final IOException e) {
-                        throw new ConfigurationException("Could not merge config files " + e.getMessage());
-                    }
-                }
+        }
+        for (val configuration : sourcehawkConfigurations) {
+            try {
+                sourcehawkConfiguration = MAPPER.readerForUpdating(sourcehawkConfiguration)
+                        .readValue(MAPPER.writeValueAsString(configuration), SourcehawkConfiguration.class);
+            } catch (final IOException e) {
+                throw new ConfigurationException("Could not merge config files " + e.getMessage());
             }
         }
         return sourcehawkConfiguration;
     }
 
     static FileEnforcer parseFileEnforcer(final Object fileEnforcerObject) {
-        return CONFIGURATION_DESERIALIZER.convertValue(fileEnforcerObject, FileEnforcer.class);
+        return MAPPER.convertValue(fileEnforcerObject, FileEnforcer.class);
     }
 
 }

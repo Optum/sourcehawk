@@ -1,0 +1,25 @@
+= Examples
+
+.Use the default configuration file in the current directory
+[source,sh]
+----
+sourcehawk validate-config
+----
+
+.Use the standard input
+[source,sh]
+----
+cat ~/sourcehawk.yml | sourcehawk validate-config -
+----
+
+.Use an absolute file path with the command alias
+[source,sh]
+----
+sourcehawk vc /path/to/sourcehawk.yml
+----
+
+.Use a relative file path and default configuration file in directory
+[source,sh]
+----
+sourcehawk validate-config .sourcehawk
+----

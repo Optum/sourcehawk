@@ -1,0 +1,37 @@
+= Examples
+
+.Use the default configuration file in the current directory
+[source,sh]
+----
+sourcehawk scan
+----
+
+.Use a remote configuration file
+[source,sh]
+----
+sourcehawk scan --config-file-url https://raw.githubsercontent.com/optum/sourcehawk-parent/main/sourcehawk.yml
+----
+
+.Fail on warnings, and output in markdown format to file
+[source,sh]
+----
+sourcehawk scan -f MARKDOWN --fail-on-warnings > sourcehawk-scan-results.md
+----
+
+.Output in JSON format and pretty print with jq
+[source,sh]
+----
+sourcehawk scan --output-format JSON | jq
+----
+
+.Scan an external source directory and output with medium verbosity
+[source,sh]
+----
+sourcehawk scan --verbosity MEDIUM /path/to/source
+----
+
+.Use a super awesome alias
+[source,sh]
+----
+sourcehawk flyover /flight/path
+----

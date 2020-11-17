@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
 @CommandLine.Command(
         name = ValidateConfigCommand.COMMAND_NAME,
         aliases = { "vc" },
-        description = "Validate configuration",
+        description = "Validate Sourcehawk configuration file format and syntax",
         mixinStandardHelpOptions = true
 )
 class ValidateConfigCommand implements Callable<Integer> {
@@ -136,7 +136,7 @@ class ValidateConfigCommand implements Callable<Integer> {
      */
     private static Optional<String> captureEnforcerConversionError(final FileProtocol fileProtocol, final Map<String, Object> enforcer) {
         try {
-            ConfigurationReader.CONFIGURATION_DESERIALIZER.convertValue(enforcer, FileEnforcer.class);
+            ConfigurationReader.MAPPER.convertValue(enforcer, FileEnforcer.class);
             return Optional.empty();
         } catch (final Exception e) {
             return Optional.of(deriveErrorMessage(String.format("in file protocol '%s'", fileProtocol.getName()), e));

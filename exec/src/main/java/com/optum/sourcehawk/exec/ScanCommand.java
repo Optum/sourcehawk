@@ -14,7 +14,7 @@ import picocli.CommandLine;
 @CommandLine.Command(
         name = ScanCommand.COMMAND_NAME,
         aliases = { "flyover", "survey" },
-        description = "Runs a scan on the source code"
+        description = "Runs a Sourcehawk scan on the source code"
 )
 class ScanCommand extends AbstractCommand {
 
@@ -22,7 +22,7 @@ class ScanCommand extends AbstractCommand {
 
     @CommandLine.Option(
             names = {"-fow", "--fail-on-warnings"},
-            description = "Whether",
+            description = "Whether to fail the scan if only warnings are found",
             defaultValue = "false",
             showDefaultValue = CommandLine.Help.Visibility.ALWAYS
     )

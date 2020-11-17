@@ -216,6 +216,17 @@
                             </sources>
                         </mapping>
                         <mapping>
+                            <directory>/usr/local/bin</directory>
+                            <directoryIncluded>false</directoryIncluded>
+                            <filemode>755</filemode>
+                            <sources>
+                                <soflinkSource>
+                                    <destination>shawk</destination>
+                                    <location>${project.build.directory}/${executable.name}</location>
+                                </soflinkSource>
+                            </sources>
+                        </mapping>
+                        <mapping>
                             <directory>/usr/share/bash-completion/completions</directory>
                             <filemode>755</filemode>
                             <directoryIncluded>false</directoryIncluded>
