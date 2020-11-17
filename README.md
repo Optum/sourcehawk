@@ -16,34 +16,11 @@
 
 ## Documentation
 
-### CLI Usage
-https://optum.github.io/sourcehawk
+### Installation
+https://optum.github.io/sourcehawk/#_installation
 
-#### Installation
-
-##### Linux
-```sh
-curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-linux.sh | bash
-```
-
-##### Debian
-You'll need to be able to `sudo` for this one.
-
-```sh
-curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-debian.sh | bash
-```
-
-##### Mac
-```sh
-curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-mac.sh | bash
-```
-
-#### Manuals
-
-* [Sourcehawk](https://optum.github.io/sourcehawk/#_sourcehawk1) - parent command
-* [Scan Manual](https://optum.github.io/sourcehawk/#_scan1) - `scan` command
-* [Validate Config Manual](https://optum.github.io/sourcehawk/#_validate_config1) - `validate-config` command
-* [Fix Manual](https://optum.github.io/sourcehawk/#_fix1) - `fix` command
+### Command Manuals
+https://optum.github.io/sourcehawk/#_commands
 
 ## Contributing
 If you wish to contribute to the development of Sourcehawk please read [CONTRIBUTING.md](CONTRIBUTING.md) for more information.
