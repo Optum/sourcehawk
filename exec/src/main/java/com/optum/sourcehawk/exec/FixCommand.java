@@ -14,8 +14,7 @@ import picocli.CommandLine;
 @CommandLine.Command(
         name = FixCommand.COMMAND_NAME,
         aliases = { "correct", "resolve" },
-        description = "Fix the source based on Sourcehawk configuration file.  "
-            + "This will update the files in place if any updates are required to be made."
+        description = "Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made."
 )
 class FixCommand extends AbstractCommand {
 

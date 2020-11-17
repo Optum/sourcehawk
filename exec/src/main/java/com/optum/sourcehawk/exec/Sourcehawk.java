@@ -18,7 +18,7 @@ import java.util.Properties;
  */
 @CommandLine.Command(
         name = SourcehawkConstants.NAME_LOWERCASE,
-        aliases = { "shawk" },
+        aliases = "shawk",
         description = "Watch over your source like a hawk...",
         mixinStandardHelpOptions = true,
         versionProvider = Sourcehawk.VersionProvider.class,

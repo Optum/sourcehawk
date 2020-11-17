@@ -15,7 +15,7 @@ sourcehawk fix --dry-run
 .Use a remote configuration file
 [source,sh]
 ----
-sourcehawk fix --config-file-url https://raw.githubusercontent.com/optum/sourcehawk/main/sourcehawk.yml
+shawk fix --config-file-url https://raw.githubusercontent.com/optum/sourcehawk/main/sourcehawk.yml
 ----
 
 .Use an alias

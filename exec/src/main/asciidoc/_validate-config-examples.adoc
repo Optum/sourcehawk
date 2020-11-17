@@ -12,7 +12,7 @@ sourcehawk validate-config
 cat ~/sourcehawk.yml | sourcehawk validate-config -
 ----
 
-.Use an absolute file path with the command alias
+.Use an absolute file path with a command alias
 [source,sh]
 ----
 sourcehawk vc /path/to/sourcehawk.yml
