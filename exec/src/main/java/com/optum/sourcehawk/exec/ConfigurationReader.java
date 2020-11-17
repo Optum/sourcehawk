@@ -8,6 +8,7 @@ import com.optum.sourcehawk.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
+import com.optum.sourcehawk.enforcer.file.FileResolver;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -178,8 +179,28 @@ class ConfigurationReader {
         return sourcehawkConfiguration;
     }
 
+    /**
+     * Parse the file enforcer
+     *
+     * @param fileEnforcerObject the file enforcer object
+     * @return the file enforcer
+     */
     static FileEnforcer parseFileEnforcer(final Object fileEnforcerObject) {
         return MAPPER.convertValue(fileEnforcerObject, FileEnforcer.class);
+    }
+
+    /**
+     * Convert the file enforcer to a file resolver
+     *
+     * @param fileEnforcerObject the file enforcer object
+     * @return the file resolver if able to be converted, otherwise {@link Optional#empty()}
+     */
+    static Optional<FileResolver> convertFileEnforcerToFileResolver(final Object fileEnforcerObject) {
+        val fileEnforcer = parseFileEnforcer(fileEnforcerObject);
+        if (fileEnforcer instanceof FileResolver) {
+            return Optional.of(fileEnforcer).map(FileResolver.class::cast);
+        }
+        return Optional.empty();
     }
 
 }

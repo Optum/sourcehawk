@@ -7,7 +7,6 @@ import com.optum.sourcehawk.core.scan.ScanResult;
 import com.optum.sourcehawk.core.scan.Severity;
 import com.optum.sourcehawk.core.utils.FileUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
-import com.optum.sourcehawk.enforcer.file.FileEnforcerRegistry;
 import com.optum.sourcehawk.protocol.FileProtocol;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -122,7 +121,8 @@ public final class ScanExecutor {
             } else {
                 val severity = Severity.parse(fileProtocol.getSeverity());
                 for (val repositoryPath: repositoryPaths) {
-                    try (val fileInputStream = repositoryFileReader.read(repositoryPath).orElseThrow(() -> new IOException("File not found"))) {
+                    try (val fileInputStream = repositoryFileReader.read(repositoryPath)
+                            .orElseThrow(() -> new IOException(String.format("File not found: %s", repositoryPath)))) {
                         val enforcerResult = fileEnforcer.enforce(fileInputStream);
                         fileProtocolScanResults.add(ScanResultFactory.enforcerResult(execOptions, repositoryPath, severity, enforcerResult));
                     }

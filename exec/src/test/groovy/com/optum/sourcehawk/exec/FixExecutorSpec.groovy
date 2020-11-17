@@ -182,7 +182,7 @@ class FixExecutorSpec extends FileBaseSpecification {
     def "fix - dry run"() {
         given:
         ExecOptions execOptions = ExecOptions.builder()
-                .repositoryRoot(testResourcesRoot.resolve("repo"))
+                .repositoryRoot(testResourcesRoot.resolve("repo-updates"))
                 .build()
 
         when:

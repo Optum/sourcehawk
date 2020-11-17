@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import picocli.CommandLine;
 
+import java.util.Optional;
+
 /**
  * CLI entry point for executing Sourcehawk scan command
  *
@@ -39,8 +41,7 @@ class ScanCommand extends AbstractCommand {
                 .setCaseInsensitiveEnumValuesAllowed(true)
                 .setTrimQuotes(true)
                 .execute(args);
-        Runtime.getRuntime()
-                .halt(status);
+        Runtime.getRuntime().halt(status);
     }
 
     /**
@@ -50,18 +51,27 @@ class ScanCommand extends AbstractCommand {
      */
     @Override
     public Integer call() {
-        ScanResult scanResult;
         val execOptions = buildExecOptions().toBuilder().failOnWarnings(failOnWarnings).build();
-        try {
-            scanResult = ScanExecutor.scan(execOptions);
-        } catch (final Exception e) {
-            scanResult = ScanResultFactory.error(execOptions.getRepositoryRoot().toString(), e.getMessage());
-        }
+        val scanResult = execute(execOptions);
         ScanResultLogger.log(scanResult, execOptions);
         if (scanResult.isPassed()) {
             return CommandLine.ExitCode.OK;
         }
         return CommandLine.ExitCode.SOFTWARE;
+    }
+
+    /**
+     * Execute the scan and return the result
+     *
+     * @param execOptions the exec options
+     * @return the scan result
+     */
+    private static ScanResult execute(final ExecOptions execOptions) {
+        try {
+            return ScanExecutor.scan(execOptions);
+        } catch (final Exception e) {
+            return ScanResultFactory.error("GLOBAL", Optional.ofNullable(e.getMessage()).orElse("Unknown error"));
+        }
     }
 
 }

@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import picocli.CommandLine;
 
+import java.util.Optional;
+
 /**
  * CLI entry point for executing Sourcehawk fix command
  *
@@ -37,8 +39,7 @@ class FixCommand extends AbstractCommand {
                 .setCaseInsensitiveEnumValuesAllowed(true)
                 .setTrimQuotes(true)
                 .execute(args);
-        Runtime.getRuntime()
-                .halt(status);
+        Runtime.getRuntime().halt(status);
     }
 
     /**
@@ -48,13 +49,8 @@ class FixCommand extends AbstractCommand {
      */
     @Override
     public Integer call() {
-        FixResult fixResult;
         val execOptions = buildExecOptions();
-        try {
-            fixResult = FixExecutor.fix(execOptions, dryRun);
-        } catch (final Exception e) {
-            fixResult = FixResultFactory.error(execOptions.getRepositoryRoot().toString(), e.getMessage());
-        }
+        val fixResult = execute(execOptions, dryRun);
         FixResultLogger.log(fixResult, execOptions);
         if (fixResult.isError()) {
             return CommandLine.ExitCode.SOFTWARE;
@@ -62,6 +58,21 @@ class FixCommand extends AbstractCommand {
             return CommandLine.ExitCode.USAGE;
         }
         return CommandLine.ExitCode.OK;
+    }
+
+    /**
+     * Execute the fix
+     *
+     * @param execOptions the exec options
+     * @param dryRun whether or not this is a dry run
+     * @return the fix result
+     */
+    private static FixResult execute(final ExecOptions execOptions, final boolean dryRun) {
+        try {
+            return FixExecutor.fix(execOptions, dryRun);
+        } catch (final Exception e) {
+            return FixResultFactory.error("GLOBAL", Optional.ofNullable(e.getMessage()).orElse("Unknown error"));
+        }
     }
 
 }

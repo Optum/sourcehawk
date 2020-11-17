@@ -58,8 +58,7 @@ class ValidateConfigCommand implements Callable<Integer> {
                 .setCaseInsensitiveEnumValuesAllowed(true)
                 .setTrimQuotes(true)
                 .execute(args);
-        Runtime.getRuntime()
-                .halt(status);
+        Runtime.getRuntime().halt(status);
     }
 
     /**

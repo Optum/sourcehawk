@@ -8,18 +8,18 @@ import java.security.Permission
 class CliBaseSpecification extends FileBaseSpecification {
 
     @Shared
-    protected SecurityManager defaultSecurityManager
+    private SecurityManager defaultSecurityManager
 
     def setupSpec() {
         defaultSecurityManager = System.getSecurityManager()
-        System.setSecurityManager(new RuntimeHaltExceptionSecurityManager())
+        System.setSecurityManager(new SystemExitSecurityManager())
     }
 
     def cleanupSpec() {
         System.setSecurityManager(defaultSecurityManager)
     }
 
-    protected static class RuntimeHaltExceptionSecurityManager extends SecurityManager {
+    protected static class SystemExitSecurityManager extends SecurityManager {
 
         @Override
         void checkPermission(Permission perm) { }
