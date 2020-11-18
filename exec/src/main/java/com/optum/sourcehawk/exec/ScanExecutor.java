@@ -106,7 +106,7 @@ public final class ScanExecutor {
         for (val enforcer : fileProtocol.getEnforcers()) {
             final FileEnforcer fileEnforcer;
             try {
-                fileEnforcer = ConfigurationReader.CONFIGURATION_DESERIALIZER.convertValue(enforcer, FileEnforcer.class);
+                fileEnforcer = ConfigurationReader.parseFileEnforcer(enforcer);
             } catch (final IllegalArgumentException e) {
                 fileProtocolScanResults.add(ScanResultFactory.error(fileProtocol.getRepositoryPath(), String.format("File enforcer invalid: %s", e.getMessage())));
                 continue;
@@ -121,7 +121,8 @@ public final class ScanExecutor {
             } else {
                 val severity = Severity.parse(fileProtocol.getSeverity());
                 for (val repositoryPath: repositoryPaths) {
-                    try (val fileInputStream = repositoryFileReader.read(repositoryPath).orElseThrow(() -> new IOException("File not found"))) {
+                    try (val fileInputStream = repositoryFileReader.read(repositoryPath)
+                            .orElseThrow(() -> new IOException(String.format("File not found: %s", repositoryPath)))) {
                         val enforcerResult = fileEnforcer.enforce(fileInputStream);
                         fileProtocolScanResults.add(ScanResultFactory.enforcerResult(execOptions, repositoryPath, severity, enforcerResult));
                     }

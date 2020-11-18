@@ -1,0 +1,21 @@
+
+file-protocols:
+  - name: Lombok Config Override
+    description: Lombok Configured appropriately
+    group: lombok
+    tags:
+      - lombok
+      - config
+    repository-path: lombok.config
+    required: true
+    severity: WARNING
+    enforcers:
+      - enforcer: .common.StringPropertyEquals
+        property-name: config.stopBubbling
+        expected-property-value: true
+      - enforcer: .common.StringPropertyEquals
+        property-name: lombok.addLombokGeneratedAnnotation
+        expected-property-value: true
+      - enforcer: .common.StringPropertyEquals
+        property-name: lombok.anyConstructor.addConstructorProperties
+        expected-property-value: true

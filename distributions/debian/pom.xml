@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -85,12 +85,12 @@
                 </executions>
             </plugin>
 
-            <!-- COPY NATIVE IMAGE EXECUTABLE -->
+            <!-- COPY NATIVE IMAGE DEPENDENCIES -->
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-native-image</id>
+                        <id>copy-native-image-dependencies</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>copy</goal>

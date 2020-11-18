@@ -18,7 +18,7 @@ import java.nio.charset.Charset;
  */
 public abstract class AbstractFileEnforcer implements FileEnforcer {
 
-    protected static final String ERROR_INPUT_STREAM = "Failed to read file with error [%s]";
+    private static final String ERROR_INPUT_STREAM = "Failed to read file with error [%s]";
 
     /** {@inheritDoc} */
     @Override

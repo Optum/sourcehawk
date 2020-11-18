@@ -1,0 +1,25 @@
+= Examples
+
+.Use the default configuration file in the current directory
+[source,sh]
+----
+sourcehawk fix
+----
+
+.Run a dry run of what would be fixed
+[source,sh]
+----
+sourcehawk fix --dry-run
+----
+
+.Use a remote configuration file
+[source,sh]
+----
+shawk fix --config-file-url https://raw.githubusercontent.com/optum/sourcehawk/main/sourcehawk.yml
+----
+
+.Use an alias
+[source,sh]
+----
+sourcehawk correct
+----

@@ -1,6 +1,6 @@
 package com.optum.sourcehawk.exec
 
-
+import com.optum.sourcehawk.core.scan.ScanResult
 import spock.lang.Unroll
 
 class ScanCommandSpec extends CliBaseSpecification {
@@ -82,6 +82,21 @@ class ScanCommandSpec extends CliBaseSpecification {
 
         where:
         arg << [ "-n", "--none" ]
+    }
+
+    def "execute - exception"() {
+        given:
+        ExecOptions execOptions = null
+
+        when:
+        ScanResult scanResult = ScanCommand.execute(execOptions)
+
+        then:
+        scanResult
+        !scanResult.passed
+
+        and:
+        noExceptionThrown()
     }
 
 }

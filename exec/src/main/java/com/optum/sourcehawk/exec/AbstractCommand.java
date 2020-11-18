@@ -97,7 +97,7 @@ abstract class AbstractCommand implements Callable<Integer> {
         @CommandLine.Option(
                 names = {"-cfu", "--config-file-url"},
                 paramLabel = "config-file-url",
-                description = "The configuration file URL"
+                description = "A remote URL which resolves to a configuration file"
         )
         URL url;
 

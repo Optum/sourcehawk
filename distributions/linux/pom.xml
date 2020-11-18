@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -31,11 +31,15 @@
             <groupId>com.optum.sourcehawk</groupId>
             <artifactId>sourcehawk-exec</artifactId>
             <classifier>native-image</classifier>
+            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.spockframework</groupId>
-            <artifactId>spock-core</artifactId>
-            <scope>test</scope>
+            <groupId>com.optum.sourcehawk</groupId>
+            <artifactId>sourcehawk-exec</artifactId>
+            <version>${project.version}</version>
+            <classifier>bash-completion</classifier>
+            <type>sh</type>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 
@@ -43,12 +47,36 @@
 
         <plugins>
 
-            <!-- COPY EXECUTABLE JAR -->
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-manpages</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>copy-resources</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
+                                    <includes>
+                                        <include>${executable.name}*</include>
+                                    </includes>
+                                </resource>
+                            </resources>
+                            <outputDirectory>${project.build.directory}/dist/manpages</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- COPY NATIVE IMAGE DEPENDENCIES -->
             <plugin>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-executable-jar</id>
+                        <id>copy-native-image-jar</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
@@ -57,7 +85,26 @@
                             <includeGroupIds>com.optum.sourcehawk</includeGroupIds>
                             <includeArtifactIds>sourcehawk-exec</includeArtifactIds>
                             <includeClassifiers>native-image</includeClassifiers>
-                            <outputDirectory>${project.build.directory}/native-image-dependencies</outputDirectory>
+                            <outputDirectory>${project.build.directory}/dist</outputDirectory>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>copy-native-image-bash-completion</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.optum.sourcehawk</groupId>
+                                    <artifactId>sourcehawk-exec</artifactId>
+                                    <classifier>bash-completion</classifier>
+                                    <type>sh</type>
+                                    <outputDirectory>${project.build.directory}/dist/bash-completion</outputDirectory>
+                                    <destFileName>${executable.name}</destFileName>
+                                </artifactItem>
+                            </artifactItems>
                         </configuration>
                     </execution>
                 </executions>
@@ -82,7 +129,7 @@
                             <buildArgs>
                                 <FROM_TAG>${dockerfile.fromtag}</FROM_TAG>
                                 <NAME>${executable.name}</NAME>
-                                <JAR>target/native-image-dependencies/sourcehawk-exec-${project.version}-native-image.jar</JAR>
+                                <JAR>target/dist/sourcehawk-exec-${project.version}-native-image.jar</JAR>
                                 <WORKDIR>${docker.workdir}</WORKDIR>
                             </buildArgs>
                             <skipDockerInfo>true</skipDockerInfo>
@@ -160,6 +207,87 @@
     </build>
 
     <profiles>
+
+        <!-- RPM BUILD -->
+        <profile>
+            <id>rpm-build</id>
+            <activation>
+                <file>
+                    <exists>/usr/bin/rpmbuild</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>rpm-maven-plugin</artifactId>
+                        <version>2.2.0</version>
+                        <executions>
+                            <execution>
+                                <id>build-rpm-package</id>
+                                <goals>
+                                    <goal>attached-rpm</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <group>Development/Tools</group>
+                            <name>${executable.name}</name>
+                            <license>GNU General Public License 3</license>
+                            <needarch>true</needarch>
+                            <classifier>x86_64</classifier>
+                            <defaultGroupname>${executable.name}</defaultGroupname>
+                            <defaultUsername>${executable.name}</defaultUsername>
+                            <keyPassphrase/> <!-- null disables gpg signing (done later on) -->
+                            <passphraseServerId/> <!-- null disables gpg signing (done later on) -->
+                            <keyname/> <!-- null disables gpg signing (done later on) -->
+                            <copyTo>${project.build.directory}/${executable.name}.rpm</copyTo>
+                            <mappings>
+                                <mapping>
+                                    <directory>/usr/local/bin</directory>
+                                    <directoryIncluded>false</directoryIncluded>
+                                    <filemode>755</filemode>
+                                    <sources>
+                                        <source>
+                                            <location>${project.build.directory}/${executable.name}</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/usr/local/bin</directory>
+                                    <directoryIncluded>false</directoryIncluded>
+                                    <filemode>755</filemode>
+                                    <sources>
+                                        <soflinkSource>
+                                            <destination>shawk</destination>
+                                            <location>${project.build.directory}/${executable.name}</location>
+                                        </soflinkSource>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/usr/share/bash-completion/completions</directory>
+                                    <filemode>755</filemode>
+                                    <directoryIncluded>false</directoryIncluded>
+                                    <sources>
+                                        <source>
+                                            <location>${project.build.directory}/dist/bash-completion/${executable.name}</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                                <mapping>
+                                    <directory>/usr/share/man/man1</directory>
+                                    <sources>
+                                        <source>
+                                            <location>${project.build.directory}/dist/manpages/</location>
+                                        </source>
+                                    </sources>
+                                </mapping>
+                            </mappings>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
 
         <!-- JAVA 8 NATIVE IMAGE BUILD -->
         <profile>

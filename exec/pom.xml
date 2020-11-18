@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -64,31 +64,7 @@
         </dependency>
         <dependency>
             <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-core</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-file-core</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-file-common</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-file-docker</artifactId>
-            <version>${project.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-enforcer-file-maven</artifactId>
+            <artifactId>sourcehawk-enforcer-file-registry</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>
@@ -107,14 +83,20 @@
 
         <!-- TEST DEPENDENCIES -->
         <dependency>
-            <groupId>org.spockframework</groupId>
-            <artifactId>spock-core</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
             <version>0.9.12</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.hamcrest</groupId>
+            <artifactId>hamcrest-core</artifactId>
+            <version>2.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -245,7 +227,7 @@
                             <arguments>
                                 <argument>--force</argument>
                                 <argument>--completionScript</argument>
-                                <argument>${project.build.directory}/${executable.name}_bash_completion.sh</argument>
+                                <argument>${project.build.directory}/${executable.name}-bash-completion.sh</argument>
                                 <argument>${executable.class}</argument>
                             </arguments>
                         </configuration>
@@ -276,7 +258,7 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/${executable.name}_bash_completion.sh</file>
+                                    <file>${project.build.directory}/${executable.name}-bash-completion.sh</file>
                                     <classifier>bash-completion</classifier>
                                     <type>sh</type>
                                 </artifact>
@@ -427,7 +409,7 @@
                                         <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk/native-image.properties</file>
                                         <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk-generated/reflect-config.json</file>
                                         <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk-generated/resource-config.json</file>
-                                        <file>${project.build.directory}/${executable.name}_bash_completion.sh</file>
+                                        <file>${project.build.directory}/${executable.name}-bash-completion.sh</file>
                                         <file>${project.parent.basedir}/gh-pages/index.html</file>
                                         <file>${project.parent.basedir}/gh-pages/stylesheets/sourcehawk.css</file>
                                         <file>${project.parent.basedir}/gh-pages/manpages/sourcehawk.1</file>

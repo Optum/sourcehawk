@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-enforcer</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.3-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,9 +19,11 @@
 
     <modules>
         <module>core</module>
+        <module>aot</module>
         <module>common</module>
         <module>docker</module>
         <module>maven</module>
+        <module>registry</module>
     </modules>
 
     <build>

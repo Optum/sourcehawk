@@ -11,7 +11,7 @@ DEB_PACKAGE="/tmp/sourcehawk-$VERSION.deb"
 echo "Downloading Sourcehawk package..."
 if curl -sLk "$DOWNLOAD_URL" -o "$DEB_PACKAGE"; then
   echo "Installing..."
-  sudo dpkg -i "$DEB_PACKAGE"
+  sudo apt install "$DEB_PACKAGE"
   # shellcheck disable=SC1090
   source ~/.bashrc
   sourcehawk -V

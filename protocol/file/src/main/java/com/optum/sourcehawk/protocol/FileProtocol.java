@@ -22,8 +22,7 @@ import java.util.Map;
 @Value
 @Builder
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@JsonDeserialize(builder = FileProtocol.FileProtocolBuilder.class)
-// Persuade Mr. Jackson to use builder (which allows defaults during deserialization)
+@JsonDeserialize(builder = FileProtocol.FileProtocolBuilder.class) // Persuade Mr. Jackson to use builder (which allows defaults during deserialization)
 public class FileProtocol implements Protocol {
 
     /**
@@ -85,7 +84,6 @@ public class FileProtocol implements Protocol {
      * @author Brian Wyka
      */
     @JsonPOJOBuilder(withPrefix = "")
-    public static class FileProtocolBuilder {
-    }
+    public static class FileProtocolBuilder { }
 
 }

@@ -4,8 +4,8 @@ import com.optum.sourcehawk.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
 import com.optum.sourcehawk.core.repository.RepositoryFileReader;
 import com.optum.sourcehawk.core.scan.FixResult;
+import com.optum.sourcehawk.core.utils.FileUtils;
 import com.optum.sourcehawk.enforcer.EnforcerConstants;
-import com.optum.sourcehawk.enforcer.file.FileEnforcer;
 import com.optum.sourcehawk.enforcer.file.FileResolver;
 import com.optum.sourcehawk.protocol.FileProtocol;
 import lombok.AccessLevel;
@@ -13,14 +13,15 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
+import java.nio.file.Path;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Entry point into executing scans
@@ -57,82 +58,78 @@ public final class FixExecutor {
             return FixResultFactory.error(execOptions.getConfigurationFileLocation(), "Scan configuration file not found or remote configuration read issue");
         }
         val repositoryFileReader = LocalRepositoryFileReader.create(execOptions.getRepositoryRoot());
-        val filteredFileProtocols = sourcehawkConfiguration.getFileProtocols().stream()
+        return sourcehawkConfiguration.getFileProtocols().stream()
                 .filter(FileProtocol::isRequired)
-                .collect(Collectors.toSet());
-        val fileProtocolFixResults = new ArrayList<FixResult>(filteredFileProtocols.size());
-        for (val fileProtocol : filteredFileProtocols) {
-            try (val stringWriter = new StringWriter()) {
-                val fixResult = fixFileProtocol(repositoryFileReader, fileProtocol, stringWriter, dryRun);
-                fileProtocolFixResults.add(fixResult);
-                if (fixResult.isFixesApplied() && !dryRun) {
-                    try (val fileWriter = new FileWriter(new File(fileProtocol.getRepositoryPath()))) {
-                        fileWriter.write(stringWriter.toString());
-                    }
-                }
-            } catch (final IOException e) {
-                fileProtocolFixResults.add(FixResultFactory.error(fileProtocol.getRepositoryPath(), String.format("Error fixing file protocol: %s", e.getMessage())));
-            }
-        }
-        return fileProtocolFixResults.stream()
+                .flatMap(fileProtocol -> fileProtocol.getEnforcers().stream()
+                        .flatMap(enforcer -> fixBasedOnEnforcer(execOptions, fileProtocol, repositoryFileReader, dryRun, enforcer)))
                 .reduce(FixResult.builder().build(), FixResult::reduce);
     }
 
     /**
-     * Fix the file protocol
+     * Fix the file based on the enforcer
      *
-     * @param repositoryFileReader the repository file reader
+     * @param execOptions the exec options
      * @param fileProtocol the file protocol
-     * @param fixWriter the fix writer
+     * @param repositoryFileReader the repository file reader
      * @param dryRun whether or not this is a dry run
+     * @param enforcer the raw enforcer object map
      * @return the scan result
-     * @throws IOException if any error occurs during file processing
      */
-    private static FixResult fixFileProtocol(final RepositoryFileReader repositoryFileReader, final FileProtocol fileProtocol,
-                                             final Writer fixWriter, boolean dryRun) throws IOException {
-        val fileProtocolFixResults = new ArrayList<FixResult>(fileProtocol.getEnforcers().size());
-        for (val enforcer : fileProtocol.getEnforcers()) {
-            final Optional<FileResolver> fileResolverOptional;
-            try {
-                fileResolverOptional = convertToFileResolver(ConfigurationReader.CONFIGURATION_DESERIALIZER.convertValue(enforcer, FileEnforcer.class));
-            } catch (final IllegalArgumentException e) {
-                return FixResultFactory.error(fileProtocol.getRepositoryPath(), String.format("File enforcer invalid: %s", e.getMessage()));
-            }
-            if (fileResolverOptional.isPresent()) {
-                // TODO: handle glob patterns
-                val fileInputStreamOptional = repositoryFileReader.read(fileProtocol.getRepositoryPath());
-                if (fileInputStreamOptional.isPresent()) {
-                    try (val fileInputStream = fileInputStreamOptional.get()) {
-                        fileProtocolFixResults.add(FixResultFactory.resolverResult(fileProtocol, fileResolverOptional.get().resolve(fileInputStream, fixWriter), dryRun));
-                    } catch (final IOException e) {
-                        val message = String.format("Error fixing file protocol: %s", e.getMessage());
-                        fileProtocolFixResults.add(FixResultFactory.error(fileProtocol.getRepositoryPath(), message));
-                    }
-                } else {
-                    fileProtocolFixResults.add(FixResultFactory.fileNotFound(fileProtocol));
-                    break;
-                }
-            } else {
-                val fixResult = FixResultFactory.noResolver(fileProtocol.getRepositoryPath(), String.valueOf(enforcer.get(EnforcerConstants.DESERIALIZATION_TYPE_KEY)));
-                fileProtocolFixResults.add(fixResult);
-            }
+    private static Stream<FixResult> fixBasedOnEnforcer(final ExecOptions execOptions, final FileProtocol fileProtocol, final RepositoryFileReader repositoryFileReader,
+                                                        final boolean dryRun, final Map<String, Object> enforcer) {
+        final Optional<FileResolver> fileResolverOptional;
+        try {
+            fileResolverOptional = ConfigurationReader.convertFileEnforcerToFileResolver(enforcer);
+        } catch (final IllegalArgumentException e) {
+            return Stream.of(FixResultFactory.error(fileProtocol.getRepositoryPath(), String.format("File enforcer invalid: %s", e.getMessage())));
         }
-        return fileProtocolFixResults.stream()
-                .reduce(FixResult.builder().build(), FixResult::reduce);
+        if (!fileResolverOptional.isPresent()) {
+            return Stream.of(FixResultFactory.noResolver(fileProtocol.getRepositoryPath(), String.valueOf(enforcer.get(EnforcerConstants.DESERIALIZATION_TYPE_KEY))));
+        }
+        final Set<Path> repositoryPaths;
+        try {
+            repositoryPaths = FileUtils.find(execOptions.getRepositoryRoot().toString(), fileProtocol.getRepositoryPath())
+                    .map(Path::toAbsolutePath)
+                    .collect(Collectors.toSet());
+        } catch (final IOException e) {
+            val message = String.format("Error finding file(s) matching [%s]: %s", fileProtocol.getRepositoryPath(), e.getMessage());
+            return Stream.of(FixResultFactory.error(fileProtocol.getRepositoryPath(), message));
+        }
+        if (repositoryPaths.isEmpty()) {
+            return Stream.of(FixResultFactory.fileNotFound(fileProtocol));
+        }
+        return repositoryPaths.stream()
+                .map(repositoryPath -> fixFile(execOptions, fileProtocol, repositoryFileReader, dryRun, fileResolverOptional.get(), repositoryPath));
     }
 
     /**
-     * Convert the file enforcer to a file resolver
+     * Fix the file based on the protocol
      *
-     * @param fileEnforcer the file enforcer
-     * @return the file resolver if able to be converted, otherwise {@link Optional#empty()}
+     * @param execOptions the exec options
+     * @param fileProtocol the file protocol
+     * @param repositoryFileReader the repository file reader
+     * @param dryRun whether or not this is a dry run
+     * @param fileResolver the file resolver
+     * @param repositoryPath the repository path
+     * @return the fix result
      */
-    private static Optional<FileResolver> convertToFileResolver(final FileEnforcer fileEnforcer) {
-        if (fileEnforcer instanceof FileResolver) {
-            return Optional.of(fileEnforcer)
-                    .map(FileResolver.class::cast);
+    private static FixResult fixFile(final ExecOptions execOptions, final FileProtocol fileProtocol, final RepositoryFileReader repositoryFileReader,
+                                     final boolean dryRun, final FileResolver fileResolver, final Path repositoryPath) {
+        val relativeRepositoryPath = FileUtils.deriveRelativePath(execOptions.getRepositoryRoot().toString(), repositoryPath.toString());
+        try (val fileInputStream = repositoryFileReader.read(relativeRepositoryPath)
+                .orElseThrow(() -> new IOException(String.format("File not found: %s", relativeRepositoryPath)));
+             val fixWriter = new StringWriter()) {
+            val fixResult = FixResultFactory.resolverResult(fileProtocol, fileResolver.resolve(fileInputStream, fixWriter), dryRun);
+            if (fixResult.isFixesApplied() && !dryRun) {
+                try (val fileWriter = new FileWriter(repositoryPath.toFile())) {
+                    fileWriter.write(fixWriter.toString());
+                }
+            }
+            return fixResult;
+        } catch (final IOException e) {
+            val message = String.format("Error fixing file for protocol [%s]: %s", fileProtocol.getName(), e.getMessage());
+            return FixResultFactory.error(fileProtocol.getRepositoryPath(), message);
         }
-        return Optional.empty();
     }
 
 }
