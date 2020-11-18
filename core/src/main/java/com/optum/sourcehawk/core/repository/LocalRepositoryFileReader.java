@@ -35,7 +35,9 @@ public class LocalRepositoryFileReader implements RepositoryFileReader {
         return new LocalRepositoryFileReader(directory);
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public Optional<InputStream> read(@NonNull final String repositoryFilePath) throws IOException {
         return getInputStream(directory.resolve(Paths.get(repositoryFilePath)));

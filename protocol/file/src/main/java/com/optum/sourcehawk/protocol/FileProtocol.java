@@ -30,6 +30,7 @@ public class FileProtocol implements Protocol {
      * The name of the protocol
      */
     @NonNull
+    @EqualsAndHashCode.Include
     String name;
 
     /**

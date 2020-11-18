@@ -22,6 +22,7 @@
         <sonar.exclusions>**/utils/ModifiableProperties.java</sonar.exclusions>
         <sonar.coverage.exclusions>**/utils/ModifiableProperties.java</sonar.coverage.exclusions>
         <sonar.cpd.exclusions>**/utils/ModifiableProperties.java</sonar.cpd.exclusions>
+        <enforcer.skip>true</enforcer.skip>
     </properties>
 
     <dependencies>

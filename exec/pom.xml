@@ -117,6 +117,12 @@
             <version>0.9.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>cglib</groupId>
+            <artifactId>cglib-nodep</artifactId>
+            <version>3.2.12</version>
+            <scope>test</scope>
+        </dependency>
 
     </dependencies>
 
@@ -216,6 +222,7 @@
                                 <argument>com.optum.sourcehawk.exec.ScanCommand</argument>
                                 <argument>com.optum.sourcehawk.exec.ValidateConfigCommand</argument>
                                 <argument>com.optum.sourcehawk.exec.FixCommand</argument>
+                                <argument>com.optum.sourcehawk.exec.FlattenCommand</argument>
                             </arguments>
                         </configuration>
                     </execution>

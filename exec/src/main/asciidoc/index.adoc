@@ -100,3 +100,7 @@ include::{includedir}/scan.adoc[leveloffset=2,tag=picocli-generated-full-manpage
 '''
 
 include::{includedir}/fix.adoc[leveloffset=2,tag=picocli-generated-full-manpage]
+
+'''
+
+include::{includedir}/flatten.adoc[leveloffset=2,tag=picocli-generated-full-manpage]

@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.optum.sourcehawk.protocol.FileProtocol;
 import lombok.Value;
@@ -18,6 +19,7 @@ public class SourcehawkConfiguration {
     /**
      * The remote files to inherit from in URL form
      */
+    @JsonIgnore
     @JsonMerge
     Collection<String> configLocations;
 

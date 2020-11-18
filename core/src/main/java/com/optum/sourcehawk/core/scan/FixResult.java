@@ -55,24 +55,24 @@ public class FixResult implements Serializable {
 
     /**
      * All of the messages associated with the scan
-     *
+     * <p>
      * Key: Repository File Path
      * Value: Collection of {@link ScanResult.MessageDescriptor}
      */
     @NonNull
     @Builder.Default
     @SuppressWarnings("squid:S1948") // Lombok generates private modifier
-    Map<String, Collection<MessageDescriptor>> messages = Collections.emptyMap();
+            Map<String, Collection<MessageDescriptor>> messages = Collections.emptyMap();
 
     /**
      * Messages formatted for reporting
-     *
+     * <p>
      * Format: [SEVERITY] repositoryFilePath :: message
      */
     @NonNull
     @Builder.Default
     @SuppressWarnings("squid:S1948") // Lombok generates private modifier
-    Collection<String> formattedMessages = Collections.emptyList();
+            Collection<String> formattedMessages = Collections.emptyList();
 
     /**
      * Reduce two {@link FixResult}s into one
@@ -82,6 +82,16 @@ public class FixResult implements Serializable {
      * @return the reduced fix result
      */
     public static FixResult reduce(final FixResult one, final FixResult two) {
+        if (one == null) {
+            return two != null ? two : FixResult.builder()
+                    .error(true)
+                    .errorCount(1)
+                    .formattedMessages(Collections.singletonList("Fix results appear to be empty"))
+                    .build();
+        }
+        if (two == null) {
+            return one;
+        }
         val formattedMessages = new HashSet<>(one.formattedMessages);
         formattedMessages.addAll(two.formattedMessages);
         if (formattedMessages.size() < (one.formattedMessages.size() + two.formattedMessages.size())) {
@@ -110,7 +120,9 @@ public class FixResult implements Serializable {
         @NonNull String repositoryPath;
         @NonNull String message;
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String toString() {
             return String.format("%s :: %s", repositoryPath, message);

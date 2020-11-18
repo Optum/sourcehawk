@@ -38,12 +38,17 @@ curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-debian.sh |
 curl https://raw.githubusercontent.com/Optum/sourcehawk/main/install-mac.sh | bash
 ```
 
-#### Manuals
+#### Documentation
+
+* [Sourcehawk](https://optum.github.io/sourcehawk-docs) - general documentation
+
+##### Commands
 
 * [Sourcehawk](https://optum.github.io/sourcehawk/#_sourcehawk1) - parent command
 * [Scan Manual](https://optum.github.io/sourcehawk/#_scan1) - `scan` command
 * [Validate Config Manual](https://optum.github.io/sourcehawk/#_validate_config1) - `validate-config` command
 * [Fix Manual](https://optum.github.io/sourcehawk/#_fix1) - `fix` command
+* [Flatten Manual](https://optum.github.io/sourcehawk/#_flatten1) - `flatten` command
 
 ## Contributing
 If you wish to contribute to the development of Sourcehawk please read [CONTRIBUTING.md](CONTRIBUTING.md) for more information.

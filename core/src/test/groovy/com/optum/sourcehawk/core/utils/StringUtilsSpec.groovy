@@ -111,6 +111,21 @@ class StringUtilsSpec extends Specification {
         string << [null, "", " "]
     }
 
+    @Unroll
+    def "defaultString #string or #defaultStr is #expected"() {
+        expect:
+        StringUtils.defaultString(string, defaultStr) == expected
+
+        where:
+        string | defaultStr || expected
+        null   | "test"     || "test"
+        ""     | "test"     || ""
+        " "    | "test"     || " "
+        null   | null       || null
+        ""     | null       || ""
+        " "    | null       || " "
+    }
+
     def "removeNewLines - one character only -either carriage return or new line"() {
         expect:
         StringUtils.removeNewLines('\r') == ""
@@ -136,7 +151,7 @@ class StringUtilsSpec extends Specification {
         !StringUtils.isUrl(url)
 
         where:
-        url << [ null, "", " " ]
+        url << [null, "", " "]
     }
 
     @Unroll

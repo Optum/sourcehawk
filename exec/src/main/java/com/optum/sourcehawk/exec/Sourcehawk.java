@@ -1,6 +1,7 @@
 package com.optum.sourcehawk.exec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.optum.sourcehawk.core.constants.SourcehawkConstants;
 import lombok.val;
 import org.slf4j.Logger;
@@ -15,14 +16,20 @@ import java.util.Properties;
  * The Sourcehawk command (default CLI entry point)
  *
  * @author Brian Wyka
+ * @author Christian Oestreich
  */
 @CommandLine.Command(
         name = SourcehawkConstants.NAME_LOWERCASE,
-        aliases = { "shawk" },
+        aliases = {"shawk"},
         description = "Watch over your source like a hawk...",
         mixinStandardHelpOptions = true,
         versionProvider = Sourcehawk.VersionProvider.class,
-        subcommands = { CommandLine.HelpCommand.class, ScanCommand.class, ValidateConfigCommand.class, FixCommand.class }
+        subcommands = {CommandLine.HelpCommand.class,
+                ScanCommand.class,
+                ValidateConfigCommand.class,
+                FixCommand.class,
+                FlattenCommand.class
+        }
 )
 class Sourcehawk {
 
@@ -31,6 +38,7 @@ class Sourcehawk {
     static final Logger MESSAGE_LOGGER = LoggerFactory.getLogger("MESSAGE");
     static final Logger MESSAGE_ANSI_LOGGER = LoggerFactory.getLogger("MESSAGE-ANSI");
     static final ObjectMapper JSON_FORMATTER = new ObjectMapper();
+    static final ObjectMapper YAML_FORMATTER = new YAMLMapper();
 
     /**
      * Bootstrap the command
@@ -60,10 +68,12 @@ class Sourcehawk {
         static final String VERSION = loadVersion();
 
 
-        /** {@inheritDoc} */
+        /**
+         * {@inheritDoc}
+         */
         @Override
         public String[] getVersion() {
-            return new String[] { String.format("%s v%s", SourcehawkConstants.NAME, VERSION) };
+            return new String[]{String.format("%s v%s", SourcehawkConstants.NAME, VERSION)};
         }
 
         /**
@@ -87,7 +97,7 @@ class Sourcehawk {
          * @param inputStream the manifest input stream
          * @return the properties
          */
-        private static Optional<Properties> loadProperties(final InputStream inputStream)  {
+        private static Optional<Properties> loadProperties(final InputStream inputStream) {
             try {
                 val properties = new Properties();
                 properties.load(inputStream);
