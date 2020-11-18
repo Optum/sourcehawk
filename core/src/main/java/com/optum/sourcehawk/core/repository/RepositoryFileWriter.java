@@ -5,7 +5,7 @@ import java.io.IOException;
 /**
  * A reader responsible for reading repository files
  *
- * @author Brian Wyka
+ * @author Christian Oestreich
  */
 public interface RepositoryFileWriter {
 

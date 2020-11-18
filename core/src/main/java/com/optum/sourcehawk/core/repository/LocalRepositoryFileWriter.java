@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 /**
  * A repository file reader implementation which reads from file system
  *
- * @author Brian Wyka
+ * @author Christian Oestreich
  */
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class LocalRepositoryFileWriter implements RepositoryFileWriter {
