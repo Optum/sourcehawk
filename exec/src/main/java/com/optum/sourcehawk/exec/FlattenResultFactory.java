@@ -1,6 +1,5 @@
 package com.optum.sourcehawk.exec;
 
-import com.optum.sourcehawk.core.scan.FixResult;
 import com.optum.sourcehawk.core.scan.FlattenResult;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +8,7 @@ import lombok.val;
 import java.util.Collections;
 
 /**
- * A factory for creating instances of {@link FixResult}
+ * A factory for creating instances of {@link FlattenResult}
  *
  * @author Christian Oestreich
  */

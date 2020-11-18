@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * The result of a fix
  *
- * @author Brian Wyka
+ * @author Christian Oestreich
  */
 @Value
 @Builder
