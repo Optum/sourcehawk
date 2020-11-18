@@ -4,7 +4,5 @@
  *
  * @author Brian Wyka
  */
-@SourcehawkFileEnforcerRegistry
+@com.optum.sourcehawk.enforcer.file.aot.SourcehawkFileEnforcerRegistry
 package com.optum.sourcehawk.enforcer.file;
-
-import com.optum.sourcehawk.enforcer.file.aot.SourcehawkFileEnforcerRegistry;

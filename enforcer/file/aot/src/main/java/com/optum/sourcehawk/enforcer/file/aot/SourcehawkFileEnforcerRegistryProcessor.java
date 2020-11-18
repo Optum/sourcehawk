@@ -13,7 +13,6 @@ import com.squareup.javapoet.WildcardTypeName;
 import org.reflections.Reflections;
 
 import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Modifier;
@@ -62,12 +61,6 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
         } catch (final ClassNotFoundException e) {
             throw new IllegalStateException("Improper classpath setup, make sure the compiler has correct dependencies", e);
         }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public synchronized void init(final ProcessingEnvironment processingEnvironment) {
-        super.init(processingEnvironment);
     }
 
     /** {@inheritDoc} */
