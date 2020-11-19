@@ -1,13 +1,14 @@
 package com.optum.sourcehawk.exec.graal.nativeimage
 
 import com.optum.sourcehawk.configuration.SourcehawkConfiguration
-import com.optum.sourcehawk.core.scan.ScanResult
 import com.optum.sourcehawk.enforcer.file.FileEnforcer
 import com.optum.sourcehawk.exec.FileBaseSpecification
 import com.optum.sourcehawk.protocol.FileProtocol
 import org.reflections.Reflections
 
+import java.lang.reflect.Modifier
 import java.nio.charset.StandardCharsets
+import java.util.stream.Collectors
 
 /**
  * The purpose of this spec is to generate a reflection configuration file which whitelists
@@ -29,7 +30,10 @@ class ReflectConfigGeneratorSpec extends FileBaseSpecification {
                 .getResourceAsStream("reflect-config-template.json")
                 .getText(StandardCharsets.UTF_8.name())
         Reflections reflections = new Reflections("com.optum.sourcehawk.enforcer")
-        Set<Class<?>> enforcerClasses = reflections.getSubTypesOf(FileEnforcer)
+        Set<Class<?>> enforcerClasses = reflections.getSubTypesOf(FileEnforcer).stream()
+                .filter({!Modifier.isAbstract(it.modifiers) })
+                .collect(Collectors.toSet())
+
 
         when:
         // Sourcehawk (required to support Jackson Deserialization)
@@ -37,12 +41,10 @@ class ReflectConfigGeneratorSpec extends FileBaseSpecification {
         reflectionClasses.add(SourcehawkConfiguration)
         reflectionClasses.add(FileProtocol)
         reflectionClasses.add(FileProtocol.FileProtocolBuilder)
-        reflectionClasses.add(ScanResult)
-        reflectionClasses.add(ScanResult.MessageDescriptor)
 
         then:
         reflectionClasses
-        reflectionClasses.size() == 25
+        reflectionClasses.stream().noneMatch({ Modifier.isAbstract(it.modifiers) || Modifier.isInterface(it.modifiers) })
 
         when:
         FileOutputStream generatedFileOutputStream = new FileOutputStream(generatedReflectionConfigFile, false)
