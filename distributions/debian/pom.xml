@@ -19,7 +19,8 @@
 
     <properties>
         <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
-        <docker.debpkg.file>/tmp/${executable.name}.deb</docker.debpkg.file>
+        <debian.package>${executable.name}</debian.package>
+        <debian.architecture>amd64</debian.architecture>
     </properties>
 
     <dependencies>
@@ -59,7 +60,7 @@
                                 <resource>
                                     <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
                                     <includes>
-                                        <include>${executable.name}*</include>
+                                        <include>${debian.package}*</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -103,7 +104,7 @@
                                     <classifier>x86_64</classifier>
                                     <type>zip</type>
                                     <outputDirectory>${debian.build.directory}/usr/local/bin</outputDirectory>
-                                    <destFileName>${executable.name}</destFileName>
+                                    <destFileName>${debian.package}</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>com.optum.sourcehawk</groupId>
@@ -111,7 +112,7 @@
                                     <classifier>bash-completion</classifier>
                                     <type>sh</type>
                                     <outputDirectory>${debian.build.directory}/usr/share/bash-completion/completions</outputDirectory>
-                                    <destFileName>${executable.name}</destFileName>
+                                    <destFileName>${debian.package}</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -125,18 +126,37 @@
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>build-and-tag</id>
+                        <id>build-and-tag-deb</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>build</goal>
                             <goal>tag</goal>
                         </goals>
                         <configuration>
-                            <repository>${project.artifactId}-debian-builder</repository>
+                            <repository>${project.artifactId}-builder-debian</repository>
                             <tag>${project.version}</tag>
                             <buildArgs>
+                                <FROM>bitnami/minideb:buster</FROM>
                                 <DEBIAN_DIRECTORY>target/debian</DEBIAN_DIRECTORY>
-                                <DEB_FILE>${docker.debpkg.file}</DEB_FILE>
+                                <DEB_FILE>/tmp/${debian.package}-debian.deb</DEB_FILE>
+                            </buildArgs>
+                            <skipDockerInfo>true</skipDockerInfo>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>build-and-tag-ubuntu</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <repository>${project.artifactId}-builder-ubuntu</repository>
+                            <tag>${project.version}</tag>
+                            <buildArgs>
+                                <FROM>ubuntu:focal</FROM>
+                                <DEBIAN_DIRECTORY>target/debian</DEBIAN_DIRECTORY>
+                                <DEB_FILE>/tmp/${debian.package}-ubuntu.deb</DEB_FILE>
                             </buildArgs>
                             <skipDockerInfo>true</skipDockerInfo>
                         </configuration>
@@ -165,7 +185,7 @@
 
                     <!-- EXTRACT DEB PACKAGE FROM DOCKER CONTAINER TO TARGET DIRECTORY -->
                     <execution>
-                        <id>extract-deb-package</id>
+                        <id>extract-debian-package</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
@@ -173,8 +193,23 @@
                         <configuration>
                             <executable>../scripts/extract-file-from-docker-container.sh</executable>
                             <arguments>
-                                <argument>${project.artifactId}-debian-builder:${project.version}</argument>
-                                <argument>${docker.debpkg.file}</argument>
+                                <argument>${project.artifactId}-builder-debian:${project.version}</argument>
+                                <argument>/tmp/${debian.package}-debian.deb</argument>
+                                <argument>${project.build.directory}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>extract-ubuntu-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>../scripts/extract-file-from-docker-container.sh</executable>
+                            <arguments>
+                                <argument>${project.artifactId}-builder-ubuntu:${project.version}</argument>
+                                <argument>/tmp/${debian.package}-ubuntu.deb</argument>
                                 <argument>${project.build.directory}</argument>
                             </arguments>
                         </configuration>
@@ -197,8 +232,13 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/${executable.name}.deb</file>
-                                    <classifier>x86_64</classifier>
+                                    <file>${project.build.directory}/${debian.package}-debian.deb</file>
+                                    <classifier>debian-amd64</classifier>
+                                    <type>deb</type>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/${debian.package}-ubuntu.deb</file>
+                                    <classifier>ubuntu-amd64</classifier>
                                     <type>deb</type>
                                 </artifact>
                             </artifacts>
@@ -209,5 +249,62 @@
 
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>publish-debian-packages</id>
+            <activation>
+                <property>
+                    <name>ci.deploy</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>publish-debian-package</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <executable>../scripts/publish-debian-package.sh</executable>
+                                    <arguments>
+                                        <argument>${project.version}</argument>
+                                        <argument>${project.build.directory}/${debian.package}-debian.deb</argument>
+                                        <argument>deb</argument>
+                                        <argument>${debian.package}</argument>
+                                        <argument>buster,jessie,stretch</argument>
+                                        <argument>${debian.architecture},i386,x86_64</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>publish-ubuntu-package</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <executable>../scripts/publish-debian-package.sh</executable>
+                                    <arguments>
+                                        <argument>${project.version}</argument>
+                                        <argument>${project.build.directory}/${debian.package}-ubuntu.deb</argument>
+                                        <argument>ubuntu</argument>
+                                        <argument>${debian.package}</argument>
+                                        <argument>focal</argument>
+                                        <argument>${debian.architecture},i386,x86_64</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 
 </project>

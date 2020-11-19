@@ -2,6 +2,7 @@ package com.optum.sourcehawk.exec.graal.nativeimage
 
 import com.optum.sourcehawk.configuration.SourcehawkConfiguration
 import com.optum.sourcehawk.enforcer.file.FileEnforcer
+import com.optum.sourcehawk.enforcer.file.FileEnforcerRegistry
 import com.optum.sourcehawk.exec.FileBaseSpecification
 import com.optum.sourcehawk.protocol.FileProtocol
 import org.reflections.Reflections
@@ -37,13 +38,15 @@ class ReflectConfigGeneratorSpec extends FileBaseSpecification {
 
         when:
         // Sourcehawk (required to support Jackson Deserialization)
-        Set<Class<?>> reflectionClasses = new HashSet<>(enforcerClasses)
-        reflectionClasses.add(SourcehawkConfiguration)
-        reflectionClasses.add(FileProtocol)
-        reflectionClasses.add(FileProtocol.FileProtocolBuilder)
+        Set<Class<?>> configurationClasses = new HashSet<>()
+        configurationClasses.add(SourcehawkConfiguration)
+        configurationClasses.add(FileProtocol)
+        configurationClasses.add(FileProtocol.FileProtocolBuilder)
+        Set<Class<?>> reflectionClasses = enforcerClasses + configurationClasses
 
         then:
         reflectionClasses
+        reflectionClasses.size() == FileEnforcerRegistry.getEnforcers().size() + configurationClasses.size()
         reflectionClasses.stream().noneMatch({ Modifier.isAbstract(it.modifiers) || Modifier.isInterface(it.modifiers) })
 
         when:

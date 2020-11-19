@@ -15,13 +15,22 @@
     <packaging>pom</packaging>
 
     <name>Sourcehawk</name>
-    <description>Sourcehawk multi-module parent</description>
+    <description>Sourcehawk is an extensible compliance as code tool which allows development teams to run compliance scans on their source code.</description>
+
+    <properties>
+        <project.license>GNU General Public License version 3</project.license>
+        <organization.email>opensource@optum.com</organization.email>
+        <maintainer.name>Brian Wyka</maintainer.name>
+        <maintainer.email>brian.wyka@optum.com</maintainer.email>
+        <slf4j.version>2.0.0-alpha1</slf4j.version> <!-- compatible with java 11 -->
+        <jacoco.coverage.minimum>0.97</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->
+    </properties>
 
     <developers>
         <developer>
             <id>brianwyka</id>
-            <name>Brian Wyka</name>
-            <email>brian.wyka@optum.com</email>
+            <name>${maintainer.name}</name>
+            <email>${maintainer.email}</email>
             <organization>Optum</organization>
             <roles>
                 <role>Project Lead</role>
@@ -54,14 +63,6 @@
         <system>github</system>
         <url>https://github.com/optum/sourcehawk/actions</url>
     </ciManagement>
-
-    <properties>
-
-        <slf4j.version>2.0.0-alpha1</slf4j.version> <!-- compatible with java 11 -->
-
-        <jacoco.coverage.minimum>0.97</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->
-
-    </properties>
 
     <dependencyManagement>
         <dependencies>
