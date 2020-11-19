@@ -4,8 +4,7 @@
 VERSION=$(curl -sI https://github.com/optum/sourcehawk/releases/latest | grep -i location | awk -F"/" '{ printf "%s", $NF }' | tr -d '\r\n')
 
 # Download the binary and make it executable
-ARCH="$(uname -m)"
-DOWNLOAD_URL="https://github.com/optum/sourcehawk/releases/download/$VERSION/sourcehawk-linux-$ARCH.deb"
+DOWNLOAD_URL="https://github.com/optum/sourcehawk/releases/download/$VERSION/sourcehawk-debian-amd64.deb"
 DEB_PACKAGE="/tmp/sourcehawk-$VERSION.deb"
 
 echo "Downloading Sourcehawk package..."
@@ -18,6 +17,6 @@ if curl -sLk "$DOWNLOAD_URL" -o "$DEB_PACKAGE"; then
   sourcehawk --help
   rm -rf "$DEB_PACKAGE"
 else
-  echo "Sourcehawk is not yet available on your architecture: $ARCH"
+  echo "Sourcehawk debian package installation failed: $?"
   exit 1
 fi

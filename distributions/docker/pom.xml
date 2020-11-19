@@ -77,6 +77,7 @@
                             <repository>${docker.repository}</repository>
                             <tag>${docker.tag}</tag>
                             <buildArgs>
+                                <NAME>${executable.name}</NAME>
                                 <NATIVE_IMAGE_PATH>target/native-image</NATIVE_IMAGE_PATH>
                             </buildArgs>
                             <skipDockerInfo>true</skipDockerInfo>

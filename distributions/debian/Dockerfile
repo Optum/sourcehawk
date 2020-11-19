@@ -1,5 +1,6 @@
-# Minima Debian Base Image
-FROM bitnami/minideb:jessie
+# Minimal Debian Base Image
+ARG FROM=bitnami/minideb:buster
+FROM ${FROM}
 
 # Build Arguments
 ARG DEBIAN_DIRECTORY

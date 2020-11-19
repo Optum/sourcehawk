@@ -254,7 +254,7 @@
                         <configuration>
                             <group>Development/Tools</group>
                             <name>${executable.name}</name>
-                            <license>GNU General Public License 3</license>
+                            <license>${project.license}</license>
                             <needarch>true</needarch>
                             <classifier>x86_64</classifier>
                             <defaultGroupname>${executable.name}</defaultGroupname>

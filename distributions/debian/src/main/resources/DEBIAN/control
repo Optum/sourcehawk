@@ -1,8 +1,9 @@
 Package: ${executable.name}
 Version: ${project.version}
+Distribution: stable
 Section: utils
-Architecture: amd64
-Maintainer: Brian Wyka brian.wyka@optum.com
-Homepage: https://optum.github.io/sourcehawk
-Description: ${global.project.name}
- Watch over your source like a hawk!
+Architecture: ${debian.architecture}
+Priority: optional
+Maintainer: ${maintainer.name} <${maintainer.email}>
+Homepage: ${project.url}
+Description: ${project.description}

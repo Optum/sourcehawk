@@ -48,6 +48,8 @@ jobs:
         if: success()
         run: ./mvnw --batch-mode deploy -D ci.deploy -D ci.release
         env:
+          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
           DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
           DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
@@ -115,7 +117,18 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/debian/target/sourcehawk.deb
-          asset_name: sourcehawk-linux-x86_64.deb
+          asset_name: sourcehawk-debian-amd64.deb
+          asset_content_type: application/octet-stream
+      - name: Upload Sourcehawk Ubuntu Package
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./distributions/debian/target/sourcehawk-ubuntu.deb
+          asset_name: sourcehawk-ubuntu-amd64.deb
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk RPM Package
         if: success()
