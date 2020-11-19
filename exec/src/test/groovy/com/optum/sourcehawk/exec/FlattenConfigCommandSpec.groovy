@@ -28,6 +28,8 @@ class FlattenConfigCommandSpec extends CliBaseSpecification {
 
     def "main: console output"() {
         given:
+        OutputStream stdOut = new ByteArrayOutputStream()
+        System.out = new PrintStream(stdOut)
         String[] args = ["-c", repositoryRoot.toString() + "/sourcehawk.yml"]
 
         when:
@@ -36,6 +38,22 @@ class FlattenConfigCommandSpec extends CliBaseSpecification {
         then:
         CliBaseSpecification.SystemExit systemExit = thrown(CliBaseSpecification.SystemExit)
         systemExit.status == 0
+        stdOut.toString().trim() == new File(testResourcesRoot.toString() + "/flattened/sourcehawk-flattened-base.yml").text.trim()
+    }
+
+    def "main: console output override"() {
+        given:
+        OutputStream stdOut = new ByteArrayOutputStream()
+        System.out = new PrintStream(stdOut)
+        String[] args = ["-c", testResourcesRoot.toString() + "/sourcehawk-override.yml"]
+
+        when:
+        FlattenConfigCommand.main(args)
+
+        then:
+        CliBaseSpecification.SystemExit systemExit = thrown(CliBaseSpecification.SystemExit)
+        systemExit.status == 0
+        stdOut.toString().trim() == new File(testResourcesRoot.toString() + "/flattened/sourcehawk-flattened-override.yml").text.trim()
     }
 
     def "main: console output not exists"() {

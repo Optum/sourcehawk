@@ -1,4 +1,14 @@
 file-protocols:
+  - name: Maven Pom
+    description: maven pom.xml has correct configuration
+    group: maven
+    tags:
+      - maven
+    repository-path: pom.xml
+    enforcers:
+      - enforcer: .xml.XPathEquals
+        expectations:
+          "//project/ciManagement/type/text()": ghe
   - name: Maven Wrapper
     description: Maven Wrapper exists
     repository-path: .mvn/wrapper/maven-wrapper.jar
@@ -12,9 +22,6 @@ file-protocols:
     enforcers:
       - enforcer: .maven.MavenBannedProperties
         banned-properties:
-          "maven.test.skip": true
-          "enforcer.skip": true
-          "jacoco.skip": true
           "special.skip": true
   - name: Lombok Config
     description: Lombok Configured appropriately
