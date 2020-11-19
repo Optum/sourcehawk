@@ -1,0 +1,5 @@
+FROM scratch
+
+FROM node
+
+FROM nginx

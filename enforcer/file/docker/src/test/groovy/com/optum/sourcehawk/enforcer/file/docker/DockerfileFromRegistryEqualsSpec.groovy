@@ -4,18 +4,17 @@ package com.optum.sourcehawk.enforcer.file.docker
 import com.optum.sourcehawk.enforcer.EnforcerResult
 import org.spockframework.util.IoUtil
 import spock.lang.Specification
-import spock.lang.Unroll
 
-class DockerfileFromHostEqualsSpec extends Specification {
+class DockerfileFromRegistryEqualsSpec extends Specification {
 
     def "equals"() {
         expect:
-        DockerfileFromHostEquals.equals("hub.docker.com")
+        DockerfileFromRegistryEquals.equals("hub.docker.com")
     }
 
     def "enforce - null input stream"() {
         when:
-        DockerfileFromHostEquals.equals("docker.io").enforceInternal(null)
+        DockerfileFromRegistryEquals.equals("docker.io").enforceInternal(null)
 
         then:
         thrown(NullPointerException)
@@ -23,7 +22,7 @@ class DockerfileFromHostEqualsSpec extends Specification {
 
     def "enforce (passed)"() {
         given:
-        DockerfileFromHostEquals dockerfileFromHostEquals = DockerfileFromHostEquals.equals('hub.docker.com')
+        DockerfileFromRegistryEquals dockerfileFromHostEquals = DockerfileFromRegistryEquals.equals('hub.docker.com')
         InputStream fileInputStream = IoUtil.getResourceAsStream('/Dockerfile-default')
 
         when:
@@ -37,7 +36,7 @@ class DockerfileFromHostEqualsSpec extends Specification {
 
     def "enforce (failed - missing FROM line)"() {
         given:
-        DockerfileFromHostEquals dockerfileFromHostEquals = DockerfileFromHostEquals.equals('hub.docker.com')
+        DockerfileFromRegistryEquals dockerfileFromHostEquals = DockerfileFromRegistryEquals.equals('hub.docker.com')
         InputStream fileInputStream = IoUtil.getResourceAsStream('/Dockerfile-noFrom')
 
         when:
@@ -47,14 +46,14 @@ class DockerfileFromHostEqualsSpec extends Specification {
         result
         !result.passed
         result.messages
+        result.messages.size() == 1
         result.messages[0] == "Dockerfile is missing FROM line"
     }
 
-    @Unroll
     def "enforce (failed - missing FROM host)"() {
         given:
-        DockerfileFromHostEquals dockerfileFromHostEquals = DockerfileFromHostEquals.equals('hub.docker.com')
-        InputStream fileInputStream = IoUtil.getResourceAsStream("/Dockerfile-${fileSuffix}")
+        DockerfileFromRegistryEquals dockerfileFromHostEquals = DockerfileFromRegistryEquals.equals('hub.docker.com')
+        InputStream fileInputStream = IoUtil.getResourceAsStream("/Dockerfile-noFromHost")
 
         when:
         EnforcerResult result = dockerfileFromHostEquals.enforce(fileInputStream)
@@ -63,15 +62,13 @@ class DockerfileFromHostEqualsSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0] == "Dockerfile FROM is missing host prefix"
-
-        where:
-        fileSuffix << [ 'noFromHost', 'scratch' ]
+        result.messages.size() == 1
+        result.messages[0] == "Dockerfile FROM [optum/centos:1.0.0] is missing host prefix"
     }
 
     def "enforce (failed - incorrect FROM host)"() {
         given:
-        DockerfileFromHostEquals dockerfileFromHostEquals = DockerfileFromHostEquals.equals('sub.docker.com')
+        DockerfileFromRegistryEquals dockerfileFromHostEquals = DockerfileFromRegistryEquals.equals('sub.docker.com')
         InputStream fileInputStream = IoUtil.getResourceAsStream('/Dockerfile-default')
 
         when:
@@ -81,12 +78,30 @@ class DockerfileFromHostEqualsSpec extends Specification {
         result
         !result.passed
         result.messages
+        result.messages.size() == 1
         result.messages[0] == "Dockerfile FROM host [hub.docker.com] does not equal [sub.docker.com]"
+    }
+
+    def "enforce (failed - multiples missing FROM host)"() {
+        given:
+        DockerfileFromRegistryEquals dockerfileFromHostEquals = DockerfileFromRegistryEquals.equals('sub.docker.com')
+        InputStream fileInputStream = IoUtil.getResourceAsStream('/Dockerfile-multipleFromsNoTags')
+
+        when:
+        EnforcerResult result = dockerfileFromHostEquals.enforce(fileInputStream)
+
+        then:
+        result
+        !result.passed
+        result.messages
+        result.messages.size() == 2
+        result.messages[0] == "Dockerfile FROM [node] is missing host prefix"
+        result.messages[1] == "Dockerfile FROM [nginx] is missing host prefix"
     }
 
     def "enforce (null input stream)"() {
         given:
-        DockerfileFromHostEquals dockerfileFromHostEquals = DockerfileFromHostEquals.equals('hub.docker.com')
+        DockerfileFromRegistryEquals dockerfileFromHostEquals = DockerfileFromRegistryEquals.equals('hub.docker.com')
 
         when:
         dockerfileFromHostEquals.enforce(null)

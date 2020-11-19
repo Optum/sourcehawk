@@ -8,14 +8,14 @@ import spock.lang.Specification
 
 class ContentEqualsSpec extends Specification {
 
-    def "equals"() {
+    def "string"() {
         expect:
-        ContentEquals.equals('file')
+        ContentEquals.string('file')
     }
 
     def "enforce - null input stream"() {
         when:
-        ContentEquals.equals("abc").enforceInternal(null)
+        ContentEquals.string("abc").enforceInternal(null)
 
         then:
         thrown(NullPointerException)
@@ -23,23 +23,7 @@ class ContentEqualsSpec extends Specification {
 
     def "enforce (passed)"() {
         given:
-        ContentEquals contentEquals = ContentEquals.equals(IoUtil.getResourceAsStream('/file.txt').text)
-        InputStream fileInputStream = IoUtil.getResourceAsStream('/file.txt')
-
-        when:
-        EnforcerResult result = contentEquals.enforce(fileInputStream)
-
-        then:
-        result
-        result.passed
-        !result.messages
-    }
-
-    @Ignore // FIXME
-    @Issue("https://github.optum.com/sourcehawk-projects/sourcehawk/issues/51")
-    def "enforce - additional empty lines (passed)"() {
-        given:
-        ContentEquals contentEquals = ContentEquals.equals(IoUtil.getResourceAsStream('/file_additional_empty_lines.txt').text)
+        ContentEquals contentEquals = ContentEquals.string(IoUtil.getResourceAsStream('/file.txt').text)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/file.txt')
 
         when:
@@ -53,7 +37,36 @@ class ContentEqualsSpec extends Specification {
 
     def "enforce (failed)"() {
         given:
-        ContentEquals contentEquals = ContentEquals.equals(IoUtil.getResourceAsStream('/file.txt').text)
+        ContentEquals contentEquals = ContentEquals.string(IoUtil.getResourceAsStream('/file.txt').text)
+        InputStream fileInputStream = IoUtil.getResourceAsStream('/checksum.txt')
+
+        when:
+        EnforcerResult result = contentEquals.enforce(fileInputStream)
+
+        then:
+        result
+        !result.passed
+        result.messages
+        result.messages[0] == "File contents do not equal that of the expected file contents"
+    }
+
+    def "enforce - URL (passed)"() {
+        given:
+        ContentEquals contentEquals = ContentEquals.url(new URL('https://raw.githubusercontent.com/optum/sourcehawk/main/README.md'))
+        InputStream fileInputStream = new URL('https://raw.githubusercontent.com/optum/sourcehawk/main/README.md').openStream()
+
+        when:
+        EnforcerResult result = contentEquals.enforce(fileInputStream)
+
+        then:
+        result
+        result.passed
+        !result.messages
+    }
+
+    def "enforce - URL (failed)"() {
+        given:
+        ContentEquals contentEquals = ContentEquals.url(new URL('https://raw.githubusercontent.com/optum/sourcehawk/main/README.md'))
         InputStream fileInputStream = IoUtil.getResourceAsStream('/checksum.txt')
 
         when:

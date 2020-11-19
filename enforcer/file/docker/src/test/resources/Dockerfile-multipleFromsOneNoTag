@@ -1,0 +1,5 @@
+FROM scratch
+
+FROM node:14.14.1
+
+FROM nginx
