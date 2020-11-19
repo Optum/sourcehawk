@@ -5,4 +5,5 @@
  * @author Brian Wyka
  */
 @com.optum.sourcehawk.enforcer.file.aot.SourcehawkFileEnforcerRegistry
+//NOSONAR java:S4032
 package com.optum.sourcehawk.enforcer.file;
