@@ -60,6 +60,7 @@ class DockerfileFromHasTagSpec extends Specification {
         result
         !result.passed
         result.messages
+        result.messages.size() == 1
         result.messages[0] == "Dockerfile is missing FROM line"
     }
 
@@ -75,7 +76,43 @@ class DockerfileFromHasTagSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0] == "Dockerfile FROM is missing tag"
+        result.messages.size() == 1
+        result.messages[0] == "Dockerfile FROM [hub.docker.com/image] is missing tag"
+    }
+
+    def "enforce (failed - missing tag in multiple FROMs - scratch ignored)"() {
+        given:
+        DockerfileFromHasTag dockerfileFromHasTag = DockerfileFromHasTag.allowLatest(false)
+        InputStream fileInputStream = IoUtil.getResourceAsStream('/Dockerfile-multipleFromsNoTags')
+        IoUtil.collect()
+
+        when:
+        EnforcerResult result = dockerfileFromHasTag.enforce(fileInputStream)
+
+        then:
+        result
+        !result.passed
+        result.messages
+        result.messages.size() == 2
+        result.messages[0] == "Dockerfile FROM [nginx] is missing tag"
+        result.messages[1] == "Dockerfile FROM [node] is missing tag"
+    }
+
+    def "enforce (failed - missing tag in one of FROMs)"() {
+        given:
+        DockerfileFromHasTag dockerfileFromHasTag = DockerfileFromHasTag.allowLatest(false)
+        InputStream fileInputStream = IoUtil.getResourceAsStream('/Dockerfile-multipleFromsOneNoTag')
+        IoUtil.collect()
+
+        when:
+        EnforcerResult result = dockerfileFromHasTag.enforce(fileInputStream)
+
+        then:
+        result
+        !result.passed
+        result.messages
+        result.messages.size() == 1
+        result.messages[0] == "Dockerfile FROM [nginx] is missing tag"
     }
 
     def "enforce (failed - allowLatest = false, latest tag found)"() {
@@ -90,7 +127,8 @@ class DockerfileFromHasTagSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0] == "Dockerfile FROM has 'latest' tag"
+        result.messages.size() == 1
+        result.messages[0] == "Dockerfile FROM [hub.docker.com/image] has 'latest' tag"
     }
 
     def "enforce (null input stream)"() {
