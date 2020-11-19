@@ -50,3 +50,5 @@ include::_fix-examples.adoc[leveloffset=3]
 '''
 
 include::{includedir}/flatten.adoc[leveloffset=2,tag=picocli-generated-full-manpage]
+
+include::_flatten-examples.adoc[leveloffset=3]

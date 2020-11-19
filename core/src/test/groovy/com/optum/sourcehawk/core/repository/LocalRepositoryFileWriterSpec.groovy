@@ -2,10 +2,8 @@ package com.optum.sourcehawk.core.repository
 
 import spock.lang.Specification
 
-import java.nio.charset.StandardCharsets
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.stream.Collectors
 
 class LocalRepositoryFileWriterSpec extends Specification {
 
@@ -24,7 +22,7 @@ class LocalRepositoryFileWriterSpec extends Specification {
 
         when:
         Optional<InputStream> fileInputStream = repositoryFileReader.read(fileResource.getAbsoluteFile().toString())
-        String fileText = new BufferedReader(new InputStreamReader(fileInputStream.get(), StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"))
+        String fileText = fileInputStream.get().text
 
         then:
         fileInputStream.isPresent()
@@ -38,7 +36,7 @@ class LocalRepositoryFileWriterSpec extends Specification {
 
         when:
         fileInputStream = repositoryFileReader.read(fileResource.getAbsolutePath())
-        String helloFileText = new BufferedReader(new InputStreamReader(fileInputStream.get(), StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"))
+        String helloFileText = fileInputStream.get().text
 
         then:
         fileInputStream
@@ -69,7 +67,7 @@ class LocalRepositoryFileWriterSpec extends Specification {
 
         when:
         fileInputStream = repositoryFileReader.read(fileName)
-        String helloFileText = new BufferedReader(new InputStreamReader(fileInputStream.get(), StandardCharsets.UTF_8)).lines().collect(Collectors.joining("\n"))
+        String helloFileText = fileInputStream.get().text
 
         then:
         fileInputStream

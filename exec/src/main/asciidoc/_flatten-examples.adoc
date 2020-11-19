@@ -1,0 +1,35 @@
+= Examples
+
+.Run with output flatten to console
+[source,sh]
+----
+sourcehawk flatten-config
+----
+
+.Use a remote configuration file
+[source,sh]
+----
+shawk flatten --config-file-url https://raw.githubusercontent.com/optum/sourcehawk/main/sourcehawk.yml
+----
+
+.Run with output flatten to file
+[source,sh]
+----
+sourcehawk fc > sourcehawk-flattened.yml
+----
+
+.Run with output flatten to file
+[source,sh]
+----
+sourcehawk fc --output sourcehawk-flattened.yml
+----
+
+.Use an alias
+[source,sh]
+----
+sourcehawk fc
+sourcehawk flatten
+sourcehawk flat
+sourcehawk merge
+sourcehawk converge
+----

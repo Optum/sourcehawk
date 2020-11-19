@@ -28,7 +28,7 @@ import java.util.Properties;
                 ScanCommand.class,
                 ValidateConfigCommand.class,
                 FixCommand.class,
-                FlattenCommand.class
+                FlattenConfigCommand.class
         }
 )
 class Sourcehawk {

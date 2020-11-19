@@ -9,7 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * A repository file reader implementation which reads from file system
+ * A repository file writer implementation which writes to the file system
  *
  * @author Christian Oestreich
  */
@@ -17,9 +17,9 @@ import java.nio.file.Paths;
 public class LocalRepositoryFileWriter implements RepositoryFileWriter {
 
     /**
-     * Creates an instance of the repository file reader with the provided directory context
+     * Creates an instance of the repository file writer
      *
-     * @return the repository file reader
+     * @return the repository file writer
      */
     public static LocalRepositoryFileWriter writer() {
         return new LocalRepositoryFileWriter();

@@ -204,7 +204,7 @@
                                 <argument>com.optum.sourcehawk.exec.ScanCommand</argument>
                                 <argument>com.optum.sourcehawk.exec.ValidateConfigCommand</argument>
                                 <argument>com.optum.sourcehawk.exec.FixCommand</argument>
-                                <argument>com.optum.sourcehawk.exec.FlattenCommand</argument>
+                                <argument>com.optum.sourcehawk.exec.FlattenConfigCommand</argument>
                             </arguments>
                         </configuration>
                     </execution>
@@ -416,6 +416,7 @@
                                         <file>${project.parent.basedir}/gh-pages/manpages/scan.1</file>
                                         <file>${project.parent.basedir}/gh-pages/manpages/validate-config.1</file>
                                         <file>${project.parent.basedir}/gh-pages/manpages/fix.1</file>
+                                        <file>${project.parent.basedir}/gh-pages/manpages/flatten.1</file>
                                     </files>
                                 </requireFilesExist>
                             </rules>

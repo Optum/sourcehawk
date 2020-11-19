@@ -62,7 +62,7 @@ public class FixResult implements Serializable {
     @NonNull
     @Builder.Default
     @SuppressWarnings("squid:S1948") // Lombok generates private modifier
-            Map<String, Collection<MessageDescriptor>> messages = Collections.emptyMap();
+    Map<String, Collection<MessageDescriptor>> messages = Collections.emptyMap();
 
     /**
      * Messages formatted for reporting
@@ -72,7 +72,7 @@ public class FixResult implements Serializable {
     @NonNull
     @Builder.Default
     @SuppressWarnings("squid:S1948") // Lombok generates private modifier
-            Collection<String> formattedMessages = Collections.emptyList();
+    Collection<String> formattedMessages = Collections.emptyList();
 
     /**
      * Reduce two {@link FixResult}s into one
