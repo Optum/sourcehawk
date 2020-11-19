@@ -21,7 +21,7 @@ public final class MavenPomParser {
     /**
      * Internal reader to read the pom.xml contents
      */
-    private static final MavenXpp3Reader READER = new MavenXpp3Reader();
+    private static final MavenXpp3Reader POM_READER = new MavenXpp3Reader();
 
     /**
      * Read the maven model from the provided pom.xml {@link InputStream}
@@ -30,8 +30,8 @@ public final class MavenPomParser {
      * @return the model if parsed correctly, otherwise {@link Optional#empty()}
      */
     public static Optional<Model> parse(final InputStream pomXmlInputStream) {
-        try (val inputStreamReader = new InputStreamReader(pomXmlInputStream)) {
-            return Optional.ofNullable(READER.read(inputStreamReader));
+        try (val pomXmlInputStreamReader = new InputStreamReader(pomXmlInputStream)) {
+            return Optional.ofNullable(POM_READER.read(pomXmlInputStreamReader));
         } catch (final XmlPullParserException | IOException e) {
             return Optional.empty();
         }
