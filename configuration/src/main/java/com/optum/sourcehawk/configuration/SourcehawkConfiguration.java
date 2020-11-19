@@ -18,6 +18,8 @@ public class SourcehawkConfiguration {
 
     /**
      * The remote files to inherit from in URL form
+     *
+     * JsonIgnore is added so during flatten the config locations are not included into the output
      */
     @JsonIgnore
     @JsonMerge
