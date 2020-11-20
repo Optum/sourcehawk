@@ -41,10 +41,10 @@ BINTRAY_PUBLISH_URL="${BINTRAY_PUBLISH_URL};deb_distribution=$BINTRAY_DISTRIBUTI
 
 # Publish Package
 echo -n "Publishing package to $BINTRAY_PUBLISH_URL..."
-curl -sfL -X PUT -T "$DEBIAN_PATH" -u "${BINTRAY_USERNAME}:${BINTRAY_API_KEY}" "$BINTRAY_PUBLISH_URL" || echo "Error publishing package" && exit 1
+curl -sfLS -X PUT -T "$DEBIAN_PATH" -u "${BINTRAY_USERNAME}:${BINTRAY_API_KEY}" "$BINTRAY_PUBLISH_URL"
 echo "done"
 
 # Calculate Metadata for Package Repository
 echo -n "Forcing metadata calculation..."
-curl -sfL -X POST -u "${BINTRAY_USERNAME}:${BINTRAY_API_KEY}" "$BINTRAY_API_URL/calc_metadata/$BINTRAY_SUBJECT/$BINTRAY_REPOSITORY" || echo "Error calculating metadata" && exit 1
+curl -sfLS -X POST -u "${BINTRAY_USERNAME}:${BINTRAY_API_KEY}" "$BINTRAY_API_URL/calc_metadata/$BINTRAY_SUBJECT/$BINTRAY_REPOSITORY"
 echo "done"
