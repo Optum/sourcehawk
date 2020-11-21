@@ -1,5 +1,5 @@
-Package: ${executable.name}
-Version: ${project.version}
+Package: ${debian.package}
+Version: ${debian.package.version}
 Distribution: stable
 Section: utils
 Architecture: ${debian.architecture}

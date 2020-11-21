@@ -1,4 +1,4 @@
 package com.optum.sourcehawk.enforcer.file
 
-abstract class AbstractTestFileEnforcer {
+abstract class AbstractTestFileEnforcer implements TestFileEnforcer {
 }

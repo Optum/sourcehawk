@@ -6,7 +6,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-jar-parent</artifactId>
-        <version>1.1.7</version>
+        <version>1.1.8</version>
         <relativePath/>
     </parent>
 
@@ -24,6 +24,7 @@
         <maintainer.email>brian.wyka@optum.com</maintainer.email>
         <slf4j.version>2.0.0-alpha1</slf4j.version> <!-- compatible with java 11 -->
         <jacoco.coverage.minimum>0.97</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->
+        <maven.multiModuleProjectDirectory/> <!-- Injected by maven wrapper -->
     </properties>
 
     <developers>
@@ -172,8 +173,8 @@
         <module>protocol</module>
         <module>configuration</module>
         <module>exec</module>
-        <module>bom</module>
         <module>distributions</module>
+        <module>bom</module>
     </modules>
 
 </project>

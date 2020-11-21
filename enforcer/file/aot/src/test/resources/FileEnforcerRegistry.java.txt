@@ -16,10 +16,12 @@ public final class FileEnforcerRegistry {
   /**
    * Mapping of enforcer classes keyed by alias
    */
-  private static final Map<String, Class<? extends FileEnforcer>> FILE_ENFORCERS;
+  private static final Map<String, Class<? extends TestFileEnforcer>> FILE_ENFORCERS;
 
   static {
     FILE_ENFORCERS = new HashMap<>();
+    FILE_ENFORCERS.put("CONCRETE-TEST-FILE-ENFORCER", ConcreteTestFileEnforcer.class);
+    FILE_ENFORCERS.put("CONCRETE2-TEST-FILE-ENFORCER", Concrete2TestFileEnforcer.class);
   }
 
   /**
@@ -27,7 +29,7 @@ public final class FileEnforcerRegistry {
    *
    * @param alias the file enforcer alias@return the file enforcer class
    */
-  public static final Optional<Class<? extends FileEnforcer>> getEnforcerByAlias(
+  public static final Optional<Class<? extends TestFileEnforcer>> getEnforcerByAlias(
       final String alias) {
     return Optional.ofNullable(FILE_ENFORCERS.get(alias));
   }
@@ -37,7 +39,7 @@ public final class FileEnforcerRegistry {
    *
    * @return the file enforcers
    */
-  public static final Map<String, Class<? extends FileEnforcer>> getEnforcers() {
+  public static final Map<String, Class<? extends TestFileEnforcer>> getEnforcers() {
     return FILE_ENFORCERS;
   }
 }

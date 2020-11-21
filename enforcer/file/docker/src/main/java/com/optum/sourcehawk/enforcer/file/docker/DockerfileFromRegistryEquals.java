@@ -2,12 +2,8 @@ package com.optum.sourcehawk.enforcer.file.docker;
 
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
-import com.optum.sourcehawk.enforcer.file.docker.utils.DockerfileParser;
+import com.optum.sourcehawk.enforcer.file.docker.utils.Dockerfile;
 import lombok.AllArgsConstructor;
-import lombok.val;
-
-import java.util.Optional;
-import java.util.function.Predicate;
 
 /**
  * Enforce that the Dockerfile has a specific host in the FROM line
@@ -15,7 +11,7 @@ import java.util.function.Predicate;
  * @author Brian Wyka
  */
 @AllArgsConstructor(staticName = "equals")
-public class DockerfileFromRegistryEquals extends AbstractDockerfileTokenEnforcer {
+public class DockerfileFromRegistryEquals extends AbstractDockerfileFromTokenEnforcer {
 
     private static final String INCORRECT_FROM_MESSAGE = "Dockerfile FROM host [%s] does not equal [%s]";
     private static final String MISSING_HOST_MESSAGE = "Dockerfile FROM [%s] is missing host prefix";
@@ -25,36 +21,21 @@ public class DockerfileFromRegistryEquals extends AbstractDockerfileTokenEnforce
      */
     private final String expectedFromRegistry;
 
-    /** {@inheritDoc} */
-    @Override
-    protected String getToken() {
-        return DockerfileParser.FROM_TOKEN;
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected Optional<Predicate<String>> getTokenValueFilter() {
-        return Optional.of(tokenValue -> !DockerfileParser.FROM_SCRATCH.equals(tokenValue));
-    }
-
     /**
      * Enforce the from host is as expected
      *
-     * @param fromValue the FROM value
+     * @param fromToken the FROM token
      * @return the enforcer result
      */
     @Override
-    protected EnforcerResult enforceToken(final String fromValue) {
-        if (fromValue.contains("/")) {
-            val fromPieces = fromValue.split("/");
-            if (fromPieces[0].contains(".")) {
-                if (StringUtils.equals(expectedFromRegistry, fromPieces[0])) {
-                    return EnforcerResult.passed();
-                }
-                return EnforcerResult.failed(String.format(INCORRECT_FROM_MESSAGE, fromPieces[0], expectedFromRegistry));
-            }
+    protected EnforcerResult enforceFromToken(final Dockerfile.FromToken fromToken) {
+        if (fromToken.getRegistryHost() == null) {
+            return EnforcerResult.failed(String.format(MISSING_HOST_MESSAGE, fromToken.getRawValue()));
         }
-        return EnforcerResult.failed(String.format(MISSING_HOST_MESSAGE, fromValue));
+        if (StringUtils.equals(expectedFromRegistry, fromToken.getRegistryHost())) {
+            return EnforcerResult.passed();
+        }
+        return EnforcerResult.failed(String.format(INCORRECT_FROM_MESSAGE, fromToken.getRegistryHost(), expectedFromRegistry));
     }
 
 }

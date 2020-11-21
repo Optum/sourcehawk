@@ -6,22 +6,24 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
+        <groupId>com.optum.sourcehawk</groupId>
         <version>0.2.3-SNAPSHOT</version>
-        <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <artifactId>sourcehawk-dist-debian</artifactId>
-    <name>Sourcehawk Distributions Debian</name>
-    <description>Sourcehawk debian package</description>
+    <artifactId>sourcehawk-dist-rpm</artifactId>
     <packaging>pom</packaging>
 
+    <name>Sourcehawk Dist RPM</name>
+    <description>Sourcehawk RPM distributions</description>
+
     <properties>
-        <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
-        <debian.package>${executable.name}</debian.package>
-        <debian.package.version>${project.version}~${git.commit.time}+${git.commit.id.abbrev}</debian.package.version>
-        <debian.architecture>amd64</debian.architecture>
+        <rpm.package>${executable.name}</rpm.package>
+        <rpm.package.version/> <!-- Calculated by build-helper-maven-plugin -->
+        <rpm.package.release>a.${git.commit.time}~${git.commit.id.abbrev}</rpm.package.release> <!-- Default for SNAPSHOT builds -->
+        <rpm.package.description>${project.parent.parent.description}</rpm.package.description>
+        <rpm.package.architecture>x86_64</rpm.package.architecture>
+        <rpm.build.directory>${project.build.directory}/rpmbuild</rpm.build.directory>
     </properties>
 
     <dependencies>
@@ -29,7 +31,7 @@
             <groupId>com.optum.sourcehawk</groupId>
             <artifactId>sourcehawk-dist-linux</artifactId>
             <version>${project.version}</version>
-            <classifier>x86_64</classifier>
+            <classifier>${rpm.package.architecture}</classifier>
             <type>zip</type>
             <scope>provided</scope>
         </dependency>
@@ -61,11 +63,11 @@
                                 <resource>
                                     <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
                                     <includes>
-                                        <include>${debian.package}*</include>
+                                        <include>${rpm.package}*</include>
                                     </includes>
                                 </resource>
                             </resources>
-                            <outputDirectory>${project.build.directory}/debian/usr/local/share/man/man1</outputDirectory>
+                            <outputDirectory>${rpm.build.directory}/usr/local/share/man/man1</outputDirectory>
                         </configuration>
                     </execution>
                     <execution>
@@ -81,7 +83,7 @@
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
-                            <outputDirectory>${debian.build.directory}</outputDirectory>
+                            <outputDirectory>${project.build.directory}</outputDirectory>
                         </configuration>
                     </execution>
                 </executions>
@@ -102,18 +104,18 @@
                                 <artifactItem>
                                     <groupId>com.optum.sourcehawk</groupId>
                                     <artifactId>sourcehawk-dist-linux</artifactId>
-                                    <classifier>x86_64</classifier>
+                                    <classifier>${rpm.package.architecture}</classifier>
                                     <type>zip</type>
-                                    <outputDirectory>${debian.build.directory}/usr/local/bin</outputDirectory>
-                                    <destFileName>${debian.package}</destFileName>
+                                    <outputDirectory>${rpm.build.directory}/usr/local/bin</outputDirectory>
+                                    <destFileName>${rpm.package}</destFileName>
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>com.optum.sourcehawk</groupId>
                                     <artifactId>sourcehawk-exec</artifactId>
                                     <classifier>bash-completion</classifier>
                                     <type>sh</type>
-                                    <outputDirectory>${debian.build.directory}/usr/share/bash-completion/completions</outputDirectory>
-                                    <destFileName>${debian.package}</destFileName>
+                                    <outputDirectory>${rpm.build.directory}/usr/share/bash-completion/completions</outputDirectory>
+                                    <destFileName>${rpm.package}</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -127,37 +129,41 @@
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>build-and-tag-deb</id>
+                        <id>build-and-tag-centos</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>build</goal>
                             <goal>tag</goal>
                         </goals>
                         <configuration>
-                            <repository>${project.artifactId}-builder-debian</repository>
+                            <repository>${project.artifactId}-builder-centos</repository>
                             <tag>${project.version}</tag>
                             <buildArgs>
-                                <FROM>bitnami/minideb:buster</FROM>
-                                <DEBIAN_DIRECTORY>target/debian</DEBIAN_DIRECTORY>
-                                <DEB_FILE>/tmp/${debian.package}-debian.deb</DEB_FILE>
+                                <FROM>centos:7</FROM>
+                                <RPM_BUILD_DIRECTORY>target/rpmbuild</RPM_BUILD_DIRECTORY>
+                                <RPM_BUILD_SPEC_FILE>target/${rpm.package}.spec</RPM_BUILD_SPEC_FILE>
+                                <RPM_FILE>/tmp/${rpm.package}-centos7.rpm</RPM_FILE>
+                                <RPM_ARCH>${rpm.package.architecture}</RPM_ARCH>
                             </buildArgs>
                             <skipDockerInfo>true</skipDockerInfo>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>build-and-tag-ubuntu</id>
+                        <id>build-and-tag-fedora</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>build</goal>
                             <goal>tag</goal>
                         </goals>
                         <configuration>
-                            <repository>${project.artifactId}-builder-ubuntu</repository>
+                            <repository>${project.artifactId}-builder-fedora</repository>
                             <tag>${project.version}</tag>
                             <buildArgs>
-                                <FROM>ubuntu:focal</FROM>
-                                <DEBIAN_DIRECTORY>target/debian</DEBIAN_DIRECTORY>
-                                <DEB_FILE>/tmp/${debian.package}-ubuntu.deb</DEB_FILE>
+                                <FROM>fedora:34</FROM>
+                                <RPM_BUILD_SPEC_FILE>target/${rpm.package}.spec</RPM_BUILD_SPEC_FILE>
+                                <RPM_BUILD_DIRECTORY>target/rpmbuild</RPM_BUILD_DIRECTORY>
+                                <RPM_FILE>/tmp/${rpm.package}-fedora34.rpm</RPM_FILE>
+                                <RPM_ARCH>${rpm.package.architecture}</RPM_ARCH>
                             </buildArgs>
                             <skipDockerInfo>true</skipDockerInfo>
                         </configuration>
@@ -180,13 +186,13 @@
                         </goals>
                         <configuration>
                             <executable>${project.parent.basedir}/scripts/gzip-manpages.sh</executable>
-                            <workingDirectory>${project.build.directory}/debian/usr/local/share/man/man1</workingDirectory>
+                            <workingDirectory>${rpm.build.directory}/usr/local/share/man/man1</workingDirectory>
                         </configuration>
                     </execution>
 
-                    <!-- EXTRACT DEB PACKAGE FROM DOCKER CONTAINER TO TARGET DIRECTORY -->
+                    <!-- EXTRACT RPM PACKAGE FROM DOCKER CONTAINER TO TARGET DIRECTORY -->
                     <execution>
-                        <id>extract-debian-package</id>
+                        <id>extract-centos-package</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
@@ -194,14 +200,14 @@
                         <configuration>
                             <executable>${project.parent.basedir}/scripts/extract-file-from-docker-container.sh</executable>
                             <arguments>
-                                <argument>${project.artifactId}-builder-debian:${project.version}</argument>
-                                <argument>/tmp/${debian.package}-debian.deb</argument>
+                                <argument>${project.artifactId}-builder-centos:${project.version}</argument>
+                                <argument>/tmp/${rpm.package}-centos7.rpm</argument>
                                 <argument>${project.build.directory}</argument>
                             </arguments>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>extract-ubuntu-package</id>
+                        <id>extract-fedora-package</id>
                         <phase>package</phase>
                         <goals>
                             <goal>exec</goal>
@@ -209,8 +215,8 @@
                         <configuration>
                             <executable>${project.parent.basedir}/scripts/extract-file-from-docker-container.sh</executable>
                             <arguments>
-                                <argument>${project.artifactId}-builder-ubuntu:${project.version}</argument>
-                                <argument>/tmp/${debian.package}-ubuntu.deb</argument>
+                                <argument>${project.artifactId}-builder-fedora:${project.version}</argument>
+                                <argument>/tmp/${rpm.package}-fedora34.rpm</argument>
                                 <argument>${project.build.directory}</argument>
                             </arguments>
                         </configuration>
@@ -219,13 +225,26 @@
                 </executions>
             </plugin>
 
-            <!-- ATTACH DEBIAN ARTIFACT-->
+            <!-- PREPARE RPM PACKAGE VERSION AND ATTACH RPM ARTIFACT-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>attach-debian-artifact</id>
+                        <id>calculate-rpm-package-version</id>
+                        <goals>
+                            <goal>regex-property</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <value>${project.version}</value>
+                            <name>rpm.package.version</name>
+                            <regex>-SNAPSHOT</regex>
+                            <failIfNoMatch>false</failIfNoMatch>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>attach-rpm-artifact</id>
                         <goals>
                             <goal>attach-artifact</goal>
                         </goals>
@@ -233,14 +252,14 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/${debian.package}-debian.deb</file>
-                                    <classifier>debian-amd64</classifier>
-                                    <type>deb</type>
+                                    <file>${project.build.directory}/${rpm.package}-centos7.rpm</file>
+                                    <classifier>centos7-${rpm.package.architecture}-el7</classifier>
+                                    <type>rpm</type>
                                 </artifact>
                                 <artifact>
-                                    <file>${project.build.directory}/${debian.package}-ubuntu.deb</file>
-                                    <classifier>ubuntu-amd64</classifier>
-                                    <type>deb</type>
+                                    <file>${project.build.directory}/${rpm.package}-fedora34.rpm</file>
+                                    <classifier>fedora34-${rpm.package.architecture}</classifier>
+                                    <type>rpm</type>
                                 </artifact>
                             </artifacts>
                         </configuration>
@@ -253,18 +272,18 @@
 
     <profiles>
         <profile>
-            <id>debian-package-version-release</id>
+            <id>rpm-package-version-release</id>
             <activation>
                 <property>
                     <name>ci.release</name>
                 </property>
             </activation>
             <properties>
-                <debian.package.version>${project.version}</debian.package.version>
+                <rpm.package.release>1</rpm.package.release>
             </properties>
         </profile>
         <profile>
-            <id>publish-debian-packages</id>
+            <id>publish-rpm-packages</id>
             <activation>
                 <property>
                     <name>ci.deploy</name>
@@ -277,40 +296,38 @@
                         <artifactId>exec-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>publish-debian-package</id>
+                                <id>publish-centos-package</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <executable>${project.parent.basedir}/scripts/publish-debian-package-to-bintray.sh</executable>
+                                    <executable>${project.parent.basedir}/scripts/publish-rpm-package.sh</executable>
                                     <arguments>
-                                        <argument>${debian.package.version}</argument>
-                                        <argument>${project.build.directory}/${debian.package}-debian.deb</argument>
+                                        <argument>${rpm.package.version}</argument>
+                                        <argument>${project.build.directory}/${rpm.package}-centos7.rpm</argument>
                                         <argument>${bintray.org}</argument>
-                                        <argument>deb</argument>
-                                        <argument>${debian.package}</argument>
-                                        <argument>buster,jessie,stretch</argument>
-                                        <argument>${debian.architecture},i386,x86_64</argument>
+                                        <argument>centos</argument>
+                                        <argument>${rpm.package}</argument>
+                                        <argument>${rpm.package.architecture}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>
                             <execution>
-                                <id>publish-ubuntu-package</id>
+                                <id>publish-fedora-package</id>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <executable>${project.parent.basedir}/scripts/publish-debian-package-to-bintray.sh</executable>
+                                    <executable>${project.parent.basedir}/scripts/publish-rpm-package.sh</executable>
                                     <arguments>
-                                        <argument>${debian.package.version}</argument>
-                                        <argument>${project.build.directory}/${debian.package}-ubuntu.deb</argument>
+                                        <argument>${rpm.package.version}</argument>
+                                        <argument>${project.build.directory}/${rpm.package}-fedora34.rpm</argument>
                                         <argument>${bintray.org}</argument>
-                                        <argument>ubuntu</argument>
-                                        <argument>${debian.package}</argument>
-                                        <argument>focal</argument>
-                                        <argument>${debian.architecture},i386,x86_64</argument>
+                                        <argument>fedora</argument>
+                                        <argument>${rpm.package}</argument>
+                                        <argument>${rpm.package.architecture}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

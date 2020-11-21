@@ -18,9 +18,13 @@
     <packaging>pom</packaging>
 
     <properties>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <executable.name>${global.project.name}</executable.name>
+        <bintray.org>optum</bintray.org>
         <docker.namespace>optumopensource</docker.namespace>
         <docker.repository>${docker.namespace}/${executable.name}</docker.repository>
+        <git.commit.time>${maven.build.timestamp}</git.commit.time> <!-- Filled by git-commit-id-plugin (defaulted here) -->
+        <git.commit.id.abbrev/> <!-- Filled by git-commit-id-plugin (defaulted here) -->
     </properties>
 
     <dependencyManagement>
@@ -57,12 +61,24 @@
                 </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <configuration>
+                    <dotGitDirectory>${maven.multiModuleProjectDirectory}/.git</dotGitDirectory>
+                    <skipPoms>false</skipPoms>
+                    <injectAllReactorProjects>true</injectAllReactorProjects>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 
     <modules>
         <module>linux</module>
         <module>docker</module>
         <module>debian</module>
+        <module>rpm</module>
     </modules>
 
 </project>

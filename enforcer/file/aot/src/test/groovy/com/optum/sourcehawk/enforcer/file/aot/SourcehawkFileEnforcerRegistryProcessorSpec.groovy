@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.enforcer.file.aot
 
+
 import com.optum.sourcehawk.enforcer.file.TestFileEnforcer
 import com.optum.sourcehawk.enforcer.file.aot.SourcehawkFileEnforcerRegistry
 import com.optum.sourcehawk.enforcer.file.aot.SourcehawkFileEnforcerRegistryProcessor
@@ -16,7 +17,9 @@ import javax.lang.model.element.Name
 import javax.lang.model.element.PackageElement
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
+import javax.tools.FileObject
 import javax.tools.JavaFileObject
+import javax.tools.StandardLocation
 
 class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
 
@@ -84,14 +87,17 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         TypeElement mockTypeElement = Mock()
         Set<? extends TypeElement> annotations = [ mockTypeElement ] as Set
         RoundEnvironment mockRoundEnvironment = Mock()
-        AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor()
+        AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor(TestFileEnforcer.class.canonicalName)
 
         PackageElement mockPackageElement = Mock()
         Name mockPackageName = Mock()
         Filer mockFiler = Mock()
         JavaFileObject mockJavaFileObject = Mock()
+        FileObject mockFileObject = Mock()
+        FileObject mockResourceObject = Mock()
 
         Writer javaFileWriter = new StringWriter()
+        Writer reflectConfigJsonResourceWriter = new StringWriter()
 
         when:
         sourcehawkFileEnforcerRegistryProcessor.init(mockProcessingEnvironment)
@@ -102,9 +108,13 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         1 * mockPackageElement.getQualifiedName() >> mockPackageName
         1 * mockPackageName.toString() >> "com.optum.sourcehawk.enforcer.file"
         1 * mockRoundEnvironment.processingOver() >> true
-        1 * mockProcessingEnvironment.getFiler() >> mockFiler
+        3 * mockProcessingEnvironment.getFiler() >> mockFiler
         1 * mockFiler.createSourceFile("com.optum.sourcehawk.enforcer.file.FileEnforcerRegistry", []) >> mockJavaFileObject
         1 * mockJavaFileObject.openWriter() >> javaFileWriter
+        1 * mockFiler.getResource(StandardLocation.CLASS_PATH, "", "reflect-config-template.json") >> mockFileObject
+        1 * mockFileObject.getCharContent(false) >> IoUtil.getResourceAsStream("/reflect-config-template.json").text
+        1 * mockFiler.createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/reflect-config.json") >> mockResourceObject
+        1 * mockResourceObject.openWriter() >> reflectConfigJsonResourceWriter
         0 * _
 
         and:
@@ -112,9 +122,11 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
 
         when:
         String javaFileContents = javaFileWriter.toString()
+        String reflectConfigJsonResourceContents = reflectConfigJsonResourceWriter.toString()
 
         then:
         javaFileContents == IoUtil.getResourceAsStream("/FileEnforcerRegistry.java.txt").text
+        reflectConfigJsonResourceContents.trim() == IoUtil.getResourceAsStream("/reflect-config.json.txt").text.trim()
     }
 
     def "process - over (error during code generation)"() {
@@ -123,7 +135,7 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         TypeElement mockTypeElement = Mock()
         Set<? extends TypeElement> annotations = [ mockTypeElement ] as Set
         RoundEnvironment mockRoundEnvironment = Mock()
-        AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor(TestFileEnforcer.class.canonicalName)
+        AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor()
 
         PackageElement mockPackageElement = Mock()
         Name mockPackageName = Mock()

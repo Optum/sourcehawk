@@ -23,7 +23,7 @@ class DockerfileFromImageEqualsSpec extends Specification {
 
     def "enforce (passed)"() {
         given:
-        DockerfileFromImageEquals DockerfileFromImageEquals = DockerfileFromImageEquals.equals('image:1.0.0')
+        DockerfileFromImageEquals DockerfileFromImageEquals = DockerfileFromImageEquals.equals('image')
         InputStream fileInputStream = IoUtil.getResourceAsStream('/Dockerfile-default')
 
         when:
@@ -66,8 +66,7 @@ class DockerfileFromImageEqualsSpec extends Specification {
 
         where:
         fileSuffix   | image
-        'noFromHost' | 'centos'
-        'noFromHost' | 'centos:1.0.0'
+        'noFromHost' | 'library/centos'
         'scratch'    | 'scratch'
     }
 
@@ -83,7 +82,7 @@ class DockerfileFromImageEqualsSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0] == "Dockerfile FROM image [image:1.0.0] does not contain [image2]"
+        result.messages[0] == "Dockerfile FROM image [image] does not equal [image2]"
     }
 
     def "enforce (null input stream)"() {

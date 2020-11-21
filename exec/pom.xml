@@ -83,12 +83,6 @@
 
         <!-- TEST DEPENDENCIES -->
         <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.12</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>test</scope>
@@ -233,6 +227,11 @@
                         <artifactId>picocli-codegen</artifactId>
                         <version>${picocli.version}</version>
                         <type>jar</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                        <version>${slf4j.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -399,9 +398,6 @@
                             <rules>
                                 <requireFilesExist>
                                     <files>
-                                        <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk/native-image.properties</file>
-                                        <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk-generated/reflect-config.json</file>
-                                        <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk-generated/resource-config.json</file>
                                         <file>${project.build.directory}/${executable.name}-bash-completion.sh</file>
                                         <file>${project.parent.basedir}/gh-pages/index.html</file>
                                         <file>${project.parent.basedir}/gh-pages/stylesheets/sourcehawk.css</file>
