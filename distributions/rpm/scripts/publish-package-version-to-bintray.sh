@@ -21,7 +21,7 @@ BINTRAY_PACKAGE="${5}"
 
 # Bintray Common Variables
 BINTRAY_API_URL="https://api.bintray.com"
-BINTRAY_PACKAGE_VERSION="${PACKAGE_VERSION%"-SNAPSHOT"}" # Remove "-SNAPSHOT" from Package Version
+BINTRAY_PACKAGE_VERSION="${PACKAGE_VERSION//"-SNAPSHOT"/}" # Remove "-SNAPSHOT" from Package Version
 BINTRAY_UPLOAD_PATH="$(echo "$BINTRAY_PACKAGE_VERSION" | cut -d'.' -f1-4)/$BINTRAY_PACKAGE-$BINTRAY_REPOSITORY-$BINTRAY_PACKAGE_VERSION.rpm"
 
 # Construct the URL for publishing
