@@ -38,4 +38,4 @@ curl -sfLS -X PUT -T "$DEBIAN_PATH" -u "${BINTRAY_USERNAME}:${BINTRAY_API_KEY}" 
 
 # Calculate Metadata for Package Repository
 echo "Forcing metadata calculation..."
-curl -sfLS -X POST -u "${BINTRAY_USERNAME}:${BINTRAY_API_KEY}" "$BINTRAY_API_URL/calc_metadata/$BINTRAY_SUBJECT/$BINTRAY_REPOSITORY"
+curl -sfLS -X POST -u "${BINTRAY_USERNAME}:${BINTRAY_API_KEY}" "$BINTRAY_API_URL/calc_metadata/$BINTRAY_ORG/$BINTRAY_REPOSITORY"
