@@ -73,9 +73,9 @@
 
     <modules>
         <module>linux</module>
-        <module>docker</module>
         <module>debian</module>
         <module>rpm</module>
+        <module>docker</module>
     </modules>
 
 </project>

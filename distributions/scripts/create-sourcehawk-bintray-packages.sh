@@ -30,7 +30,7 @@ cat > package.json << EOF
   "desc": "$DESCRIPTION",
   "labels": ["$BINTRAY_PACKAGE", "compliance"],
   "licenses": ["GPL-3.0"],
-  "vcs_url": "https://github.com/$ORG/.git",
+  "vcs_url": "https://github.com/$ORG/$NAME.git",
   "website_url": "https://$ORG.github.io/$NAME",
   "issue_tracker_url": "https://github.com/$ORG/$NAME/issues",
   "github_repo": "$ORG/$NAME",
