@@ -128,7 +128,7 @@ class DockerfileFromHasTagSpec extends Specification {
         !result.passed
         result.messages
         result.messages.size() == 1
-        result.messages[0] == "Dockerfile FROM [hub.docker.com/image] has 'latest' tag"
+        result.messages[0] == "Dockerfile FROM [hub.docker.com/image:latest] has 'latest' tag"
     }
 
     def "enforce (null input stream)"() {

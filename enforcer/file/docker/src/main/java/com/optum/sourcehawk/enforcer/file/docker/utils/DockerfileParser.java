@@ -43,4 +43,39 @@ public class DockerfileParser {
         }
     }
 
+    /**
+     * Parse the from token into an object
+     *
+     *       docker.io/image:1.0.0
+     *       image:1.0.0
+     *       image
+     *       org/image:1.0.0
+     *       docker.io/org/image
+     *       docker.io/org/image:1.0.0
+     *
+     * @param fromToken the from token string
+     * @return the from token object
+     */
+    public static Dockerfile.FromToken parseFromToken(final String fromToken) {
+        val builder = Dockerfile.FromToken.builder().rawValue(fromToken);
+        val firstForwardSlashIndex = fromToken.indexOf('/');
+        int startIndex = 0;
+        if (firstForwardSlashIndex > -1) {
+            val firstSegment = fromToken.substring(0, firstForwardSlashIndex);
+            if (firstSegment.contains(".") || firstSegment.contains(":")) {
+                builder.registryHost(firstSegment);
+                startIndex = firstForwardSlashIndex + 1;
+            }
+        }
+        val image = fromToken.substring(startIndex);
+        val imagePieces = image.split(":");
+        if (imagePieces.length == 1) {
+            builder.image(image);
+        } else {
+            builder.image(imagePieces[0]);
+            builder.tag(image.substring(image.indexOf(':') + 1));
+        }
+        return builder.build();
+    }
+
 }

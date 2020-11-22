@@ -1,8 +1,8 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: ${executable.name}
-Upstream-Contact: Brian Wyka <brian.wyka@optum.com>
-Source: https://github.com/optum/sourcehawk
+Upstream-Contact: ${maintainer.name} <${maintainer.email}>
+Source: ${project.scm.url}
 
 Files: *
-Copyright: 2020 Optum <opensource@optum.com>
-License: Apache-2.0
+Copyright: ${project.inceptionYear} ${project.organization.name} <${organization.email}>
+License: ${project.license}

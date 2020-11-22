@@ -1,4 +1,4 @@
-FROM optum/centos:1.0.0
+FROM library/centos:1.0.0
 
 MAINTAINER email@domain.org
 

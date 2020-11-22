@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -18,9 +18,10 @@
     <packaging>pom</packaging>
 
     <properties>
-        <executable.name>${global.project.name}</executable.name>
-        <docker.namespace>optumopensource</docker.namespace>
-        <docker.repository>${docker.namespace}/${executable.name}</docker.repository>
+        <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
+        <docker.repository>${docker.organization}/${global.project.name}</docker.repository>
+<!--        <git.commit.time/> &lt;!&ndash; Filled in by git-commitid-plugin &ndash;&gt;-->
+<!--        <git.commit.id.abbrev/> &lt;!&ndash; Filled in by git-commitid-plugin &ndash;&gt;-->
     </properties>
 
     <dependencyManagement>
@@ -37,6 +38,17 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <configuration>
+                        <dateFormat>${maven.build.timestamp.format}</dateFormat>
+                        <dotGitDirectory>${maven.multiModuleProjectDirectory}/.git</dotGitDirectory>
+                        <skipPoms>false</skipPoms>
+                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                        <generateGitPropertiesFilename>${project.build.directory}/git.properties</generateGitPropertiesFilename>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <executions>
@@ -61,8 +73,9 @@
 
     <modules>
         <module>linux</module>
-        <module>docker</module>
         <module>debian</module>
+        <module>rpm</module>
+        <module>docker</module>
     </modules>
 
 </project>

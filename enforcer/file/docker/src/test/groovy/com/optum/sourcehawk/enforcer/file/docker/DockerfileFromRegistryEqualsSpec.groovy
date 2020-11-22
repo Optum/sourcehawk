@@ -63,7 +63,7 @@ class DockerfileFromRegistryEqualsSpec extends Specification {
         !result.passed
         result.messages
         result.messages.size() == 1
-        result.messages[0] == "Dockerfile FROM [optum/centos:1.0.0] is missing host prefix"
+        result.messages[0] == "Dockerfile FROM [library/centos:1.0.0] is missing host prefix"
     }
 
     def "enforce (failed - incorrect FROM host)"() {

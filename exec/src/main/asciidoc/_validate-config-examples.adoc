@@ -1,5 +1,11 @@
 = Examples
 
+.Read the manual
+[source,sh]
+----
+man sourcehawk-validate-config
+----
+
 .Use the default configuration file in the current directory
 [source,sh]
 ----

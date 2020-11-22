@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,8 +19,8 @@
 
     <properties>
 
-        <picocli.version>4.5.2</picocli.version>
-        <executable.name>${project.parent.artifactId}</executable.name>
+        <!-- EXECUTABLE SETTINGS -->
+        <executable.name>${global.project.name}</executable.name>
         <executable.class>com.optum.sourcehawk.exec.Sourcehawk</executable.class>
 
         <!-- JACOCO OVERRIDES -->
@@ -30,6 +30,9 @@
         <sonar.exclusions>**/picocli/**/*.*</sonar.exclusions>
         <sonar.coverage.exclusions>**/picocli/**/*.*</sonar.coverage.exclusions>
         <sonar.cpd.exclusions>**/picocli/**/*.*</sonar.cpd.exclusions>
+
+        <!-- PICOCLI VERSION -->
+        <picocli.version>4.5.2</picocli.version>
 
     </properties>
 
@@ -82,12 +85,6 @@
         </dependency>
 
         <!-- TEST DEPENDENCIES -->
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.9.12</version>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -240,6 +237,11 @@
                         <artifactId>picocli-codegen</artifactId>
                         <version>${picocli.version}</version>
                         <type>jar</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                        <version>${slf4j.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -406,9 +408,6 @@
                             <rules>
                                 <requireFilesExist>
                                     <files>
-                                        <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk/native-image.properties</file>
-                                        <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk-generated/reflect-config.json</file>
-                                        <file>${project.build.directory}/classes/META-INF/native-image/sourcehawk-generated/resource-config.json</file>
                                         <file>${project.build.directory}/${executable.name}-bash-completion.sh</file>
                                         <file>${project.parent.basedir}/gh-pages/index.html</file>
                                         <file>${project.parent.basedir}/gh-pages/stylesheets/sourcehawk.css</file>
