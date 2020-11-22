@@ -30,6 +30,7 @@ import java.util.concurrent.Callable;
 class FlattenConfigCommand implements Callable<Integer> {
 
     private static final ObjectWriter WRITER_WITH_DEFAULT_PRETTY_PRINTER = Sourcehawk.YAML_FORMATTER.writerWithDefaultPrettyPrinter();
+    private static final String SOURCEHAWK_FLATTENED_YML = "sourcehawk-flattened.yml";
 
     static final String COMMAND_NAME = "flatten-config";
 
@@ -64,7 +65,7 @@ class FlattenConfigCommand implements Callable<Integer> {
      */
     public Integer call() {
         FlattenConfigResult flattenResult;
-        String configurationFileLocation = getConfigurationFileLocation();
+        val configurationFileLocation = getConfigurationFileLocation();
         if (StringUtils.isBlankOrEmpty(configurationFileLocation)) {
             return CommandLine.ExitCode.SOFTWARE;
         }
@@ -76,11 +77,13 @@ class FlattenConfigCommand implements Callable<Integer> {
             flattenResult = FlattenConfigResult.error(e.getMessage());
         }
 
-        outputResults(flattenResult, output);
-
         if (flattenResult.isError()) {
+            Sourcehawk.CONSOLE_RAW_LOGGER.info(flattenResult.getFormattedMessage());
             return CommandLine.ExitCode.SOFTWARE;
         }
+
+        outputResults(flattenResult, output);
+
         return CommandLine.ExitCode.OK;
     }
 
@@ -100,8 +103,8 @@ class FlattenConfigCommand implements Callable<Integer> {
      * Execute the flatten iterating over all configuration locations and aggregate the results
      *
      * @param configurationFileLocation the configuration location
-     * @param sourcehawkConfiguration   the configuration
-     * @return the aggregated scan result
+     * @param sourcehawkConfiguration   the flattened configuration object
+     * @return the aggregated flatten result
      */
     private static FlattenConfigResult executeFlatten(final String configurationFileLocation,
                                                       final SourcehawkConfiguration sourcehawkConfiguration) {
@@ -127,15 +130,12 @@ class FlattenConfigCommand implements Callable<Integer> {
         return FlattenConfigResult.error(message);
     }
 
-    private static final String SOURCEHAWK_FLATTENED_YML = "sourcehawk-flattened.yml";
-
     /**
      * Log the result of the flatten which will either output to a file or console based on params
      *
      * @param flattenResult      the flatten result
      * @param repositoryFilePath the repository file path
      */
-    @SuppressWarnings("squid:S2629")
     void outputResults(final FlattenConfigResult flattenResult,
                        final Path repositoryFilePath) {
         if (repositoryFilePath == null || StringUtils.isBlankOrEmpty(repositoryFilePath.toString())) {
@@ -153,7 +153,7 @@ class FlattenConfigCommand implements Callable<Integer> {
      */
     private static void handleFileSystemOutput(final FlattenConfigResult flattenResult, final Path repositoryFilePath) {
         try {
-            String writerPath = StringUtils.defaultString(repositoryFilePath.toString(), SOURCEHAWK_FLATTENED_YML);
+            val writerPath = StringUtils.defaultString(repositoryFilePath.toString(), SOURCEHAWK_FLATTENED_YML);
             LocalRepositoryFileWriter.writer().write(writerPath, flattenResult.getContent());
             Sourcehawk.CONSOLE_RAW_LOGGER.info(flattenResult.getFormattedMessage());
             Sourcehawk.CONSOLE_RAW_LOGGER.info("Output to {}", writerPath);
