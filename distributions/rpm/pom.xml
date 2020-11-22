@@ -310,6 +310,7 @@
                                     <executable>${project.basedir}/scripts/publish-package-version-to-bintray.sh</executable>
                                     <arguments>
                                         <argument>${rpm.package.version}</argument>
+                                        <argument>${rpm.package.release}</argument>
                                         <argument>${project.build.directory}/${rpm.package}-centos7.rpm</argument>
                                         <argument>${bintray.organization}</argument>
                                         <argument>centos</argument>
@@ -328,6 +329,7 @@
                                     <executable>${project.basedir}/scripts/publish-package-version-to-bintray.sh</executable>
                                     <arguments>
                                         <argument>${rpm.package.version}</argument>
+                                        <argument>${rpm.package.release}</argument>
                                         <argument>${project.build.directory}/${rpm.package}-fedora34.rpm</argument>
                                         <argument>${bintray.organization}</argument>
                                         <argument>fedora</argument>
