@@ -4,6 +4,6 @@ Distribution: stable
 Section: utils
 Architecture: ${debian.architecture}
 Priority: optional
-Maintainer: ${maintainer.name} <${maintainer.email}>
-Homepage: ${project.url}
-Description: ${project.description}
+Maintainer: ${global.project.maintainer.name} <${global.project.maintainer.email}>
+Homepage: ${global.project.url}
+Description: ${global.project.description}

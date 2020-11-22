@@ -8,20 +8,19 @@
     <parent>
         <artifactId>sourcehawk-dist</artifactId>
         <groupId>com.optum.sourcehawk</groupId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>sourcehawk-dist-rpm</artifactId>
     <packaging>pom</packaging>
 
     <name>Sourcehawk Dist RPM</name>
-    <description>Sourcehawk RPM distributions</description>
+    <description>Sourcehawk RPM Packages</description>
 
     <properties>
-        <rpm.package>${executable.name}</rpm.package>
-        <rpm.package.version/> <!-- Calculated by build-helper-maven-plugin -->
+        <rpm.package>${bintray.package}</rpm.package>
+        <rpm.package.version>${project.version}</rpm.package.version>
         <rpm.package.release>a.${git.commit.time}~${git.commit.id.abbrev}</rpm.package.release> <!-- Default for SNAPSHOT builds -->
-        <rpm.package.description>${project.parent.parent.description}</rpm.package.description>
         <rpm.package.architecture>x86_64</rpm.package.architecture>
         <rpm.build.directory>${project.build.directory}/rpmbuild</rpm.build.directory>
     </properties>
@@ -47,6 +46,12 @@
 
     <build>
         <plugins>
+
+            <!-- RESOLVE GIT COMMIT INFORMATION -->
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
 
             <!-- FILTER RESOURCES TO INJECT MAVEN PROPERTIES INTO PLACEHOLDERS -->
             <plugin>
@@ -237,7 +242,7 @@
                         </goals>
                         <phase>initialize</phase>
                         <configuration>
-                            <value>${project.version}</value>
+                            <value>${rpm.package.version}</value>
                             <name>rpm.package.version</name>
                             <regex>-SNAPSHOT</regex>
                             <failIfNoMatch>false</failIfNoMatch>
@@ -302,11 +307,11 @@
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <executable>${project.parent.basedir}/scripts/publish-rpm-package.sh</executable>
+                                    <executable>${project.basedir}/scripts/publish-package-version-to-bintray.sh</executable>
                                     <arguments>
                                         <argument>${rpm.package.version}</argument>
                                         <argument>${project.build.directory}/${rpm.package}-centos7.rpm</argument>
-                                        <argument>${bintray.org}</argument>
+                                        <argument>${bintray.organization}</argument>
                                         <argument>centos</argument>
                                         <argument>${rpm.package}</argument>
                                         <argument>${rpm.package.architecture}</argument>
@@ -320,11 +325,11 @@
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <executable>${project.parent.basedir}/scripts/publish-rpm-package.sh</executable>
+                                    <executable>${project.basedir}/scripts/publish-package-version-to-bintray.sh</executable>
                                     <arguments>
                                         <argument>${rpm.package.version}</argument>
                                         <argument>${project.build.directory}/${rpm.package}-fedora34.rpm</argument>
-                                        <argument>${bintray.org}</argument>
+                                        <argument>${bintray.organization}</argument>
                                         <argument>fedora</argument>
                                         <argument>${rpm.package}</argument>
                                         <argument>${rpm.package.architecture}</argument>

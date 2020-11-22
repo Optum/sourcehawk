@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -18,7 +18,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <docker.tag>${project.version}-alpine</docker.tag>
+        <docker.tag>${project.version}</docker.tag>
     </properties>
 
     <dependencies>
@@ -77,7 +77,7 @@
                             <repository>${docker.repository}</repository>
                             <tag>${docker.tag}</tag>
                             <buildArgs>
-                                <NAME>${executable.name}</NAME>
+                                <NAME>${global.project.name}</NAME>
                                 <NATIVE_IMAGE_PATH>target/native-image</NATIVE_IMAGE_PATH>
                             </buildArgs>
                             <skipDockerInfo>true</skipDockerInfo>
@@ -154,7 +154,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>../scripts/deploy-docker-image.sh</executable>
+                                    <executable>${project.basedir}/scripts/push-docker-image-to-docker-hub.sh</executable>
                                     <arguments>
                                         <argument>${docker.repository}:${docker.tag}</argument>
                                     </arguments>

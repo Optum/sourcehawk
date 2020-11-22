@@ -2,18 +2,18 @@
 Name: ${rpm.package}
 Version: ${rpm.package.version}
 Release: ${rpm.package.release}
-Summary: ${rpm.package.description}
-License: ${project.license}
-Vendor: ${project.organization.name}
-URL: ${project.url}
+Summary: ${global.project.description}
+License: ${global.project.license}
+Vendor: ${global.organization.name}
+URL: ${global.project.url}
 Group: Development/Tools
-Packager: ${project.organization.name}
+Packager: ${global.organization.name}
 autoprov: yes
 autoreq: yes
 BuildRoot: /rpmbuild/
 
 %description
-${rpm.package.description}
+${global.project.description}
 
 %prep
 echo "BUILDROOT = $RPM_BUILD_ROOT"
@@ -22,13 +22,13 @@ cp -r /tmp/rpmbuild/* $RPM_BUILD_ROOT/
 exit
 
 %files
-%defattr(-,sourcehawk,sourcehawk,-)
-%attr(0755, sourcehawk, sourcehawk) /usr/local/bin/*
-%attr(0644, sourcehawk, sourcehawk) /usr/local/share/man/man1/*
-%attr(0755, sourcehawk, sourcehawk) /usr/share/bash-completion/completions/*
+%defattr(-,${rpm.package},${rpm.package},-)
+%attr(0755, ${rpm.package}, ${rpm.package}) /usr/local/bin/*
+%attr(0644, ${rpm.package}, ${rpm.package}) /usr/local/share/man/man1/*
+%attr(0755, ${rpm.package}, ${rpm.package}) /usr/share/bash-completion/completions/*
 
 %post
-ln -s /usr/local/bin/sourcehawk /usr/local/bin/shawk
+ln -s /usr/local/bin/${rpm.package} /usr/local/bin/shawk
 
 %postun
 rm /usr/local/bin/shawk

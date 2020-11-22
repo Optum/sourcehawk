@@ -3,49 +3,114 @@
 Sourcehawk can be installed using the installation scripts from GitHub.
 
 == Linux
-This installation only includes the binary executable.  Executable will be saved to `/usr/local/bin`
+Sourcehawk can be installed from Bintray through most linux package managers including:
 
-=== Terminal One-Liner
-[source,sh,role="primary"]
-----
-curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-linux.sh | bash
-----
+1. **Debian** - https://bintray.com/beta/#/optum/deb/sourcehawk?tab=overview[Bintray Package]
+2. **Ubuntu** - https://bintray.com/beta/#/optum/ubuntu/sourcehawk?tab=overview[Bintray Package]
+3. **Centos** - https://bintray.com/beta/#/optum/centos/sourcehawk?tab=overview[Bintray Package]
+4. **Fedora** - https://bintray.com/beta/#/optum/fedora/sourcehawk?tab=overview[Bintray Package]
 
-NOTE: Support for installation from an RPM repository will be added in a future release.
+See below for OS-specific installation instructions...
 
-=== Manual Install
-If you don't have access to `/usr/local/bin`, you will need to install manually.
+IMPORTANT: These installations all require `sudo` permission.
 
-1. Download the `linux` binary from the https://github.com/Optum/sourcehawk/releases/latest[releases] page.
-2. Rename the binary to `sourcehawk` and add to a directory on your `PATH`, i.e. - `~/bin`, or `~/.local/bin`
-
-== Debian
+=== Debian
 In addition to the executable binary, this installation will include bash completion scripts, and manpages.
 
-=== Terminal One-Liner
-[source,sh,role="secondary"]
+. Add the Bintray public key `379CE192D401AB61` to your system
+[source,sh]
 ----
-curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-debian.sh | bash
-----
-
-IMPORTANT: This requires `sudo` permissions
-
-=== Manual Install
-If you don't have `sudo` access, you may be able to install manually, it is recommended to use the linux approach documented above.
-
-== Yum
-In addition to the executable binary, this installation will include bash completion scripts, and manpages.
-
-=== Terminal One-Liner
-[source,sh,role="secondary"]
-----
-curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-yum.sh | bash
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
 ----
 
-IMPORTANT: This requires `sudo` permissions
+[start=2]
+. Add the Bintray source and update repository indexes
+[source,sh]
+----
+echo "deb https://dl.bintray.com/optum/deb buster main" | sudo tee -a /etc/apt/sources.list
+sudo apt update
+----
+If you aren't on `buster`, replace  it your respective distribution, i.e - `jessie`, or `stretch`.  If you don't know your
+distribution you may be able to find it by using the following command:
 
-=== Manual Install
-If you don't have `sudo` access, you may be able to install manually, it is recommended to use the linux approach documented above.
+[source,sh]
+----
+cat /etc/os-release | grep VERSION_CODENAME | cut -f2 -d'='
+----
+
+[start=3]
+. Install the latest version of `sourcehawk`
+[source,sh]
+----
+sudo apt install sourcehawk
+----
+
+=== Ubuntu
+This distribution includes bash completion scripts as well as manpages.
+
+. Add the Bintray public key `379CE192D401AB61` to your system
+[source,sh]
+----
+apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61
+----
+
+[start=2]
+. Add the Bintray source and update repository indexes
+[source,sh]
+----
+echo "deb https://dl.bintray.com/optum/ubuntu focal main" | sudo tee -a /etc/apt/sources.list
+sudo apt update
+----
+Currently, `focal` is the only distribution published.  Let us know if you need others by creating an issue on Github.
+
+[start=3]
+. Install the latest version of `sourcehawk`
+[source,sh]
+----
+sudo apt install sourcehawk
+----
+
+=== Centos
+This distribution includes bash completion scripts as well as manpages.
+
+. Download the Bintray repository file and add it to the `yum` repos
+[source,sh]
+----
+curl https://api.bintray.com/optum/centos/rpm -o bintray-optum-centos.repo
+sudo mv bintray-optum-centos.repo /etc/yum.repos.d/
+----
+
+[start=2]
+. Install the latest version of `sourcehawk`
+[source,sh]
+----
+sudo yum install sourcehawk
+----
+
+=== Fedora
+This distribution includes bash completion scripts as well as manpages.
+
+. Download the Bintray repository file and add it `dnf` config manager
+[source,sh]
+----
+curl https://api.bintray.com/optum/fedora/rpm -o bintray-optum-fedora.repo
+sudo mv bintray-optum-fedora.repo /etc/yum.repos.d/
+----
+
+[start=2]
+. Add the repository to `dnf` config manager and enable it
+[source,sh]
+----
+sudo dnf config-manager --add-repo /etc/yum.repos.d/bintray-optum-fedora.repo
+dnf config-manager --set-enabled bintray-optum-fedora
+----
+
+[start=3]
+. Install the latest version of `sourcehawk`
+[source,sh]
+----
+sudo dnf install sourcehawk
+----
 
 == Mac / Darwin
 This installation only includes the binary executable.  Executable will be saved to `/usr/local/bin`
@@ -65,8 +130,6 @@ If you don't have access to `/usr/local/bin`, you will need to install manually.
 2. Rename the binary to `sourcehawk` and add to a directory on your `PATH`, i.e. - `~/bin`, or `~/.local/bin`
 
 == Windows
-
-=== Manual Install
 
 1. Download the `windows exe` binary from the https://github.com/Optum/sourcehawk/releases/latest[releases] page.
 2. Rename the binary to `sourcehawk.exe` and store it wherever you want

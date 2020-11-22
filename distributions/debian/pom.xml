@@ -8,18 +8,18 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
     <artifactId>sourcehawk-dist-debian</artifactId>
     <name>Sourcehawk Distributions Debian</name>
-    <description>Sourcehawk debian package</description>
+    <description>Sourcehawk Debian Packages</description>
     <packaging>pom</packaging>
 
     <properties>
         <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
-        <debian.package>${executable.name}</debian.package>
+        <debian.package>${bintray.package}</debian.package>
         <debian.package.version>${project.version}~${git.commit.time}+${git.commit.id.abbrev}</debian.package.version>
         <debian.architecture>amd64</debian.architecture>
     </properties>
@@ -45,6 +45,12 @@
 
     <build>
         <plugins>
+
+            <!-- RESOLVE GIT COMMIT INFORMATION -->
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+            </plugin>
 
             <!-- FILTER RESOURCES TO INJECT MAVEN PROPERTIES INTO PLACEHOLDERS -->
             <plugin>
@@ -219,11 +225,24 @@
                 </executions>
             </plugin>
 
-            <!-- ATTACH DEBIAN ARTIFACT-->
+            <!-- CALCULATE DEBIAN PACKAGE VERSION AND ATTACH DEBIAN ARTIFACT-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
+                    <execution>
+                        <id>calculate-debian-package-version</id>
+                        <goals>
+                            <goal>regex-property</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <value>${debian.package.version}</value>
+                            <name>debian.package.version</name>
+                            <regex>-SNAPSHOT</regex>
+                            <failIfNoMatch>false</failIfNoMatch>
+                        </configuration>
+                    </execution>
                     <execution>
                         <id>attach-debian-artifact</id>
                         <goals>
@@ -252,6 +271,7 @@
     </build>
 
     <profiles>
+
         <profile>
             <id>debian-package-version-release</id>
             <activation>
@@ -283,11 +303,11 @@
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <executable>${project.parent.basedir}/scripts/publish-debian-package-to-bintray.sh</executable>
+                                    <executable>${project.basedir}/scripts/publish-package-version-to-bintray.sh</executable>
                                     <arguments>
                                         <argument>${debian.package.version}</argument>
                                         <argument>${project.build.directory}/${debian.package}-debian.deb</argument>
-                                        <argument>${bintray.org}</argument>
+                                        <argument>${bintray.organization}</argument>
                                         <argument>deb</argument>
                                         <argument>${debian.package}</argument>
                                         <argument>buster,jessie,stretch</argument>
@@ -302,11 +322,11 @@
                                 </goals>
                                 <phase>deploy</phase>
                                 <configuration>
-                                    <executable>${project.parent.basedir}/scripts/publish-debian-package-to-bintray.sh</executable>
+                                    <executable>${project.basedir}/scripts/publish-package-version-to-bintray.sh</executable>
                                     <arguments>
                                         <argument>${debian.package.version}</argument>
                                         <argument>${project.build.directory}/${debian.package}-ubuntu.deb</argument>
-                                        <argument>${bintray.org}</argument>
+                                        <argument>${bintray.organization}</argument>
                                         <argument>ubuntu</argument>
                                         <argument>${debian.package}</argument>
                                         <argument>focal</argument>

@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -20,9 +20,9 @@
     <properties>
         <dockerfile.fromtag/> <!-- Defined in jdk specific profile -->
         <docker.image>${project.artifactId}-native-image-builder</docker.image>
-        <docker.workdir>/home/${executable.name}</docker.workdir>
-        <docker.build.executable>${docker.workdir}/${executable.name}</docker.build.executable>
-        <native.image>${project.build.directory}/${executable.name}</native.image>
+        <docker.workdir>/home/${global.project.name}</docker.workdir>
+        <docker.build.executable>${docker.workdir}/${global.project.name}</docker.build.executable>
+        <native.image>${project.build.directory}/${global.project.name}</native.image>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
@@ -61,7 +61,7 @@
                                 <resource>
                                     <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
                                     <includes>
-                                        <include>${executable.name}*</include>
+                                        <include>${global.project.name}*</include>
                                     </includes>
                                 </resource>
                             </resources>
@@ -102,7 +102,7 @@
                                     <classifier>bash-completion</classifier>
                                     <type>sh</type>
                                     <outputDirectory>${project.build.directory}/dist/bash-completion</outputDirectory>
-                                    <destFileName>${executable.name}</destFileName>
+                                    <destFileName>${global.project.name}</destFileName>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -128,7 +128,7 @@
                             <tag>${project.version}</tag>
                             <buildArgs>
                                 <FROM_TAG>${dockerfile.fromtag}</FROM_TAG>
-                                <NAME>${executable.name}</NAME>
+                                <NAME>${global.project.name}</NAME>
                                 <JAR>target/dist/sourcehawk-exec-${project.version}-native-image.jar</JAR>
                                 <WORKDIR>${docker.workdir}</WORKDIR>
                             </buildArgs>

@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,8 +19,8 @@
 
     <properties>
 
-        <picocli.version>4.5.2</picocli.version>
-        <executable.name>${project.parent.artifactId}</executable.name>
+        <!-- EXECUTABLE SETTINGS -->
+        <executable.name>${global.project.name}</executable.name>
         <executable.class>com.optum.sourcehawk.exec.Sourcehawk</executable.class>
 
         <!-- JACOCO OVERRIDES -->
@@ -30,6 +30,9 @@
         <sonar.exclusions>**/picocli/**/*.*</sonar.exclusions>
         <sonar.coverage.exclusions>**/picocli/**/*.*</sonar.coverage.exclusions>
         <sonar.cpd.exclusions>**/picocli/**/*.*</sonar.cpd.exclusions>
+
+        <!-- PICOCLI VERSION -->
+        <picocli.version>4.5.2</picocli.version>
 
     </properties>
 

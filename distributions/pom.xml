@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.2.3-SNAPSHOT</version>
+        <version>0.3.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,12 +19,9 @@
 
     <properties>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
-        <executable.name>${global.project.name}</executable.name>
-        <bintray.org>optum</bintray.org>
-        <docker.namespace>optumopensource</docker.namespace>
-        <docker.repository>${docker.namespace}/${executable.name}</docker.repository>
-        <git.commit.time>${maven.build.timestamp}</git.commit.time> <!-- Filled by git-commit-id-plugin (defaulted here) -->
-        <git.commit.id.abbrev/> <!-- Filled by git-commit-id-plugin (defaulted here) -->
+        <docker.repository>${docker.organization}/${global.project.name}</docker.repository>
+<!--        <git.commit.time/> &lt;!&ndash; Filled in by git-commitid-plugin &ndash;&gt;-->
+<!--        <git.commit.id.abbrev/> &lt;!&ndash; Filled in by git-commitid-plugin &ndash;&gt;-->
     </properties>
 
     <dependencyManagement>
@@ -41,6 +38,17 @@
     <build>
         <pluginManagement>
             <plugins>
+                <plugin>
+                    <groupId>pl.project13.maven</groupId>
+                    <artifactId>git-commit-id-plugin</artifactId>
+                    <configuration>
+                        <dateFormat>${maven.build.timestamp.format}</dateFormat>
+                        <dotGitDirectory>${maven.multiModuleProjectDirectory}/.git</dotGitDirectory>
+                        <skipPoms>false</skipPoms>
+                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                        <generateGitPropertiesFilename>${project.build.directory}/git.properties</generateGitPropertiesFilename>
+                    </configuration>
+                </plugin>
                 <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <executions>
@@ -61,17 +69,6 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-        <plugins>
-            <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <configuration>
-                    <dotGitDirectory>${maven.multiModuleProjectDirectory}/.git</dotGitDirectory>
-                    <skipPoms>false</skipPoms>
-                    <injectAllReactorProjects>true</injectAllReactorProjects>
-                </configuration>
-            </plugin>
-        </plugins>
     </build>
 
     <modules>
