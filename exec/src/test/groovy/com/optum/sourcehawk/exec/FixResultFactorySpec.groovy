@@ -66,6 +66,38 @@ class FixResultFactorySpec extends Specification {
         fixResult.formattedMessages[0] == "path/file.ext :: All fixed up"
     }
 
+    def "resolverResult - error"() {
+        given:
+        Map<String, Object> enforcers = [
+                "path/file.ext": StringPropertyEquals.equals("key", "value")
+        ]
+        FileProtocol fileProtocol = FileProtocol.builder()
+                .repositoryPath("path/file.ext")
+                .name("protocol")
+                .enforcers([ enforcers ])
+                .build()
+        ResolverResult resolverResult = ResolverResult.error("BOOM")
+
+        when:
+        FixResult fixResult = FixResultFactory.resolverResult(fileProtocol, resolverResult, false)
+
+        then:
+        fixResult
+        !fixResult.fixesApplied
+        fixResult.fixCount == 0
+        fixResult.error
+        fixResult.errorCount == 1
+        !fixResult.noResolver
+        fixResult.messages
+        fixResult.messages.size() == 1
+        fixResult.messages["path/file.ext"].size() == 1
+        fixResult.messages["path/file.ext"][0].repositoryPath == "path/file.ext"
+        fixResult.messages["path/file.ext"][0].message == "BOOM"
+        fixResult.formattedMessages
+        fixResult.formattedMessages.size() == 1
+        fixResult.formattedMessages[0] == "path/file.ext :: BOOM"
+    }
+
     def "resolverResult - updates - dry run"() {
         given:
         Map<String, Object> enforcers = [

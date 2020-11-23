@@ -78,7 +78,7 @@ public class ContainsLineAt extends AbstractFileEnforcer implements FileResolver
 
     /** {@inheritDoc} */
     @Override
-    public ResolverResult resolve(final @NonNull InputStream fileInputStream, final @NonNull Writer output) throws IOException {
+    public ResolverResult resolve(final @NonNull InputStream fileInputStream, final @NonNull Writer outputFileWriter) throws IOException {
         val resolverResultBuilder = ResolverResult.builder();
         val predicate = getPredicate();
         try (val bufferedFileReader = new BufferedReader(new InputStreamReader(fileInputStream))) {
@@ -86,13 +86,13 @@ public class ContainsLineAt extends AbstractFileEnforcer implements FileResolver
             int lineNumber = 1;
             while (((line = bufferedFileReader.readLine()) != null) && (lineNumber <= expectedLineNumber)) {
                 if (lineNumber == expectedLineNumber && !predicate.test(line)) {
-                    output.write(expectedLine);
+                    outputFileWriter.write(expectedLine);
                     resolverResultBuilder.updatesApplied(true)
                             .messages(Collections.singleton(String.format(UPDATE_MESSAGE_TEMPLATE, expectedLineNumber, expectedLine)));
                 } else {
-                    output.write(line);
+                    outputFileWriter.write(line);
                 }
-                output.write(System.lineSeparator());
+                outputFileWriter.write(System.lineSeparator());
                 lineNumber++;
             }
         }
