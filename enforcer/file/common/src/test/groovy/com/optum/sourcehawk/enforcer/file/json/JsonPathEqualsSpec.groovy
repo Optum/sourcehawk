@@ -267,4 +267,37 @@ class JsonPathEqualsSpec extends Specification {
         !stringWriter.toString()
     }
 
+    def "resolve - closed input stream"() {
+        given:
+        InputStream inputStream = IoUtil.getResourceAsStream('/bicycle.json')
+        inputStream.close()
+
+        when:
+        ResolverResult resolverResult = JsonPathEquals.equals('$.key', "doesn't matter").resolve(inputStream, new StringWriter())
+
+        then:
+        resolverResult
+        !resolverResult.updatesApplied
+        resolverResult.fixCount == 0
+        resolverResult.error
+        resolverResult.errorCount == 1
+        resolverResult.messages
+        resolverResult.messages.size() == 1
+        resolverResult.messages[0] == "Query parsing resulted in error [net.minidev.json.parser.ParseException: Unexpected exception java.io.IOException: Stream closed occur at position -1.]"
+    }
+
+    def "resolve - null input stream or writer"() {
+        when:
+        JsonPathEquals.equals('$.key', "doesn't matter").resolve(null, new StringWriter())
+
+        then:
+        thrown(NullPointerException)
+
+        when:
+        JsonPathEquals.equals('$.key', "doesn't matter").resolve( IoUtil.getResourceAsStream('/bicycle.json'), null)
+
+        then:
+        thrown(NullPointerException)
+    }
+
 }

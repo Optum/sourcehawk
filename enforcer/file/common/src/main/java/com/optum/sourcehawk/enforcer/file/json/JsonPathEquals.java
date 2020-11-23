@@ -104,7 +104,7 @@ public class JsonPathEquals extends AbstractFileEnforcer implements FileResolver
         try {
             documentContext = JsonPath.parse(actualFileInputStream);
         } catch (final Exception e) {
-            throw new IOException(e);
+            return ResolverResult.error(String.format(PARSE_ERROR_TEMPLATE, e.getMessage()));
         }
         val resolverResult = expectations.entrySet().stream()
                 .map(entry -> resolve(documentContext, entry.getKey(), entry.getValue()))
