@@ -121,4 +121,24 @@ public final class StringUtils {
         return url.startsWith("http://") || url.startsWith("https://");
     }
 
+    /**
+     * <p>Returns either the passed in String, or if the String is
+     * <code>null</code>, the value of <code>defaultStr</code>.</p>
+     *
+     * <pre>
+     * StringUtils.defaultString(null, "NULL")  = "NULL"
+     * StringUtils.defaultString("", "NULL")    = ""
+     * StringUtils.defaultString("bat", "NULL") = "bat"
+     * </pre>
+     *
+     * @see String#valueOf(Object)
+     * @param str  the String to check, may be null
+     * @param defaultStr  the default String to return
+     *  if the input is <code>null</code>, may be null
+     * @return the passed in String, or the default if it was <code>null</code>
+     */
+    public static String defaultString(final String str, final String defaultStr){
+        return str == null ? defaultStr : str;
+    }
+
 }

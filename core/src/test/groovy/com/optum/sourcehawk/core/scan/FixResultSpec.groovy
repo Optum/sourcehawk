@@ -1,6 +1,7 @@
 package com.optum.sourcehawk.core.scan
 
 import spock.lang.Specification
+import spock.lang.Unroll
 
 class FixResultSpec extends Specification {
 
@@ -10,7 +11,10 @@ class FixResultSpec extends Specification {
                 .fixesApplied(true)
                 .fixCount(2)
                 .noResolver(true)
-                .messages(["lombok.config": ["Fixed up"]])
+                .messages(["lombok.config": [FixResult.MessageDescriptor.builder()
+                                                     .repositoryPath("path")
+                                                     .message("test")
+                                                     .build()]])
                 .formattedMessages(["lombok.config :: Fixed up"])
 
         when:
@@ -23,7 +27,10 @@ class FixResultSpec extends Specification {
                 .fixesApplied(true)
                 .fixCount(2)
                 .noResolver(true)
-                .messages(["lombok.config": ["Fixed up"]])
+                .messages(["lombok.config": [FixResult.MessageDescriptor.builder()
+                                                     .repositoryPath("path")
+                                                     .message("test")
+                                                     .build()]])
                 .formattedMessages(["lombok.config :: Fixed up"])
                 .build()
                 .hashCode()
@@ -44,6 +51,99 @@ class FixResultSpec extends Specification {
         !fixResult.error
         !fixResult.messages
         !fixResult.formattedMessages
+    }
+
+    @Unroll
+    def "reduce - resolvers #resolverOne || #resolverTwo == #expected"() {
+        given:
+        FixResult one = FixResult.builder()
+                .fixesApplied(true)
+                .fixCount(2)
+                .noResolver(resolverOne)
+                .messages(["lombok.config": ["Fixed up"]])
+                .formattedMessages(["lombok.config :: Fixed up"])
+                .build()
+        FixResult two = FixResult.builder().noResolver(resolverTwo).build()
+
+        when:
+        FixResult reduced = FixResult.reduce(one, two)
+
+        then:
+        reduced
+        reduced.fixesApplied
+        reduced.fixCount == 2
+        reduced.noResolver == expected
+        !reduced.error
+        reduced.messages.size() == 1
+        reduced.formattedMessages.size() == 1
+
+        where:
+        resolverOne | resolverTwo || expected
+        true        | false       || true
+        true        | true        || true
+        false       | true        || true
+        false       | false       || false
+    }
+
+    @Unroll
+    def "reduce - error #errorOne && #errorTwo == #expected"() {
+        given:
+        FixResult one = FixResult.builder()
+                .fixesApplied(true)
+                .fixCount(2)
+                .error(errorOne)
+                .messages(["lombok.config": ["Fixed up"]])
+                .formattedMessages(["lombok.config :: Fixed up"])
+                .build()
+        FixResult two = FixResult.builder().error(errorTwo).build()
+
+        when:
+        FixResult reduced = FixResult.reduce(one, two)
+
+        then:
+        reduced
+        reduced.fixesApplied
+        reduced.fixCount == 2
+        reduced.error == expected
+        reduced.messages.size() == 1
+        reduced.formattedMessages.size() == 1
+
+        where:
+        errorOne | errorTwo || expected
+        true     | false    || false
+        true     | true     || true
+        false    | true     || false
+        false    | false    || false
+    }
+
+    @Unroll
+    def "reduce - fixesApplied #fixesAppliedOne || #fixesAppliedTwo == #expected"() {
+        given:
+        FixResult one = FixResult.builder()
+                .fixCount(2)
+                .fixesApplied(fixesAppliedOne)
+                .messages(["lombok.config": ["Fixed up"]])
+                .formattedMessages(["lombok.config :: Fixed up"])
+                .build()
+        FixResult two = FixResult.builder().fixesApplied(fixesAppliedTwo).build()
+
+        when:
+        FixResult reduced = FixResult.reduce(one, two)
+
+        then:
+        reduced
+        reduced.fixesApplied == expected
+        reduced.fixCount == 2
+        !reduced.error
+        reduced.messages.size() == 1
+        reduced.formattedMessages.size() == 1
+
+        where:
+        fixesAppliedOne | fixesAppliedTwo || expected
+        true            | false           || true
+        true            | true            || true
+        false           | true            || true
+        false           | false           || false
     }
 
     def "reduce - one fix, one no fix"() {
@@ -182,6 +282,21 @@ class FixResultSpec extends Specification {
         reduced.errorCount == 2
         reduced.messages.size() == 2
         reduced.formattedMessages.size() == 2
+    }
+
+    @Unroll
+    def "test nulls #one #two #expected"() {
+        when:
+        FixResult reduced = FixResult.reduce(one, two)
+
+        then:
+        reduced.error == expected
+
+        where:
+        one                                      | two                                      || expected
+        FixResult.builder().error(false).build() | null                                     || false
+        null                                     | FixResult.builder().error(false).build() || false
+        null                                     | null                                     || true
     }
 
 }

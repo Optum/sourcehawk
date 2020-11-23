@@ -1,0 +1,45 @@
+file-protocols:
+  - name: Maven Pom
+    description: maven pom.xml has correct configuration
+    group: maven
+    tags:
+      - maven
+    repository-path: pom.xml
+    enforcers:
+      - enforcer: .xml.XPathEquals
+        expectations:
+          "//project/ciManagement/type/text()": ghe
+  - name: Maven Wrapper
+    description: Maven Wrapper exists
+    repository-path: .mvn/wrapper/maven-wrapper.jar
+  - name: Maven Banned Deps
+    description: Maven pom.xml banned deps check
+    group: maven
+    tags:
+      - maven
+      - dependencies
+    repository-path: pom.xml
+    enforcers:
+      - enforcer: .maven.MavenBannedProperties
+        banned-properties:
+          "special.skip": true
+  - name: Lombok Config
+    description: Lombok Configured appropriately
+    group: lombok
+    repository-path: lombok.config
+    required: true
+    tags:
+      - "lombok"
+      - "config"
+    severity: "WARNING"
+    enforcers:
+      - enforcer: .common.StringPropertyEquals
+        property-name: config.stopBubbling
+        expected-property-value: false
+      - enforcer: .common.StringPropertyEquals
+        property-name: lombok.anyConstructor.addConstructorProperties
+        expected-property-value: false
+
+# Composable recursive source hawk configs (Must be public repo)
+config-locations:
+  - https://raw.githubusercontent.com/optum/sourcehawk-parent/main/.sourcehawk/config.yml

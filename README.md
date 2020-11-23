@@ -22,5 +22,8 @@ https://optum.github.io/sourcehawk/#_installation
 ### Command Manuals
 https://optum.github.io/sourcehawk/#_commands
 
+### Online Docs
+https://optum.github.io/sourcehawk-docs
+
 ## Contributing
 If you wish to contribute to the development of Sourcehawk please read [CONTRIBUTING.md](CONTRIBUTING.md) for more information.

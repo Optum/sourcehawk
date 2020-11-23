@@ -209,6 +209,20 @@ class FixExecutorSpec extends FileBaseSpecification {
         fixResult.formattedMessages[2] == 'lombok.config :: Property [config.stopBubbling] with value [false] has been updated to value [true]'
     }
 
+    def "executeFix"(){
+
+        given:
+        ExecOptions execOptions = ExecOptions.builder()
+                .repositoryRoot(testResourcesRoot.resolve("repo-updates"))
+                .build()
+
+        when:
+        def result = FixExecutor.executeFix(execOptions, null, false)
+
+        then:
+        result.error
+    }
+
      // TODO: temporary testing directory
 
 }
