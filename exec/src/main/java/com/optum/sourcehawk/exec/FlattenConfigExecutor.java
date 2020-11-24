@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.nio.file.Paths;
 
 /**
- * CLI entry point for executing Sourcehawk flatten command
+ * Entry point for executing Sourcehawk flatten command
  *
  * @author Christian Oestreich
  */

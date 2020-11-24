@@ -2,7 +2,6 @@ package com.optum.sourcehawk.exec;
 
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileWriter;
 import com.optum.sourcehawk.core.scan.FlattenConfigResult;
-import com.optum.sourcehawk.core.scan.OutputFormat;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import lombok.experimental.UtilityClass;
 import lombok.val;
@@ -10,11 +9,10 @@ import lombok.val;
 import java.nio.file.Path;
 
 /**
- * A logger for flatten results
+ * A logger for flatten config results
  *
  * @author Christian Oestreich
  * @see com.optum.sourcehawk.core.scan.FlattenConfigResult
- * @see OutputFormat
  */
 @UtilityClass
 class FlattenConfigResultLogger {
@@ -43,13 +41,27 @@ class FlattenConfigResultLogger {
      */
     private static void handleFileSystemOutput(final FlattenConfigResult flattenResult, final Path repositoryFilePath) {
         try {
-            val writerPath = repositoryFilePath != null ? StringUtils.defaultString(repositoryFilePath.toString(), SOURCEHAWK_FLATTENED_YML) : SOURCEHAWK_FLATTENED_YML;
-            LocalRepositoryFileWriter.writer().write(writerPath, flattenResult.getContent());
+            val outputPath = getOutputPath(repositoryFilePath);
+            LocalRepositoryFileWriter.writer().write(outputPath, flattenResult.getContent());
             Sourcehawk.CONSOLE_RAW_LOGGER.info(flattenResult.getFormattedMessage());
-            Sourcehawk.CONSOLE_RAW_LOGGER.info("Output to {}", writerPath);
+            Sourcehawk.CONSOLE_RAW_LOGGER.info("Output to {}", outputPath);
         } catch (Exception e) {
             Sourcehawk.CONSOLE_RAW_LOGGER.error("Could not flatten file due to {}", e.getMessage());
         }
+    }
+
+    /**
+     * Get the output path or default path of sourcehawk-flattened.yml
+     * if not provided
+     *
+     * @param repositoryFilePath The path to output the
+     * @return The output file name to use
+     */
+    private static String getOutputPath(final Path repositoryFilePath) {
+        if (repositoryFilePath != null) {
+            return StringUtils.defaultString(repositoryFilePath.toString(), SOURCEHAWK_FLATTENED_YML);
+        }
+        return SOURCEHAWK_FLATTENED_YML;
     }
 
     /**
