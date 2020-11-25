@@ -1,11 +1,18 @@
-name: Release
+name: Build and Push Docker Builders
 on:
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Github Ref'
+        required: false
+        default: 'main'
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref }}
       - name: Build and Push Docker Images to Bintray
         shell: bash
         run: ./distributions/scripts/build-and-push-docker-builders-to-bintray.sh
