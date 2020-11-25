@@ -1,6 +1,6 @@
 package com.optum.sourcehawk.exec
 
-import com.optum.sourcehawk.core.scan.FlattenConfigResult
+
 import spock.lang.Unroll
 
 class FlattenConfigCommandSpec extends CliBaseSpecification {
@@ -143,28 +143,5 @@ class FlattenConfigCommandSpec extends CliBaseSpecification {
 
         where:
         arg << ["-n", "--none"]
-    }
-
-    def "handleException"() {
-        when:
-        def result = FlattenConfigCommand.handleException("test", new IOException("message"))
-
-        then:
-        result.error
-        result.formattedMessage == "Error flattening sourcehawk configuration at test with error: message"
-    }
-    def "handleDryRunOutput"() {
-        when:
-        FlattenConfigCommand.handleDryRunOutput(null)
-
-        then:
-        notThrown(Exception)
-
-        when:
-        FlattenConfigCommand.handleDryRunOutput(FlattenConfigResult.success(null))
-
-        then:
-        notThrown(Exception)
-
     }
 }

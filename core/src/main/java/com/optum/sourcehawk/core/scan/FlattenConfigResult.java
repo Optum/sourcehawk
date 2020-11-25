@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.core.scan;
 
+import com.optum.sourcehawk.core.utils.StringUtils;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
@@ -37,7 +38,7 @@ public class FlattenConfigResult implements Serializable {
     @NonNull
     @Builder.Default
     @SuppressWarnings("squid:S1948") // Lombok generates private modifier
-            String formattedMessage = "Flatten successful";
+    String formattedMessage = "Flatten successful";
 
 
     /**
@@ -55,7 +56,7 @@ public class FlattenConfigResult implements Serializable {
      * @return the flatten result
      */
     public static FlattenConfigResult error(final String message) {
-        return new FlattenConfigResult(null, true, message);
+        return new FlattenConfigResult(null, true, StringUtils.defaultString(message, "No error message provided"));
     }
 
 
