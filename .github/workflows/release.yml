@@ -118,7 +118,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/debian/target/sourcehawk-debian-buster.deb
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-debian-buster_amd64.deb
+          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-debian-buster-amd64.deb
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Ubuntu Focal Package
         if: success()
@@ -129,7 +129,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/debian/target/sourcehawk-ubuntu-focal.deb
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-ubuntu-focal_amd64.deb
+          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-ubuntu-focal-amd64.deb
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Centos 8 RPM Package
         if: success()
@@ -139,7 +139,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./distributions/linux/target/sourcehawk-centos-8.rpm
+          asset_path: ./distributions/rpm/target/sourcehawk-centos-8.rpm
           asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.el8.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Fedora 34 RPM Package
@@ -150,7 +150,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./distributions/linux/target/sourcehawk-fedora-34.rpm
+          asset_path: ./distributions/rpm/target/sourcehawk-fedora-34.rpm
           asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc34.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Publish Github Pages
@@ -214,7 +214,7 @@ jobs:
       - name: Build Mac Native Image
         if: success()
         working-directory: build
-        run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces -H:+StaticExecutableWithDynamicLibC --report-unsupported-elements-at-runtime --no-fallback
+        run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback
       - name: Smoke Test
         if: success()
         working-directory: build
