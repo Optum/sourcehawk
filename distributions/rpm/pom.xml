@@ -8,7 +8,7 @@
     <parent>
         <artifactId>sourcehawk-dist</artifactId>
         <groupId>com.optum.sourcehawk</groupId>
-        <version>0.4.1-SNAPSHOT</version>
+        <version>0.4.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>sourcehawk-dist-rpm</artifactId>
@@ -432,7 +432,6 @@
                         <configuration>
                             <environmentVariables combine.children="append">
                                 <BINTRAY_REPOSITORY_OVERRIDE>dev-snapshots</BINTRAY_REPOSITORY_OVERRIDE>
-                                <BINTRAY_UPLOAD_PATH>${rpm.package.architecture}/${rpm.package.version}/${rpm.package}-${rpm.package.version}-${rpm.package.release}.${rpm.package.architecture}.rpm</BINTRAY_UPLOAD_PATH>
                             </environmentVariables>
                         </configuration>
                     </plugin>
@@ -472,6 +471,7 @@
                                     <environmentVariables combine.children="append">
                                         <PACKAGE_FILE_PATH>${project.build.directory}/${rpm.package}-centos-7.rpm</PACKAGE_FILE_PATH>
                                         <BINTRAY_REPOSITORY>centos</BINTRAY_REPOSITORY>
+                                        <BINTRAY_DISTRIBUTION>el7</BINTRAY_DISTRIBUTION>
                                     </environmentVariables>
                                 </configuration>
                             </execution>
@@ -486,6 +486,7 @@
                                     <environmentVariables combine.children="append">
                                         <PACKAGE_FILE_PATH>${project.build.directory}/${rpm.package}-centos-8.rpm</PACKAGE_FILE_PATH>
                                         <BINTRAY_REPOSITORY>centos</BINTRAY_REPOSITORY>
+                                        <BINTRAY_DISTRIBUTION>el8</BINTRAY_DISTRIBUTION>
                                     </environmentVariables>
                                 </configuration>
                             </execution>
@@ -500,6 +501,7 @@
                                     <environmentVariables combine.children="append">
                                         <PACKAGE_FILE_PATH>${project.build.directory}/${rpm.package}-fedora-32.rpm</PACKAGE_FILE_PATH>
                                         <BINTRAY_REPOSITORY>fedora</BINTRAY_REPOSITORY>
+                                        <BINTRAY_DISTRIBUTION>fc32</BINTRAY_DISTRIBUTION>
                                     </environmentVariables>
                                 </configuration>
                             </execution>
@@ -514,6 +516,7 @@
                                     <environmentVariables combine.children="append">
                                         <PACKAGE_FILE_PATH>${project.build.directory}/${rpm.package}-fedora-33.rpm</PACKAGE_FILE_PATH>
                                         <BINTRAY_REPOSITORY>fedora</BINTRAY_REPOSITORY>
+                                        <BINTRAY_DISTRIBUTION>fc33</BINTRAY_DISTRIBUTION>
                                     </environmentVariables>
                                 </configuration>
                             </execution>
@@ -528,6 +531,7 @@
                                     <environmentVariables combine.children="append">
                                         <PACKAGE_FILE_PATH>${project.build.directory}/${rpm.package}-fedora-34.rpm</PACKAGE_FILE_PATH>
                                         <BINTRAY_REPOSITORY>fedora</BINTRAY_REPOSITORY>
+                                        <BINTRAY_DISTRIBUTION>fc34</BINTRAY_DISTRIBUTION>
                                     </environmentVariables>
                                 </configuration>
                             </execution>

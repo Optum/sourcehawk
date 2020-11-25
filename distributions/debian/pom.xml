@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.4.1-SNAPSHOT</version>
+        <version>0.4.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -20,7 +20,8 @@
     <properties>
         <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
         <debian.package>${bintray.package}</debian.package>
-        <debian.package.version>${project.version}~${git.commit.time}+${git.commit.id.abbrev}</debian.package.version>
+        <debian.package.version>${project.version}</debian.package.version>
+        <debian.package.version.suffix>~${git.commit.time}+${git.commit.id.abbrev}</debian.package.version.suffix>
         <debian.architecture>amd64</debian.architecture>
     </properties>
 
@@ -288,7 +289,7 @@
                 </property>
             </activation>
             <properties>
-                <debian.package.version>${project.version}</debian.package.version>
+                <debian.package.version.suffix/> <!-- No suffix required on releases -->
             </properties>
         </profile>
         <profile>
@@ -319,9 +320,6 @@
                     <name>ci.deploy</name>
                 </property>
             </activation>
-            <properties>
-                <debian.package.version>${project.version}</debian.package.version>
-            </properties>
             <build>
                 <plugins>
                     <plugin>
@@ -331,7 +329,7 @@
                             <environmentVariables>
                                 <BINTRAY_ORGANIZATION>${bintray.organization}</BINTRAY_ORGANIZATION>
                                 <BINTRAY_PACKAGE>${debian.package}</BINTRAY_PACKAGE>
-                                <PACKAGE_VERSION>${debian.package.version}</PACKAGE_VERSION>
+                                <PACKAGE_VERSION>${debian.package.version}${debian.package.version.suffix}</PACKAGE_VERSION>
                                 <BINTRAY_ARCHITECTURES>${debian.architecture},i386,x86_64</BINTRAY_ARCHITECTURES>
                             </environmentVariables>
                         </configuration>
