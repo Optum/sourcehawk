@@ -126,7 +126,7 @@ jobs:
       - name: Build Mac Native Image
         if: success()
         working-directory: build
-        run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces -H:+StaticExecutableWithDynamicLibC --report-unsupported-elements-at-runtime --no-fallback
+        run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback
       - name: Smoke Test
         if: success()
         working-directory: build
