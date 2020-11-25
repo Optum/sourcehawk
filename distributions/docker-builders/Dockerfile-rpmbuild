@@ -1,0 +1,4 @@
+ARG FROM=centos:7
+FROM ${FROM}
+
+RUN yum install -y rpm-build

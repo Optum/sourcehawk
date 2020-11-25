@@ -1,0 +1,6 @@
+# Oracle GraalVM Java 8 Base Container
+ARG FROM=oracle/graalvm-ce:20.3.0-java8
+FROM ${FROM}
+
+# Install native-image tool
+RUN gu install --no-progress native-image
