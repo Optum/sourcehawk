@@ -238,11 +238,6 @@
                         <version>${picocli.version}</version>
                         <type>jar</type>
                     </dependency>
-                    <dependency>
-                        <groupId>org.slf4j</groupId>
-                        <artifactId>slf4j-simple</artifactId>
-                        <version>${slf4j.version}</version>
-                    </dependency>
                 </dependencies>
             </plugin>
 
@@ -381,7 +376,7 @@
                                     <includes combine.children="append">
                                         <include>ch.qos.logback:*:*:*:*</include>
                                         <include>com.fasterxml.jackson.core:*:*:*:*</include>
-                                        <include>com.fasterxml.jackson.dataformat:*:*:*:*</include>
+                                        <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
                                         <include>com.jayway.jsonpath:json-path:*:*:*</include>
                                         <include>net.minidev:accessors-smart:*:*:*</include>
                                         <include>net.minidev:json-smart:*:*:*</include>
@@ -389,7 +384,6 @@
                                         <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
                                         <include>org.fusesource.jansi:jansi:*:*:*</include>
                                         <include>org.ow2.asm:asm:*:*:*</include>
-                                        <include>org.slf4j:slf4j-simple:*:*:*</include>
                                         <include>org.yaml:snakeyaml:*:*:*</include>
                                     </includes>
                                 </bannedDependencies>

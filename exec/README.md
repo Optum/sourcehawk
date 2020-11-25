@@ -2,12 +2,12 @@ Sourcehawk Exec
 ---------------
 
 ### Picocli
-Picocli source code is one file: `src/main/java/picocli/CommandLine.java`.  To update it to a 
-specific version, run the following script:
+Picocli source code is one file: `src/main/java/picocli/CommandLine.java`.  To update it to the 
+latest version, run the following script:
 
 #### Updating Picocli
 ```bash
-./update-picocli.sh 4.5.0
+./scripts/update-picocli.sh
 ```
 
 #### Picocli on GraalVM

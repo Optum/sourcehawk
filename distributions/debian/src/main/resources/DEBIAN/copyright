@@ -5,4 +5,4 @@ Source: ${project.scm.url}
 
 Files: *
 Copyright: ${project.inceptionYear} ${project.organization.name} <${organization.email}>
-License: ${project.license}
+License: ${project.license.abbrev.deb}

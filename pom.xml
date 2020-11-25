@@ -22,6 +22,8 @@
         <!-- GLOBAL PROJECT -->
         <global.project.url>https://optum.github.io/sourcehawk</global.project.url>
         <global.project.license>GNU General Public License version 3</global.project.license>
+        <global.project.license.abbrev.deb>GPL-3</global.project.license.abbrev.deb>
+        <global.project.license.abbrev.rpm>GPLv3</global.project.license.abbrev.rpm>
 
         <slf4j.version>2.0.0-alpha1</slf4j.version> <!-- compatible with java 11 -->
         <jacoco.coverage.minimum>0.97</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->

@@ -1,6 +1,5 @@
 Package: ${debian.package}
 Version: ${debian.package.version}
-Distribution: stable
 Section: utils
 Architecture: ${debian.architecture}
 Priority: optional

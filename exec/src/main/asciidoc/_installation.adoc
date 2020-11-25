@@ -113,7 +113,7 @@ sudo dnf install sourcehawk
 ----
 
 == Mac / Darwin
-This installation only includes the binary executable.  Executable will be saved to `/usr/local/bin`
+This installation only includes the binary executable.  Executable will be saved to `/usr/bin`
 
 === Terminal One-Liner
 [source,sh,role="secondary"]
@@ -124,7 +124,7 @@ curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-mac.sh 
 NOTE: Support for installation through `homebrew` will be added in a future release.
 
 === Manual Install
-If you don't have access to `/usr/local/bin`, you will need to install manually.
+If you don't have access to `/usr/bin`, you will need to install manually.
 
 1. Download the `darwin` binary from the https://github.com/Optum/sourcehawk/releases/latest[releases] page.
 2. Rename the binary to `sourcehawk` and add to a directory on your `PATH`, i.e. - `~/bin`, or `~/.local/bin`

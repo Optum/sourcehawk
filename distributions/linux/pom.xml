@@ -18,7 +18,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <dockerfile.fromtag/> <!-- Defined in jdk specific profile -->
+        <graalvm.version/> <!-- Defined in jdk specific profile -->
         <docker.image>${project.artifactId}-native-image-builder</docker.image>
         <docker.workdir>/home/${global.project.name}</docker.workdir>
         <docker.build.executable>${docker.workdir}/${global.project.name}</docker.build.executable>
@@ -127,7 +127,7 @@
                             <repository>${docker.image}</repository>
                             <tag>${project.version}</tag>
                             <buildArgs>
-                                <FROM_TAG>${dockerfile.fromtag}</FROM_TAG>
+                                <GRAALVM_VERSION>${graalvm.version}</GRAALVM_VERSION>
                                 <NAME>${global.project.name}</NAME>
                                 <JAR>target/dist/sourcehawk-exec-${project.version}-native-image.jar</JAR>
                                 <WORKDIR>${docker.workdir}</WORKDIR>
@@ -236,7 +236,7 @@
                 <jdk>8</jdk>
             </activation>
             <properties>
-                <dockerfile.fromtag>20.1.0-java8</dockerfile.fromtag>
+                <graalvm.version>20.3.0-java8</graalvm.version>
             </properties>
         </profile>
 
@@ -247,7 +247,7 @@
                 <jdk>11</jdk>
             </activation>
             <properties>
-                <dockerfile.fromtag>20.2.0-java11</dockerfile.fromtag>
+                <graalvm.version>20.3.0-java11</graalvm.version>
             </properties>
         </profile>
 
