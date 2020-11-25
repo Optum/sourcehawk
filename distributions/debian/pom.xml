@@ -21,8 +21,6 @@
         <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
         <debian.package>${bintray.package}</debian.package>
         <debian.package.version>${project.version}~${git.commit.time}+${git.commit.id.abbrev}</debian.package.version>
-        <debian.deb.repository>deb-dev</debian.deb.repository>
-        <debian.ubuntu.repository>ubuntu-dev</debian.ubuntu.repository>
         <debian.architecture>amd64</debian.architecture>
     </properties>
 
@@ -52,6 +50,13 @@
             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
+                <configuration>
+                    <dateFormat>${maven.build.timestamp.format}</dateFormat>
+                    <dotGitDirectory>${maven.multiModuleProjectDirectory}/.git</dotGitDirectory>
+                    <skipPoms>false</skipPoms>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <generateGitPropertiesFilename>${project.build.directory}/git.properties</generateGitPropertiesFilename>
+                </configuration>
             </plugin>
 
             <!-- FILTER RESOURCES TO INJECT MAVEN PROPERTIES INTO PLACEHOLDERS -->
@@ -301,7 +306,6 @@
                         <configuration>
                             <environmentVariables combine.children="append">
                                 <BINTRAY_REPOSITORY_OVERRIDE>dev-snapshots</BINTRAY_REPOSITORY_OVERRIDE>
-                                <BINTRAY_UPLOAD_PATH>${debian.architecture}/${debian.package.version}/${debian.package}-${debian.package.version}-${debian.architecture}.deb</BINTRAY_UPLOAD_PATH>
                             </environmentVariables>
                         </configuration>
                     </plugin>
@@ -355,12 +359,11 @@
                                 <phase>deploy</phase>
                                 <configuration>
                                     <executable>${project.basedir}/scripts/publish-package-version-to-bintray.sh</executable>
-                                    <arguments>
+                                    <environmentVariables>
                                         <PACKAGE_FILE_PATH>${project.build.directory}/${debian.package}-ubuntu-focal.deb</PACKAGE_FILE_PATH>
-                                        <argument>ubuntu</argument>
-                                        <BINTRAY_REPOSITORY>${debian.package}</BINTRAY_REPOSITORY>
+                                        <BINTRAY_REPOSITORY>ubuntu</BINTRAY_REPOSITORY>
                                         <BINTRAY_DISTRIBUTIONS>focal</BINTRAY_DISTRIBUTIONS>
-                                    </arguments>
+                                    </environmentVariables>
                                 </configuration>
                             </execution>
                         </executions>

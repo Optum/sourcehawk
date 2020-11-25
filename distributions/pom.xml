@@ -20,8 +20,6 @@
     <properties>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <docker.repository>${docker.organization}/${global.project.name}</docker.repository>
-<!--        <git.commit.time/> &lt;!&ndash; Filled in by git-commitid-plugin &ndash;&gt;-->
-<!--        <git.commit.id.abbrev/> &lt;!&ndash; Filled in by git-commitid-plugin &ndash;&gt;-->
     </properties>
 
     <dependencyManagement>
