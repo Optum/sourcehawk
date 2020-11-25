@@ -1,8 +1,9 @@
 package com.optum.sourcehawk.enforcer.file.json
 
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.optum.sourcehawk.enforcer.EnforcerResult
 import com.optum.sourcehawk.enforcer.ResolverResult
-import net.minidev.json.parser.JSONParser
 import org.spockframework.util.IoUtil
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -231,7 +232,7 @@ class JsonPathEqualsSpec extends Specification {
         result.messages[0] == "Query [$query] which was missing, has been updated with value [$expectedValue]"
 
         when:
-        Map jsonObject = new JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(stringWriter.toString())
+        Map jsonObject = new ObjectMapper().readValue(stringWriter.toString(), Map)
 
         then:
         expectedJsonAssertion.apply(jsonObject)
