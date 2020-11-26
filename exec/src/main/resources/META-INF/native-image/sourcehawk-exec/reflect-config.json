@@ -1,0 +1,26 @@
+[
+  {
+    "name" : "com.optum.sourcehawk.core.scan.ScanResult",
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.optum.sourcehawk.core.scan.ScanResult$MessageDescriptor",
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.optum.sourcehawk.core.scan.FixResult",
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.optum.sourcehawk.core.scan.FixResult$MessageDescriptor",
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.optum.sourcehawk.core.scan.FlattenConfigResult",
+    "allPublicMethods" : true
+  },
+  {
+    "name" : "com.optum.sourcehawk.core.scan.FlattenConfigResult$MessageDescriptor",
+    "allPublicMethods" : true
+  }
+]

@@ -123,6 +123,8 @@
                                 <argument>${maven.multiModuleProjectDirectory}:/home/sourcehawk</argument>
                                 <argument>${docker.repository}:${docker.tag}</argument>
                                 <argument>scan</argument>
+                                <argument>-f</argument>
+                                <argument>JSON</argument>
                             </arguments>
                         </configuration>
                     </execution>
