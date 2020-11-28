@@ -15,7 +15,7 @@ import java.nio.file.Path;
  * @see com.optum.sourcehawk.core.scan.FlattenConfigResult
  */
 @UtilityClass
-class FlattenConfigResultLogger {
+public class FlattenConfigResultLogger {
 
     private static final String SOURCEHAWK_FLATTENED_YML = "sourcehawk-flattened.yml";
 
@@ -25,7 +25,7 @@ class FlattenConfigResultLogger {
      * @param flattenConfigResult the flatten config result
      * @param output              the output location of the results
      */
-    void log(final FlattenConfigResult flattenConfigResult, final Path output) {
+    public void log(final FlattenConfigResult flattenConfigResult, final Path output) {
         if (output == null || StringUtils.isBlankOrEmpty(output.toString())) {
             handleConsoleOutput(flattenConfigResult);
         } else {
