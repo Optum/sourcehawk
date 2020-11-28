@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.4.1-SNAPSHOT</version>
+        <version>0.4.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -20,8 +20,6 @@
     <properties>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
         <docker.repository>${docker.organization}/${global.project.name}</docker.repository>
-<!--        <git.commit.time/> &lt;!&ndash; Filled in by git-commitid-plugin &ndash;&gt;-->
-<!--        <git.commit.id.abbrev/> &lt;!&ndash; Filled in by git-commitid-plugin &ndash;&gt;-->
     </properties>
 
     <dependencyManagement>

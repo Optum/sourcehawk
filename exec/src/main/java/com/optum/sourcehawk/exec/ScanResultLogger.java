@@ -69,12 +69,9 @@ class ScanResultLogger {
      */
     private String formatJson(final ScanResult scanResult) {
         try {
-            return Sourcehawk.JSON_FORMATTER.writeValueAsString(scanResult);
+            return Sourcehawk.JSON_FORMATTER.writerWithDefaultPrettyPrinter().writeValueAsString(scanResult);
         } catch (final IOException e) {
-            if (scanResult.isPassed()) {
-                return "{\"passed\": true}";
-            }
-            return "{\"passed\": false,\"formattedMessages\":[\"Error serializing scan result: " + e.getMessage() + "\"]}";
+            return String.format("{\"passed\": %s,\"formattedMessages\":[\"Error serializing scan result: %s\"]}", scanResult.isPassed(), e.getMessage());
         }
     }
 

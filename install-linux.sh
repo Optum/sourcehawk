@@ -6,7 +6,7 @@ VERSION=$(curl -sI https://github.com/optum/sourcehawk/releases/latest | grep -i
 # Download the binary and make it executable
 ARCH="$(uname -m)"
 DOWNLOAD_URL="https://github.com/optum/sourcehawk/releases/download/$VERSION/sourcehawk-linux-$ARCH"
-INSTALL_LOCATION="/usr/local/bin"
+INSTALL_LOCATION="/usr/bin"
 INSTALL_PATH="$INSTALL_LOCATION/sourcehawk"
 
 if [ ! -w "$INSTALL_LOCATION" ]; then

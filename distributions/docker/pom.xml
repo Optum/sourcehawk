@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.4.1-SNAPSHOT</version>
+        <version>0.4.4-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -123,6 +123,8 @@
                                 <argument>${maven.multiModuleProjectDirectory}:/home/sourcehawk</argument>
                                 <argument>${docker.repository}:${docker.tag}</argument>
                                 <argument>scan</argument>
+                                <argument>-f</argument>
+                                <argument>JSON</argument>
                             </arguments>
                         </configuration>
                     </execution>

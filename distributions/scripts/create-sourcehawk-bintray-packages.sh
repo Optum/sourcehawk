@@ -1,18 +1,14 @@
 #!/bin/bash
 
-##############################################################################
+##############################################################################################################
 #
 # Create Bintray Packages in Optum's repos
 #
-# Packages
-# - https://bintray.com/beta/#/optum/deb/sourcehawk
-# - https://bintray.com/beta/#/optum/ubuntu/sourcehawk
-# - https://bintray.com/beta/#/optum/centos/sourcehawk
-# - https://bintray.com/beta/#/optum/fedora/sourcehawk
-#
-##############################################################################
+##############################################################################################################
 
 set -e
+
+DIR="$( cd "$( dirname "$( dirname "$( dirname "${BASH_SOURCE[0]}" )")")" && pwd )"
 
 ORG="optum"
 NAME="sourcehawk"
@@ -24,7 +20,8 @@ BINTRAY_ORG="$ORG"
 BINTRAY_PACKAGE="$NAME"
 BINTRAY_PACKAGE_URL="$BINTRAY_API_URL/packages/$BINTRAY_ORG"
 
-cat > package.json << EOF
+# Create request body
+cat > "$DIR/package.json" << EOF
 {
   "name": "$BINTRAY_PACKAGE",
   "desc": "$DESCRIPTION",
@@ -39,14 +36,15 @@ cat > package.json << EOF
 }
 EOF
 
-REPOS=(deb ubuntu centos fedora)
+REPOS=(deb ubuntu centos fedora dev-snapshots)
 
 for repo in "${REPOS[@]}"; do
 
   echo "Creating $NAME package in $BINTRAY_ORG/$repo..."
   echo ""
   curl -sfLS -X POST -u "${BINTRAY_USERNAME}:${BINTRAY_API_KEY}" \
-    -H "Content-type: application/json" --data-binary "@package.json" \
+    -H "Content-Type: application/json" -H "Accept: application/json" \
+    --data-binary "@$DIR/package.json" \
     "$BINTRAY_PACKAGE_URL/$repo"
   echo ""
 

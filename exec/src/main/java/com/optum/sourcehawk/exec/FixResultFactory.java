@@ -31,22 +31,23 @@ class FixResultFactory {
     FixResult resolverResult(final FileProtocol fileProtocol, final ResolverResult resolverResult, final boolean dryRun) {
         val fixResultBuilder = FixResult.builder()
                 .fixesApplied(resolverResult.isUpdatesApplied() && !dryRun);
-        if (CollectionUtils.isEmpty(resolverResult.getMessages())) {
-            return fixResultBuilder.fixCount(0).build();
+        if (CollectionUtils.isNotEmpty(resolverResult.getMessages())) {
+            val messages = new ArrayList<FixResult.MessageDescriptor>();
+            val formattedMessages = new ArrayList<String>();
+            for (val message : resolverResult.getMessages()) {
+                val messageDescriptor = FixResult.MessageDescriptor.builder()
+                        .repositoryPath(fileProtocol.getRepositoryPath())
+                        .message(message)
+                        .build();
+                messages.add(messageDescriptor);
+                formattedMessages.add(messageDescriptor.toString());
+            }
+            fixResultBuilder.formattedMessages(formattedMessages)
+                    .messages(Collections.singletonMap(fileProtocol.getRepositoryPath(), messages));
         }
-        val messages = new ArrayList<FixResult.MessageDescriptor>();
-        val formattedMessages = new ArrayList<String>();
-        for (val message : resolverResult.getMessages()) {
-            val messageDescriptor = FixResult.MessageDescriptor.builder()
-                    .repositoryPath(fileProtocol.getRepositoryPath())
-                    .message(message)
-                    .build();
-            messages.add(messageDescriptor);
-            formattedMessages.add(messageDescriptor.toString());
-        }
-        return fixResultBuilder.messages(Collections.singletonMap(fileProtocol.getRepositoryPath(), messages))
-                .formattedMessages(formattedMessages)
-                .fixCount(formattedMessages.size())
+        return fixResultBuilder.fixCount(resolverResult.getFixCount())
+                .error(resolverResult.isError())
+                .errorCount(resolverResult.getErrorCount())
                 .build();
     }
 
