@@ -10,7 +10,7 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=com.optum.sourcehawk%3Asourcehawk&metric=alert_status)](https://sonarcloud.io/dashboard?id=com.optum.sourcehawk%3Asourcehawk)
 
 ![OSS Lifecycle](https://img.shields.io/osslifecycle/optum/sourcehawk) 
-[![Sonatype OSS Index](https://img.shields.io/badge/Sonatype%20OSS%20Index-sourcehawk--exec-informational)](https://ossindex.sonatype.org/component/pkg:maven/com.optum.sourcehawk/sourcehawk-exec)
+[![Sonatype OSS Index](https://img.shields.io/badge/Sonatype%20OSS%20Index-sourcehawk--cli-informational)](https://ossindex.sonatype.org/component/pkg:maven/com.optum.sourcehawk/sourcehawk-cli)
 
 `Sourcehawk` is an extensible compliance as code tool which allows development teams to run compliance scans on their source code.  
 

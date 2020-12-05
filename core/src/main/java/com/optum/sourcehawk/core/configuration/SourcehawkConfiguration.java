@@ -6,6 +6,8 @@ import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import lombok.Value;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 /**
  * Root of all Sourcehawk configuration
@@ -30,5 +32,12 @@ public class SourcehawkConfiguration {
      */
     @JsonMerge
     Collection<FileProtocol> fileProtocols;
+
+    /**
+     * Create an empty configuration instance
+     */
+    public static SourcehawkConfiguration empty() {
+        return of(new LinkedHashSet<>(), new HashSet<>());
+    }
 
 }

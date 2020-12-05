@@ -55,9 +55,14 @@
             </dependency>
             <dependency>
                 <groupId>com.optum.sourcehawk</groupId>
-                <artifactId>sourcehawk-exec</artifactId>
+                <artifactId>sourcehawk-cli</artifactId>
                 <version>${bom.version}</version>
-                <classifier>native-image</classifier>
+            </dependency>
+            <dependency>
+                <groupId>com.optum.sourcehawk</groupId>
+                <artifactId>sourcehawk-cli</artifactId>
+                <version>${bom.version}</version>
+                <classifier>native-image-jar</classifier>
             </dependency>
         </dependencies>
     </dependencyManagement>

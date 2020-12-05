@@ -4,7 +4,6 @@ import org.spockframework.util.IoUtil
 import spock.lang.Shared
 import spock.lang.Specification
 
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 
@@ -20,11 +19,5 @@ class FileBaseSpecification extends Specification {
             .getParent() // src
             .getParent() // exec
             .getParent() // (root)
-
-    protected void createParentDirectories(final File child) {
-        try {
-            Files.createDirectories(Paths.get(child.getParent()))
-        } catch (Exception e) { }
-    }
 
 }

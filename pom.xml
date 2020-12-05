@@ -121,6 +121,18 @@
                 <version>4.13.1</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-core</artifactId>
+                <version>2.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib-nodep</artifactId>
+                <version>3.2.12</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -175,6 +187,7 @@
         <module>core</module>
         <module>enforcer</module>
         <module>exec</module>
+        <module>cli</module>
         <module>bom</module>
     </modules>
 

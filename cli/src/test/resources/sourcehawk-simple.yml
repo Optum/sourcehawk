@@ -1,0 +1,44 @@
+
+file-protocols:
+  - name: Readme Config
+    description: Readme Configured appropriately
+    group: markdown
+    tags:
+      - simple
+      - config
+    repository-path: README.md
+    required: true
+    severity: WARNING
+  - name: Lombok
+    repository-path: lombok.config
+    required: true
+    severity: WARNING
+    enforcers:
+      - enforcer: .common.StringPropertyEquals
+        property-name: config.stopBubbling
+        expected-property-value: false
+      - enforcer: .common.StringPropertyEquals
+        property-name: lombok.addLombokGeneratedAnnotation
+        expected-property-value: false
+  - name: Lombok
+    repository-path: lombok.config
+    required: true
+    severity: WARNING
+    enforcers:
+      - enforcer: .common.StringPropertyEquals
+        property-name: config.stopBubbling
+        expected-property-value: false
+      - enforcer: .common.StringPropertyEquals
+        property-name: lombok.addLombokGeneratedAnnotation
+        expected-property-value: false
+  - name: Lombok
+    repository-path: lombok.config
+    required: true
+    severity: WARNING
+    enforcers:
+      - enforcer: .common.StringPropertyEquals
+        property-name: config.stopBubbling
+        expected-property-value: false
+      - enforcer: .common.StringPropertyEquals
+        property-name: lombok.addLombokGeneratedAnnotation
+        expected-property-value: false

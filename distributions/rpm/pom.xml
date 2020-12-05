@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-exec</artifactId>
+            <artifactId>sourcehawk-cli</artifactId>
             <version>${project.version}</version>
             <classifier>bash-completion</classifier>
             <type>sh</type>
@@ -136,7 +136,7 @@
                                 </artifactItem>
                                 <artifactItem>
                                     <groupId>com.optum.sourcehawk</groupId>
-                                    <artifactId>sourcehawk-exec</artifactId>
+                                    <artifactId>sourcehawk-cli</artifactId>
                                     <classifier>bash-completion</classifier>
                                     <type>sh</type>
                                     <outputDirectory>${rpm.build.directory}/usr/share/bash-completion/completions</outputDirectory>
