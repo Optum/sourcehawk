@@ -82,8 +82,8 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: native-image-jar-${{ matrix.java }}
-          path: exec/target/*-native-image.jar
+          name: native-image-${{ matrix.java }}
+          path: cli/target/*-native-image.jar
       - name: Aggregate Coverage Reports
         id: aggregate_coverage_reports
         if: success()
@@ -108,7 +108,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: native-image-jar-8
+          name: native-image-8
           path: build
       - name: Rename Native Image JAR
         working-directory: build
@@ -137,7 +137,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: native-image-jar-11
+          name: native-image-11
           path: build
       - name: Rename Native Image JAR
         working-directory: build

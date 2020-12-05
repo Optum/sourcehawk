@@ -30,7 +30,7 @@
         <dependency>
             <groupId>com.optum.sourcehawk</groupId>
             <artifactId>sourcehawk-cli</artifactId>
-            <classifier>native-image-jar</classifier>
+            <classifier>native-image</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -76,7 +76,7 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-native-image-jar</id>
+                        <id>copy-native-image</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
@@ -84,7 +84,7 @@
                         <configuration>
                             <includeGroupIds>com.optum.sourcehawk</includeGroupIds>
                             <includeArtifactIds>sourcehawk-cli</includeArtifactIds>
-                            <includeClassifiers>native-image-jar</includeClassifiers>
+                            <includeClassifiers>native-image</includeClassifiers>
                             <outputDirectory>${project.build.directory}/dist</outputDirectory>
                         </configuration>
                     </execution>

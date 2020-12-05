@@ -62,7 +62,7 @@
                 <groupId>com.optum.sourcehawk</groupId>
                 <artifactId>sourcehawk-cli</artifactId>
                 <version>${bom.version}</version>
-                <classifier>native-image-jar</classifier>
+                <classifier>native-image</classifier>
             </dependency>
         </dependencies>
     </dependencyManagement>

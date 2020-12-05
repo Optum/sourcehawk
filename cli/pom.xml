@@ -307,7 +307,7 @@
                         </goals>
                         <phase>package</phase>
                         <configuration>
-                            <shadedClassifierName>native-image-jar</shadedClassifierName>
+                            <shadedClassifierName>native-image</shadedClassifierName>
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <filters>
                                 <filter>
@@ -318,21 +318,6 @@
                                     </excludes>
                                 </filter>
                             </filters>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>create-executable-jar</id>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <phase>package</phase>
-                        <configuration>
-                            <artifactSet>
-                                <excludes>
-                                    <exclude>com.optum.sourcehawk:sourcehawk-enforcer-file-docker</exclude>
-                                    <exclude>com.optum.sourcehawk:sourcehawk-enforcer-file-maven</exclude>
-                                </excludes>
-                            </artifactSet>
                         </configuration>
                     </execution>
                 </executions>
