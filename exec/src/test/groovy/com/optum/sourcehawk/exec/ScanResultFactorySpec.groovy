@@ -4,7 +4,7 @@ import com.optum.sourcehawk.core.scan.ScanResult
 import com.optum.sourcehawk.core.scan.Severity
 import com.optum.sourcehawk.enforcer.EnforcerResult
 import com.optum.sourcehawk.enforcer.file.common.StringPropertyEquals
-import com.optum.sourcehawk.protocol.FileProtocol
+import com.optum.sourcehawk.core.protocol.file.FileProtocol
 
 import java.nio.file.Paths
 

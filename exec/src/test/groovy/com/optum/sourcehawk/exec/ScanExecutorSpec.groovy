@@ -2,7 +2,7 @@ package com.optum.sourcehawk.exec
 
 import com.optum.sourcehawk.core.repository.RepositoryFileReader
 import com.optum.sourcehawk.core.scan.ScanResult
-import com.optum.sourcehawk.protocol.FileProtocol
+import com.optum.sourcehawk.core.protocol.file.FileProtocol
 
 class ScanExecutorSpec extends FileBaseSpecification {
 

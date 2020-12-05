@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonParseException
 import com.fasterxml.jackson.databind.exc.InvalidTypeIdException
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
 import com.optum.sourcehawk.enforcer.file.FileEnforcer
-import com.optum.sourcehawk.protocol.FileProtocol
+import com.optum.sourcehawk.core.protocol.file.FileProtocol
 import org.spockframework.util.IoUtil
 import spock.lang.Unroll
 

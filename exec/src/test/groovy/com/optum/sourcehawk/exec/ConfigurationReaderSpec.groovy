@@ -1,6 +1,6 @@
 package com.optum.sourcehawk.exec
 
-import com.optum.sourcehawk.configuration.SourcehawkConfiguration
+import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration
 import sun.nio.ch.ChannelInputStream
 
 class ConfigurationReaderSpec extends FileBaseSpecification {

@@ -5,12 +5,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.exc.InvalidTypeIdException;
 import com.fasterxml.jackson.databind.exc.PropertyBindingException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.optum.sourcehawk.configuration.SourcehawkConfiguration;
+import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.constants.SourcehawkConstants;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
-import com.optum.sourcehawk.protocol.FileProtocol;
+import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import lombok.val;
 import picocli.CommandLine;
 

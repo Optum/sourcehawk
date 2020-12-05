@@ -1,8 +1,8 @@
-package com.optum.sourcehawk.configuration;
+package com.optum.sourcehawk.core.configuration;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonMerge;
-import com.optum.sourcehawk.protocol.FileProtocol;
+import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import lombok.Value;
 
 import java.util.Collection;

@@ -47,7 +47,7 @@ jobs:
           echo ::set-output name=RELEASE_VERSION::$RELEASE_VERSION
       - name: Build Maven Project and Deploy Release
         if: success()
-        run: ./mvnw --batch-mode deploy -D ci.deploy -D ci.release
+        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.release
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}

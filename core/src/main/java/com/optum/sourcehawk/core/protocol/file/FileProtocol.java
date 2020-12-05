@@ -1,8 +1,9 @@
-package com.optum.sourcehawk.protocol;
+package com.optum.sourcehawk.core.protocol.file;
 
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.optum.sourcehawk.core.protocol.Protocol;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.NonNull;

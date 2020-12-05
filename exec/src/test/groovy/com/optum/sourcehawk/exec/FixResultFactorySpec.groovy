@@ -3,7 +3,7 @@ package com.optum.sourcehawk.exec
 import com.optum.sourcehawk.core.scan.FixResult
 import com.optum.sourcehawk.enforcer.ResolverResult
 import com.optum.sourcehawk.enforcer.file.common.StringPropertyEquals
-import com.optum.sourcehawk.protocol.FileProtocol
+import com.optum.sourcehawk.core.protocol.file.FileProtocol
 import spock.lang.Specification
 
 class FixResultFactorySpec extends Specification {

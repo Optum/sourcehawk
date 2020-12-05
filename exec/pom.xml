@@ -61,7 +61,7 @@
         <!-- SOURCEHAWK COMPILE DEPENDENCIES -->
         <dependency>
             <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-configuration</artifactId>
+            <artifactId>sourcehawk-core</artifactId>
             <version>${project.version}</version>
             <scope>compile</scope>
         </dependency>

@@ -1,13 +1,13 @@
 package com.optum.sourcehawk.exec;
 
-import com.optum.sourcehawk.configuration.SourcehawkConfiguration;
+import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
 import com.optum.sourcehawk.core.repository.RepositoryFileReader;
 import com.optum.sourcehawk.core.scan.ScanResult;
 import com.optum.sourcehawk.core.scan.Severity;
 import com.optum.sourcehawk.core.utils.FileUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
-import com.optum.sourcehawk.protocol.FileProtocol;
+import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -1,7 +1,7 @@
-package com.optum.sourcehawk.configuration
+package com.optum.sourcehawk.core.configuration
 
 
-import com.optum.sourcehawk.protocol.FileProtocol
+import com.optum.sourcehawk.core.protocol.file.FileProtocol
 import spock.lang.Specification
 
 class SourcehawkConfigurationSpec extends Specification {

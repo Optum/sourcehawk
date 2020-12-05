@@ -25,11 +25,6 @@
         <dependencies>
             <dependency>
                 <groupId>com.optum.sourcehawk</groupId>
-                <artifactId>sourcehawk-configuration</artifactId>
-                <version>${bom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.optum.sourcehawk</groupId>
                 <artifactId>sourcehawk-core</artifactId>
                 <version>${bom.version}</version>
             </dependency>
@@ -63,29 +58,6 @@
                 <artifactId>sourcehawk-exec</artifactId>
                 <version>${bom.version}</version>
                 <classifier>native-image</classifier>
-            </dependency>
-            <dependency>
-                <groupId>com.optum.sourcehawk</groupId>
-                <artifactId>sourcehawk-protocol-core</artifactId>
-                <version>${bom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.optum.sourcehawk</groupId>
-                <artifactId>sourcehawk-protocol-file</artifactId>
-                <version>${bom.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.optum.sourcehawk</groupId>
-                <artifactId>sourcehawk-dist-linux</artifactId>
-                <version>${bom.version}</version>
-                <classifier>x86_64</classifier>
-                <type>zip</type>
-            </dependency>
-            <dependency>
-                <groupId>com.optum.sourcehawk</groupId>
-                <artifactId>sourcehawk-dist-debian</artifactId>
-                <version>${bom.version}</version>
-                <type>deb</type>
             </dependency>
         </dependencies>
     </dependencyManagement>

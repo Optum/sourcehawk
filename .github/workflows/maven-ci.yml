@@ -71,7 +71,7 @@ jobs:
         run: ./mvnw --batch-mode install -D ci.build
       - name: Build Maven Project and Deploy Snapshot
         if: success() && (github.event_name == 'push' && matrix.java == '8')
-        run: ./mvnw --batch-mode deploy -D ci.deploy -D ci.snapshot
+        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}

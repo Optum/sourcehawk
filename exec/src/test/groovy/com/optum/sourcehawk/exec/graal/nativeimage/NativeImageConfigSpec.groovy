@@ -33,8 +33,7 @@ class NativeImageConfigSpec extends Specification {
 
     def "all reflect configs are on classpath"() {
         expect:
-        IoUtil.getResourceAsStream("/META-INF/native-image/sourcehawk-configuration/reflect-config.json")
-        IoUtil.getResourceAsStream("/META-INF/native-image/sourcehawk-protocol-file/reflect-config.json")
+        IoUtil.getResourceAsStream("/META-INF/native-image/sourcehawk-core/reflect-config.json")
         IoUtil.getResourceAsStream("/META-INF/native-image/sourcehawk-exec/reflect-config.json")
         IoUtil.getResourceAsStream("/META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/reflect-config.json")
     }

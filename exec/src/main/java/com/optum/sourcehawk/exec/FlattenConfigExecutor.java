@@ -1,7 +1,7 @@
 package com.optum.sourcehawk.exec;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.optum.sourcehawk.configuration.SourcehawkConfiguration;
+import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.scan.FlattenConfigResult;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import lombok.AccessLevel;

@@ -1,4 +1,4 @@
-package com.optum.sourcehawk.protocol;
+package com.optum.sourcehawk.core.protocol;
 
 
 /**

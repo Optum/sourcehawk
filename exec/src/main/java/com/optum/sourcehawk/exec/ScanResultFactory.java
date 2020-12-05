@@ -3,7 +3,7 @@ package com.optum.sourcehawk.exec;
 import com.optum.sourcehawk.core.scan.ScanResult;
 import com.optum.sourcehawk.core.scan.Severity;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
-import com.optum.sourcehawk.protocol.FileProtocol;
+import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
