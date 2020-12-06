@@ -59,7 +59,6 @@ public class FlattenConfigResult implements Serializable {
         return new FlattenConfigResult(null, true, StringUtils.defaultString(message, "No error message provided"));
     }
 
-
     /**
      * Encapsulates all of the traits of a message
      *

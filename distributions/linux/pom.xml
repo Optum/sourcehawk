@@ -29,13 +29,13 @@
     <dependencies>
         <dependency>
             <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-exec</artifactId>
+            <artifactId>sourcehawk-cli</artifactId>
             <classifier>native-image</classifier>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.optum.sourcehawk</groupId>
-            <artifactId>sourcehawk-exec</artifactId>
+            <artifactId>sourcehawk-cli</artifactId>
             <version>${project.version}</version>
             <classifier>bash-completion</classifier>
             <type>sh</type>
@@ -76,14 +76,14 @@
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>copy-native-image-jar</id>
+                        <id>copy-native-image</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
                             <includeGroupIds>com.optum.sourcehawk</includeGroupIds>
-                            <includeArtifactIds>sourcehawk-exec</includeArtifactIds>
+                            <includeArtifactIds>sourcehawk-cli</includeArtifactIds>
                             <includeClassifiers>native-image</includeClassifiers>
                             <outputDirectory>${project.build.directory}/dist</outputDirectory>
                         </configuration>
@@ -98,7 +98,7 @@
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>com.optum.sourcehawk</groupId>
-                                    <artifactId>sourcehawk-exec</artifactId>
+                                    <artifactId>sourcehawk-cli</artifactId>
                                     <classifier>bash-completion</classifier>
                                     <type>sh</type>
                                     <outputDirectory>${project.build.directory}/dist/bash-completion</outputDirectory>
@@ -129,7 +129,7 @@
                             <buildArgs>
                                 <GRAALVM_VERSION>${graalvm.version}</GRAALVM_VERSION>
                                 <NAME>${global.project.name}</NAME>
-                                <JAR>target/dist/sourcehawk-exec-${project.version}-native-image.jar</JAR>
+                                <JAR>target/dist/sourcehawk-cli-${project.version}-native-image.jar</JAR>
                                 <WORKDIR>${docker.workdir}</WORKDIR>
                             </buildArgs>
                             <skipDockerInfo>true</skipDockerInfo>

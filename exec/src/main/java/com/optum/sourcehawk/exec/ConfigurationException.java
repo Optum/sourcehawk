@@ -5,7 +5,7 @@ package com.optum.sourcehawk.exec;
  *
  * @author Christian Oestreich
  */
-class ConfigurationException extends RuntimeException {
+public class ConfigurationException extends RuntimeException {
 
     private static final long serialVersionUID = -3780617079858754794L;
 
@@ -14,7 +14,7 @@ class ConfigurationException extends RuntimeException {
      *
      * @param message the error message
      */
-    ConfigurationException(final String message) {
+    public ConfigurationException(final String message) {
         super(message);
     }
 

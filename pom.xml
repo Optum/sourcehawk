@@ -121,6 +121,18 @@
                 <version>4.13.1</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.hamcrest</groupId>
+                <artifactId>hamcrest-core</artifactId>
+                <version>2.2</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>cglib</groupId>
+                <artifactId>cglib-nodep</artifactId>
+                <version>3.2.12</version>
+                <scope>test</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -152,6 +164,7 @@
                                             <exclude>*</exclude>
                                         </excludes>
                                         <includes>
+                                            <include>com.fasterxml.jackson.core:*:*:*:*</include>
                                             <include>com.optum.sourcehawk:*:*:*:*</include>
                                             <include>javax.activation:activation</include>
                                             <include>org.slf4j:slf4j-api</include>
@@ -173,11 +186,23 @@
     <modules>
         <module>core</module>
         <module>enforcer</module>
-        <module>protocol</module>
-        <module>configuration</module>
         <module>exec</module>
-        <module>distributions</module>
+        <module>cli</module>
         <module>bom</module>
     </modules>
+
+    <profiles>
+        <profile>
+            <id>distributions-build</id>
+            <activation>
+                <property>
+                    <name>ci.build</name>
+                </property>
+            </activation>
+            <modules>
+                <module>distributions</module>
+            </modules>
+        </profile>
+    </profiles>
 
 </project>

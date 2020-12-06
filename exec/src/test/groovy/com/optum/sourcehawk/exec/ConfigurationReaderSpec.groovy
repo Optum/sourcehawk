@@ -1,6 +1,7 @@
 package com.optum.sourcehawk.exec
 
-import com.optum.sourcehawk.configuration.SourcehawkConfiguration
+import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration
+import org.spockframework.util.IoUtil
 import sun.nio.ch.ChannelInputStream
 
 class ConfigurationReaderSpec extends FileBaseSpecification {
@@ -52,7 +53,7 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
         inputStream instanceof ChannelInputStream
     }
 
-    def "merge files"() {
+    def "merge"() {
         given:
         LinkedHashSet set = [] as LinkedHashSet
         set << ConfigurationReader.parseConfiguration(testResourcesRoot.resolve("sourcehawk-simple.yml"))
@@ -65,7 +66,7 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
         configuration.fileProtocols.size() == 4
     }
 
-    def "merge files with dupes"() {
+    def "merge - dupes"() {
         given:
         LinkedHashSet set = [] as LinkedHashSet
         set << ConfigurationReader.parseConfiguration(testResourcesRoot.resolve("sourcehawk-simple.yml"))
@@ -91,7 +92,7 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
         configuration.fileProtocols.find{ it.name == "Gitignore Config"}.enforcers.size() == 0
     }
 
-    def "merge files - null"() {
+    def "merge - null"() {
         given:
         LinkedHashSet set = [] as LinkedHashSet
         set << ConfigurationReader.parseConfiguration(testResourcesRoot.resolve("sourcehawk-simple.yml"))
@@ -103,4 +104,28 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
         then:
         configuration.fileProtocols.size() == 2
     }
+
+    def "merge - empty set"() {
+        when:
+        SourcehawkConfiguration configuration = ConfigurationReader.merge([] as Set)
+
+        then:
+        configuration
+        !configuration.fileProtocols
+        !configuration.configLocations
+    }
+
+    def "deserialize - exception"() {
+        given:
+        InputStream inputStream = IoUtil.getResourceAsStream("/sourcehawk-simple.yml")
+        inputStream.close()
+
+        when:
+        Optional<SourcehawkConfiguration> configuration = ConfigurationReader.deserialize(inputStream)
+
+        then:
+        !configuration
+        !configuration.isPresent()
+    }
+
 }

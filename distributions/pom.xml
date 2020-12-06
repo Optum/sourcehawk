@@ -26,7 +26,7 @@
         <dependencies>
             <dependency>
                 <groupId>com.optum.sourcehawk</groupId>
-                <artifactId>sourcehawk-exec</artifactId>
+                <artifactId>sourcehawk-cli</artifactId>
                 <classifier>native-image</classifier>
                 <version>${project.version}</version>
             </dependency>
