@@ -21,6 +21,7 @@ class ExecOptionsSpec extends Specification {
         execOptions.configurationFileLocation == "sourcehawk.yml"
         execOptions.verbosity == Verbosity.HIGH
         !execOptions.failOnWarnings
+        !execOptions.github
 
         and:
         execOptions == ExecOptions.builder().build()
@@ -47,6 +48,61 @@ class ExecOptionsSpec extends Specification {
         execOptions.configurationFileLocation == "Sourcehawk"
         execOptions.verbosity == Verbosity.ZERO
         execOptions.failOnWarnings
+        !execOptions.github
+    }
+
+    def "builder - github"() {
+        given:
+        ExecOptions.ExecOptionsBuilder builder = ExecOptions.builder()
+                .repositoryRoot(Paths.get("/"))
+                .configurationFileLocation("Sourcehawk")
+                .verbosity(Verbosity.ZERO)
+                .failOnWarnings(true)
+                .github(ExecOptions.GithubOptions.builder()
+                        .coords("owner/repo")
+                        .ref("ref")
+                        .build())
+
+        when:
+        ExecOptions execOptions = builder.build()
+
+        then:
+        execOptions
+        execOptions.repositoryRoot == Paths.get("/")
+        execOptions.configurationFileLocation == "Sourcehawk"
+        execOptions.verbosity == Verbosity.ZERO
+        execOptions.failOnWarnings
+        execOptions.github
+        execOptions.github.coords == "owner/repo"
+        execOptions.github.ref == "ref"
+    }
+
+    def "builder - github - optionals"() {
+        given:
+        ExecOptions.ExecOptionsBuilder builder = ExecOptions.builder()
+                .repositoryRoot(Paths.get("/"))
+                .configurationFileLocation("Sourcehawk")
+                .verbosity(Verbosity.ZERO)
+                .failOnWarnings(true)
+                .github(ExecOptions.GithubOptions.builder()
+                        .token("token")
+                        .coords("owner/repo")
+                        .ref("ref")
+                        .enterpriseUrl(new URL("https://github.example.com"))
+                        .build())
+
+        when:
+        ExecOptions execOptions = builder.build()
+
+        then:
+        execOptions
+        execOptions.repositoryRoot == Paths.get("/")
+        execOptions.configurationFileLocation == "Sourcehawk"
+        execOptions.verbosity == Verbosity.ZERO
+        execOptions.failOnWarnings
+        execOptions.github
+        execOptions.github.coords == "owner/repo"
+        execOptions.github.ref == "ref"
     }
 
     def "builder - NPE"() {
@@ -74,6 +130,15 @@ class ExecOptionsSpec extends Specification {
         when:
         ExecOptions.builder()
                 .outputFormat(null)
+
+        then:
+        thrown(NullPointerException)
+    }
+
+    def "builder - github - NPE"() {
+        when:
+        ExecOptions.GithubOptions.builder()
+                .build()
 
         then:
         thrown(NullPointerException)

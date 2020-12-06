@@ -37,7 +37,7 @@ class FlattenConfigCommand implements Callable<Integer> {
     private Path output;
 
     @CommandLine.ArgGroup
-    protected AbstractCommand.ConfigFileExclusiveOptions configFile;
+    protected AbstractExecCommand.ConfigFileExclusiveOptions configFile;
 
     /**
      * Bootstrap the command

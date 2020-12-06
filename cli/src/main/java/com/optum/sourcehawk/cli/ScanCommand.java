@@ -22,7 +22,7 @@ import java.util.Optional;
         aliases = { "flyover", "survey" },
         description = "Runs a Sourcehawk scan on the source code"
 )
-class ScanCommand extends AbstractCommand {
+class ScanCommand extends AbstractExecCommand {
 
     static final String COMMAND_NAME = "scan";
 
@@ -40,11 +40,7 @@ class ScanCommand extends AbstractCommand {
      * @param args the command line args
      */
     public static void main(final String... args) {
-        val status = new CommandLine(new ScanCommand())
-                .setCaseInsensitiveEnumValuesAllowed(true)
-                .setTrimQuotes(true)
-                .execute(args);
-        Runtime.getRuntime().halt(status);
+        execute(new ScanCommand(), args);
     }
 
     /**

@@ -61,6 +61,15 @@ class ScanResultSpec extends Specification {
         scanResult.passed
     }
 
+    def "failed - no warnings"() {
+        when:
+        ScanResult scanResult = ScanResult.builder().build()
+
+        then:
+        scanResult
+        !scanResult.passedWithNoWarnings
+    }
+
     def "reduce - passed > failed"() {
         given:
         ScanResult one = ScanResult.passed()

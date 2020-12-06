@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
+import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -52,5 +53,49 @@ public class ExecOptions {
      */
     @Builder.Default
     boolean failOnWarnings = false;
+
+    /**
+     * Whether or not this will be executed against Github
+     */
+    GithubOptions github;
+
+    /**
+     * The Github exec options
+     *
+     * @author Brian Wyka
+     */
+    @Value
+    @Builder
+    public static class GithubOptions {
+
+        /**
+         * The default Github ref
+         */
+        public static final String DEFAULT_REF = "main";
+
+        /**
+         * The Github personal access token (optional)
+         */
+        String token;
+
+        /**
+         * THe Github coordinates (owner/repo)
+         */
+        @NonNull
+        String coords;
+
+        /**
+         * The Github reference
+         */
+        @NonNull
+        @Builder.Default
+        String ref = DEFAULT_REF;
+
+        /**
+         * The Github Enterprise URL (optional)
+         */
+        URL enterpriseUrl;
+
+    }
 
 }

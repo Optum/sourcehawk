@@ -2,6 +2,7 @@ package com.optum.sourcehawk.exec.scan;
 
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
+import com.optum.sourcehawk.core.repository.GithubRepositoryFileReader;
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
 import com.optum.sourcehawk.core.repository.RepositoryFileReader;
 import com.optum.sourcehawk.core.scan.ScanResult;
@@ -50,11 +51,34 @@ public final class ScanExecutor {
      * @return the aggregated scan result
      */
     private static ScanResult executeScan(final ExecOptions execOptions, final SourcehawkConfiguration sourcehawkConfiguration) {
-        val repositoryFileReader = LocalRepositoryFileReader.create(execOptions.getRepositoryRoot());
+        val repositoryFileReader = getRepositoryFileReader(execOptions);
         return sourcehawkConfiguration.getFileProtocols().stream()
                 .filter(FileProtocol::isRequired)
                 .map(fileProtocol -> enforceFileProtocol(execOptions, fileProtocol, repositoryFileReader))
                 .reduce(ScanResult.passed(), ScanResult::reduce);
+    }
+
+    /**
+     * Get an instance of the repository file reader
+     *
+     * @param execOptions the exec options
+     * @return the repository file reader
+     */
+    private static RepositoryFileReader getRepositoryFileReader(final ExecOptions execOptions) {
+        if (execOptions.getGithub() != null) {
+            val githubCoordinates = execOptions.getGithub().getCoords().split("/");
+            if (execOptions.getGithub().getEnterpriseUrl() != null) {
+                return new GithubRepositoryFileReader(
+                        execOptions.getGithub().getToken(),
+                        execOptions.getGithub().getEnterpriseUrl().toString(),
+                        githubCoordinates[0],
+                        githubCoordinates[1],
+                        execOptions.getGithub().getRef()
+                );
+            }
+            return new GithubRepositoryFileReader(execOptions.getGithub().getToken(), githubCoordinates[0], githubCoordinates[1], execOptions.getGithub().getRef());
+        }
+        return LocalRepositoryFileReader.create(execOptions.getRepositoryRoot());
     }
 
     /**

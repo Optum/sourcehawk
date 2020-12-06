@@ -22,7 +22,7 @@ import java.util.Optional;
         aliases = { "correct", "resolve" },
         description = "Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made."
 )
-class FixCommand extends AbstractCommand {
+class FixCommand extends AbstractExecCommand {
 
     static final String COMMAND_NAME = "fix";
 
@@ -38,12 +38,7 @@ class FixCommand extends AbstractCommand {
      * @param args the command line args
      */
     public static void main(final String... args) {
-        val command = new FixCommand();
-        val status = new CommandLine(command)
-                .setCaseInsensitiveEnumValuesAllowed(true)
-                .setTrimQuotes(true)
-                .execute(args);
-        Runtime.getRuntime().halt(status);
+        execute(new FixCommand(), args);
     }
 
     /**

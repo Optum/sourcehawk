@@ -45,6 +45,15 @@ class ScanCommandSpec extends CliBaseSpecification {
         ]
     }
 
+    def "main: #args (invalid github org)"() {
+        when:
+        ScanCommand.main([ "--github-coords", "owner" ] as String[])
+
+        then:
+        SystemExit systemExit = thrown(SystemExit)
+        systemExit.status == 1
+    }
+
     def "main: enforcer fails (failed)"() {
         given:
         String[] args = ["-c", "sourcehawk-failed-enforcer.yml", testResourcesRoot.toString()]
@@ -83,6 +92,18 @@ class ScanCommandSpec extends CliBaseSpecification {
 
         where:
         arg << [ "-n", "--none" ]
+    }
+
+    def "main: multiple exclusive options"() {
+        given:
+        String[] args = new String[] { "-cfu", "http://www.example.com", "-c", "sourcehawk.yml" }
+
+        when:
+        ScanCommand.main(args)
+
+        then:
+        SystemExit systemExit = thrown(SystemExit)
+        systemExit.status == 2
     }
 
     def "execute - exception"() {

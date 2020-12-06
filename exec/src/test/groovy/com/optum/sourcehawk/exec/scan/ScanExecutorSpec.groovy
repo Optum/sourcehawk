@@ -1,5 +1,7 @@
 package com.optum.sourcehawk.exec.scan
 
+import com.optum.sourcehawk.core.repository.GithubRepositoryFileReader
+import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader
 import com.optum.sourcehawk.core.repository.RepositoryFileReader
 import com.optum.sourcehawk.core.scan.ScanResult
 import com.optum.sourcehawk.core.protocol.file.FileProtocol
@@ -7,6 +9,8 @@ import com.optum.sourcehawk.exec.ConfigurationException
 import com.optum.sourcehawk.exec.ExecOptions
 import com.optum.sourcehawk.exec.FileBaseSpecification
 import com.optum.sourcehawk.exec.scan.ScanExecutor
+
+import java.nio.file.Paths
 
 class ScanExecutorSpec extends FileBaseSpecification {
 
@@ -305,6 +309,62 @@ class ScanExecutorSpec extends FileBaseSpecification {
         and:
         scanResult
         !scanResult.passed
+    }
+
+    def "enforceFileProtocol - glob pattern no enforcers"() {
+        given:
+        ExecOptions execOptions = ExecOptions.builder()
+                .repositoryRoot(repositoryRoot)
+                .build()
+        FileProtocol fileProtocol = FileProtocol.builder()
+                .name("test")
+                .repositoryPath("file.txt")
+                .build()
+        RepositoryFileReader repositoryFileReader = LocalRepositoryFileReader.create(repositoryRoot)
+
+        when:
+        ScanResult scanResult = ScanExecutor.enforceFileProtocol(execOptions, fileProtocol, repositoryFileReader)
+
+        then:
+        scanResult
+        scanResult.errorCount == 1
+    }
+
+    def "getRepositoryFileReader - local"() {
+        given:
+        ExecOptions execOptions = ExecOptions.builder()
+                .repositoryRoot(repositoryRoot)
+                .build()
+
+        expect:
+        ScanExecutor.getRepositoryFileReader(execOptions) instanceof LocalRepositoryFileReader
+    }
+
+    def "getRepositoryFileReader - github"() {
+        given:
+        ExecOptions execOptions = ExecOptions.builder()
+                .github(ExecOptions.GithubOptions.builder()
+                        .coords("owner/repo")
+                        .ref("ref")
+                        .build())
+                .build()
+
+        expect:
+        ScanExecutor.getRepositoryFileReader(execOptions) instanceof GithubRepositoryFileReader
+    }
+
+    def "getRepositoryFileReader - github enterprise"() {
+        given:
+        ExecOptions execOptions = ExecOptions.builder()
+                .github(ExecOptions.GithubOptions.builder()
+                        .coords("owner/repo")
+                        .ref("ref")
+                        .enterpriseUrl(new URL("https://github.example.com"))
+                        .build())
+                .build()
+
+        expect:
+        ScanExecutor.getRepositoryFileReader(execOptions) instanceof GithubRepositoryFileReader
     }
 
 }
