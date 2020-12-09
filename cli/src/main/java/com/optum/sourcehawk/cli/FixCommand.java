@@ -22,7 +22,7 @@ import java.util.Optional;
         aliases = { "correct", "resolve" },
         description = "Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made."
 )
-class FixCommand extends AbstractExecCommand {
+public class FixCommand extends AbstractExecCommand {
 
     static final String COMMAND_NAME = "fix";
 

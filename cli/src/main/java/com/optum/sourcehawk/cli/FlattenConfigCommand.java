@@ -26,7 +26,7 @@ import java.util.concurrent.Callable;
         description = "Flatten the sourcehawk configuration onto system by recursively reading and merging local and remote configurations will output to console by default",
         mixinStandardHelpOptions = true
 )
-class FlattenConfigCommand implements Callable<Integer> {
+public class FlattenConfigCommand implements Callable<Integer> {
 
     static final String COMMAND_NAME = "flatten-config";
 

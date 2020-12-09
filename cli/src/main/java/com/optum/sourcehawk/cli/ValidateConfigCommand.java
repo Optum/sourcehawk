@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
         description = "Validate Sourcehawk configuration file format and syntax",
         mixinStandardHelpOptions = true
 )
-class ValidateConfigCommand implements Callable<Integer> {
+public class ValidateConfigCommand implements Callable<Integer> {
 
     static final String COMMAND_NAME = "validate-config";
 

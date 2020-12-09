@@ -22,7 +22,7 @@ import java.util.Optional;
         aliases = { "flyover", "survey" },
         description = "Runs a Sourcehawk scan on the source code"
 )
-class ScanCommand extends AbstractExecCommand {
+public class ScanCommand extends AbstractExecCommand {
 
     static final String COMMAND_NAME = "scan";
 

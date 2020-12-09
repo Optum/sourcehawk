@@ -28,7 +28,7 @@ import java.util.Properties;
                 FlattenConfigCommand.class
         }
 )
-class Sourcehawk {
+public class Sourcehawk {
 
     /**
      * Bootstrap the command
