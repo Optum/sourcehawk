@@ -2,8 +2,6 @@ package com.optum.sourcehawk.exec.scan;
 
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
-import com.optum.sourcehawk.core.repository.GithubRepositoryFileReader;
-import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
 import com.optum.sourcehawk.core.repository.RepositoryFileReader;
 import com.optum.sourcehawk.core.scan.ScanResult;
 import com.optum.sourcehawk.core.scan.Severity;
@@ -12,6 +10,7 @@ import com.optum.sourcehawk.core.utils.FileUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
 import com.optum.sourcehawk.exec.ConfigurationReader;
 import com.optum.sourcehawk.exec.ExecOptions;
+import com.optum.sourcehawk.exec.ExecutorHelper;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +19,8 @@ import lombok.val;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 /**
@@ -39,96 +40,74 @@ public final class ScanExecutor {
      */
     public static ScanResult scan(final ExecOptions execOptions) {
         return ConfigurationReader.readConfiguration(execOptions.getRepositoryRoot(), execOptions.getConfigurationFileLocation())
-                .map(sourcehawkConfiguration -> executeScan(execOptions, sourcehawkConfiguration))
+                .map(sourcehawkConfiguration -> processRequiredFileProtocols(execOptions, sourcehawkConfiguration))
                 .orElseGet(() -> ScanResultFactory.error(execOptions.getConfigurationFileLocation(), "Configuration file not found"));
     }
 
     /**
-     * Execute the scan.  Iterate over all file protocols, and each enforcer within the file protocol and aggregate the results
+     * Process all the required file protocols.  Iterate over all file protocols, and enforcers and aggregate the results
      *
      * @param execOptions             the scan options
      * @param sourcehawkConfiguration the configuration
      * @return the aggregated scan result
      */
-    private static ScanResult executeScan(final ExecOptions execOptions, final SourcehawkConfiguration sourcehawkConfiguration) {
-        val repositoryFileReader = getRepositoryFileReader(execOptions);
+    private static ScanResult processRequiredFileProtocols(final ExecOptions execOptions, final SourcehawkConfiguration sourcehawkConfiguration) {
+        val repositoryFileReader = ExecutorHelper.getRepositoryFileReader(execOptions);
         return sourcehawkConfiguration.getFileProtocols().stream()
                 .filter(FileProtocol::isRequired)
-                .map(fileProtocol -> enforceFileProtocol(execOptions, fileProtocol, repositoryFileReader))
+                .map(fileProtocol -> processFileProtocol(execOptions, repositoryFileReader, fileProtocol))
                 .reduce(ScanResult.passed(), ScanResult::reduce);
     }
 
     /**
-     * Get an instance of the repository file reader
+     * Process the file protocol based on the exec options with the file produced by the repository file reader
      *
-     * @param execOptions the exec options
-     * @return the repository file reader
-     */
-    private static RepositoryFileReader getRepositoryFileReader(final ExecOptions execOptions) {
-        if (execOptions.getGithub() != null) {
-            val githubCoordinates = execOptions.getGithub().getCoords().split("/");
-            if (execOptions.getGithub().getEnterpriseUrl() != null) {
-                return new GithubRepositoryFileReader(
-                        execOptions.getGithub().getToken(),
-                        execOptions.getGithub().getEnterpriseUrl().toString(),
-                        githubCoordinates[0],
-                        githubCoordinates[1],
-                        execOptions.getGithub().getRef()
-                );
-            }
-            return new GithubRepositoryFileReader(execOptions.getGithub().getToken(), githubCoordinates[0], githubCoordinates[1], execOptions.getGithub().getRef());
-        }
-        return LocalRepositoryFileReader.create(execOptions.getRepositoryRoot());
-    }
-
-    /**
-     * Enforce the file protocol based on the exec options and repository file reader
-     *
-     * @param execOptions the exec options
-     * @param fileProtocol the file protocol
+     * @param execOptions          the exec options
      * @param repositoryFileReader the repository file reader
+     * @param fileProtocol         the file protocol
      * @return the scan result
      */
-    private static ScanResult enforceFileProtocol(final ExecOptions execOptions, final FileProtocol fileProtocol, final RepositoryFileReader repositoryFileReader) {
+    private static ScanResult processFileProtocol(final ExecOptions execOptions, final RepositoryFileReader repositoryFileReader, final FileProtocol fileProtocol) {
         if (CollectionUtils.isEmpty(fileProtocol.getEnforcers())) {
             if (FileUtils.isGlobPattern(fileProtocol.getRepositoryPath())) {
                 val message = "Error enforcing file protocol: glob patterns can only be used when there is at least one enforcer";
                 return ScanResultFactory.error(fileProtocol.getRepositoryPath(), message);
-            } else {
-                return enforceFileExists(execOptions, repositoryFileReader, fileProtocol);
             }
+            return enforceFileExists(execOptions, repositoryFileReader, fileProtocol);
         }
         try {
             return enforceFileProtocol(execOptions, repositoryFileReader, fileProtocol);
         } catch (final IOException e) {
-            val message = String.format("Error enforcing file protocol: %s", e.getMessage());
-            return ScanResultFactory.error(fileProtocol.getRepositoryPath(), message);
+            return ScanResultFactory.error(fileProtocol.getRepositoryPath(), String.format("Error enforcing file protocol: %s", e.getMessage()));
         }
     }
 
     /**
-     * Handle scenarios where there are no enforcers for a file protocol
+     * Enforce the file exists when the file protocol has no enforcers
      *
-     * @param execOptions the exec options
+     * @param execOptions          the exec options
      * @param repositoryFileReader the repository file reader
      * @param fileProtocol         the file protocol
      * @return the scan result
      */
     private static ScanResult enforceFileExists(final ExecOptions execOptions, final RepositoryFileReader repositoryFileReader, final FileProtocol fileProtocol) {
         try {
-            return repositoryFileReader.read(fileProtocol.getRepositoryPath())
-                    .map(fis -> ScanResult.passed())
-                    .orElseGet(() -> ScanResultFactory.fileNotFound(execOptions, fileProtocol));
+            val fileInputStreamOptional = repositoryFileReader.read(fileProtocol.getRepositoryPath());
+            if (fileInputStreamOptional.isPresent()) {
+                try (val fileInputStream = fileInputStreamOptional.get()) {
+                    return ScanResult.passed();
+                }
+            }
+            return ScanResultFactory.fileNotFound(execOptions, fileProtocol);
         } catch (final IOException e) {
-            val message = String.format("Unable to obtain file input stream: %s", e.getMessage());
-            return ScanResultFactory.error(fileProtocol.getRepositoryPath(), message);
+            return ScanResultFactory.error(fileProtocol.getRepositoryPath(), String.format("Unable to obtain file input stream: %s", e.getMessage()));
         }
     }
 
     /**
-     * Enforce the file protocol
+     * Enforce the file protocol and aggregate the results
      *
-     * @param execOptions the exec options
+     * @param execOptions          the exec options
      * @param repositoryFileReader the repository file reader
      * @param fileProtocol         the file protocol
      * @return the scan result
@@ -144,26 +123,61 @@ public final class ScanExecutor {
                 fileProtocolScanResults.add(ScanResultFactory.error(fileProtocol.getRepositoryPath(), String.format("File enforcer invalid: %s", e.getMessage())));
                 continue;
             }
-            val repositoryPaths = FileUtils.find(execOptions.getRepositoryRoot().toString(), fileProtocol.getRepositoryPath())
-                    .map(Path::toAbsolutePath)
-                    .map(Path::toString)
-                    .map(absoluteRepositoryFilePath -> FileUtils.deriveRelativePath(execOptions.getRepositoryRoot().toString(), absoluteRepositoryFilePath))
-                    .collect(Collectors.toSet());
-            if (repositoryPaths.isEmpty()) {
-                fileProtocolScanResults.add(ScanResultFactory.fileNotFound(execOptions, fileProtocol));
+            if (execOptions.getGithub() == null && FileUtils.isGlobPattern(fileProtocol.getRepositoryPath())) {
+                fileProtocolScanResults.addAll(executeFileEnforcerOnGlob(execOptions, repositoryFileReader, fileProtocol, fileEnforcer));
             } else {
-                val severity = Severity.parse(fileProtocol.getSeverity());
-                for (val repositoryPath: repositoryPaths) {
-                    try (val fileInputStream = repositoryFileReader.read(repositoryPath)
-                            .orElseThrow(() -> new IOException(String.format("File not found: %s", repositoryPath)))) {
-                        val enforcerResult = fileEnforcer.enforce(fileInputStream);
-                        fileProtocolScanResults.add(ScanResultFactory.enforcerResult(execOptions, repositoryPath, severity, enforcerResult));
-                    }
-                }
+                fileProtocolScanResults.add(executeFileEnforcer(execOptions, repositoryFileReader, fileProtocol.getRepositoryPath(), fileProtocol.getSeverity(), fileEnforcer));
             }
         }
         return fileProtocolScanResults.stream()
                 .reduce(ScanResult.passed(), ScanResult::reduce);
+    }
+
+    /**
+     * Execute the file enforcer on all files matched by the glob pattern provided by the file protocol repository path
+     *
+     * @param execOptions the exec options
+     * @param repositoryFileReader the repository file reader
+     * @param fileProtocol the file protocol containing the repository file path glob pattern and severity
+     * @param fileEnforcer the file enforcer
+     * @return the collection of scan results
+     * @throws IOException if any error occurs enforcing the file protocol
+     */
+    private static Collection<ScanResult> executeFileEnforcerOnGlob(final ExecOptions execOptions, final RepositoryFileReader repositoryFileReader,
+                                                                    final FileProtocol fileProtocol, final FileEnforcer fileEnforcer) throws IOException {
+        val repositoryPaths = FileUtils.find(execOptions.getRepositoryRoot().toString(), fileProtocol.getRepositoryPath())
+                .map(Path::toAbsolutePath)
+                .map(Path::toString)
+                .map(absoluteRepositoryFilePath -> FileUtils.deriveRelativePath(execOptions.getRepositoryRoot().toString(), absoluteRepositoryFilePath))
+                .collect(Collectors.toSet());
+        if (repositoryPaths.isEmpty()) {
+            return Collections.singleton(ScanResultFactory.fileNotFound(execOptions, fileProtocol));
+        }
+        val fileEnforcerScanResults = new ArrayList<ScanResult>(repositoryPaths.size());
+        for (val repositoryPath : repositoryPaths) {
+            fileEnforcerScanResults.add(executeFileEnforcer(execOptions, repositoryFileReader, repositoryPath, fileProtocol.getSeverity(), fileEnforcer));
+        }
+        return fileEnforcerScanResults;
+    }
+
+    /**
+     * Execute the file enforcer to produce the scan result
+     *
+     * @param execOptions the exec options
+     * @param repositoryFileReader the repository file reader
+     * @param repositoryFilePath the repository file path
+     * @param severity the severity of the file protocol
+     * @param fileEnforcer the file enforcer to execute
+     * @return the scan result
+     * @throws IOException if any error occurs accessing the file or executing enforcer
+     */
+    private static ScanResult executeFileEnforcer(final ExecOptions execOptions, final RepositoryFileReader repositoryFileReader,
+                                                  final String repositoryFilePath,  final String severity, final FileEnforcer fileEnforcer) throws IOException {
+        try (val fileInputStream = repositoryFileReader.read(repositoryFilePath)
+                .orElseThrow(() -> new IOException(String.format("File not found: %s", repositoryFilePath)))) {
+            val enforcerResult = fileEnforcer.enforce(fileInputStream);
+            return ScanResultFactory.enforcerResult(execOptions, repositoryFilePath, Severity.parse(severity), enforcerResult);
+        }
     }
 
 }
