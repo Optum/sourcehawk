@@ -79,10 +79,16 @@ public class ExecOptions {
         String token;
 
         /**
-         * THe Github coordinates (owner/repo)
+         * THe Github owner
          */
         @NonNull
-        String coords;
+        String owner;
+
+        /**
+         * THe Github repository
+         */
+        @NonNull
+        String repository;
 
         /**
          * The Github reference
@@ -96,6 +102,26 @@ public class ExecOptions {
          */
         URL enterpriseUrl;
 
+    }
+
+    /**
+     * Print a string representation of the exec options
+     *
+     * @return the string representation of the exec options
+     */
+    @Override
+    public String toString() {
+        String string =  System.lineSeparator();
+        if (github == null) {
+            string += "Repository Root... " + repositoryRoot + System.lineSeparator();
+        } else {
+            string += "Github............ " + String.format("%s/%s@%s", github.owner, github.repository, github.ref) + System.lineSeparator();
+        }
+        string += "Config File....... " + configurationFileLocation + System.lineSeparator();
+        string += "Verbosity......... " + verbosity + System.lineSeparator();
+        string += "Output Format..... " + outputFormat + System.lineSeparator();
+        string += "Fail on Warnings.. " +failOnWarnings + System.lineSeparator();
+        return string;
     }
 
 }

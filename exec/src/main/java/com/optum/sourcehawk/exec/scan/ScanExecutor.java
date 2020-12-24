@@ -7,6 +7,7 @@ import com.optum.sourcehawk.core.scan.ScanResult;
 import com.optum.sourcehawk.core.scan.Severity;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.core.utils.FileUtils;
+import com.optum.sourcehawk.core.utils.Try;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
 import com.optum.sourcehawk.exec.ConfigurationReader;
 import com.optum.sourcehawk.exec.ExecOptions;
@@ -52,7 +53,7 @@ public final class ScanExecutor {
      * @return the aggregated scan result
      */
     private static ScanResult processRequiredFileProtocols(final ExecOptions execOptions, final SourcehawkConfiguration sourcehawkConfiguration) {
-        val repositoryFileReader = ExecutorHelper.getRepositoryFileReader(execOptions);
+        val repositoryFileReader = ExecutorHelper.resolveRepositoryFileReader(execOptions);
         return sourcehawkConfiguration.getFileProtocols().stream()
                 .filter(FileProtocol::isRequired)
                 .map(fileProtocol -> processFileProtocol(execOptions, repositoryFileReader, fileProtocol))
@@ -75,11 +76,10 @@ public final class ScanExecutor {
             }
             return enforceFileExists(execOptions, repositoryFileReader, fileProtocol);
         }
-        try {
-            return enforceFileProtocol(execOptions, repositoryFileReader, fileProtocol);
-        } catch (final IOException e) {
-            return ScanResultFactory.error(fileProtocol.getRepositoryPath(), String.format("Error enforcing file protocol: %s", e.getMessage()));
-        }
+        return Try.attemptOrDefault(
+                () -> enforceFileProtocol(execOptions, repositoryFileReader, fileProtocol),
+                e -> ScanResultFactory.error(fileProtocol.getRepositoryPath(), String.format("Error enforcing file protocol: %s", e.getMessage()))
+        );
     }
 
     /**
@@ -92,11 +92,8 @@ public final class ScanExecutor {
      */
     private static ScanResult enforceFileExists(final ExecOptions execOptions, final RepositoryFileReader repositoryFileReader, final FileProtocol fileProtocol) {
         try {
-            val fileInputStreamOptional = repositoryFileReader.read(fileProtocol.getRepositoryPath());
-            if (fileInputStreamOptional.isPresent()) {
-                try (val fileInputStream = fileInputStreamOptional.get()) {
-                    return ScanResult.passed();
-                }
+            if (repositoryFileReader.exists(fileProtocol.getRepositoryPath())) {
+                return ScanResult.passed();
             }
             return ScanResultFactory.fileNotFound(execOptions, fileProtocol);
         } catch (final IOException e) {
@@ -113,7 +110,8 @@ public final class ScanExecutor {
      * @return the scan result
      * @throws IOException if any error occurs during file processing
      */
-    private static ScanResult enforceFileProtocol(final ExecOptions execOptions, final RepositoryFileReader repositoryFileReader, final FileProtocol fileProtocol) throws IOException {
+    private static ScanResult enforceFileProtocol(final ExecOptions execOptions, final RepositoryFileReader repositoryFileReader,
+                                                  final FileProtocol fileProtocol) throws IOException {
         val fileProtocolScanResults = new ArrayList<ScanResult>(fileProtocol.getEnforcers().size());
         for (val enforcer : fileProtocol.getEnforcers()) {
             final FileEnforcer fileEnforcer;

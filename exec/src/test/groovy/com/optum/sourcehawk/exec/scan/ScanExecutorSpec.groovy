@@ -274,7 +274,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ScanResult scanResult = ScanExecutor.enforceFileExists(execOptions, mockRepositoryFileReader, fileProtocol)
 
         then:
-        1 * mockRepositoryFileReader.read(_ as String) >> {
+        1 * mockRepositoryFileReader.exists(_ as String) >> {
             throw new IOException("BOOM")
         }
         0 * _

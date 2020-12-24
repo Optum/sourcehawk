@@ -59,7 +59,8 @@ class ExecOptionsSpec extends Specification {
                 .verbosity(Verbosity.ZERO)
                 .failOnWarnings(true)
                 .github(ExecOptions.GithubOptions.builder()
-                        .coords("owner/repo")
+                        .owner("owner")
+                        .repository("repo")
                         .ref("ref")
                         .build())
 
@@ -73,7 +74,8 @@ class ExecOptionsSpec extends Specification {
         execOptions.verbosity == Verbosity.ZERO
         execOptions.failOnWarnings
         execOptions.github
-        execOptions.github.coords == "owner/repo"
+        execOptions.github.owner == "owner"
+        execOptions.github.repository == "repo"
         execOptions.github.ref == "ref"
     }
 
@@ -86,7 +88,8 @@ class ExecOptionsSpec extends Specification {
                 .failOnWarnings(true)
                 .github(ExecOptions.GithubOptions.builder()
                         .token("token")
-                        .coords("owner/repo")
+                        .owner("owner")
+                        .repository("repo")
                         .ref("ref")
                         .enterpriseUrl(new URL("https://github.example.com"))
                         .build())
@@ -101,8 +104,10 @@ class ExecOptionsSpec extends Specification {
         execOptions.verbosity == Verbosity.ZERO
         execOptions.failOnWarnings
         execOptions.github
-        execOptions.github.coords == "owner/repo"
+        execOptions.github.owner == "owner"
+        execOptions.github.repository == "repo"
         execOptions.github.ref == "ref"
+        execOptions.toString()
     }
 
     def "builder - NPE"() {

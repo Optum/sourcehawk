@@ -4,10 +4,11 @@ import com.optum.sourcehawk.core.repository.GithubRepositoryFileReader;
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
 import com.optum.sourcehawk.core.repository.RepositoryFileReader;
 import lombok.experimental.UtilityClass;
-import lombok.val;
 
 /**
  * A helper class for executors
+ *
+ * @author Brian Wyka
  */
 @UtilityClass
 public class ExecutorHelper {
@@ -18,19 +19,23 @@ public class ExecutorHelper {
      * @param execOptions the exec options
      * @return the repository file reader
      */
-    public RepositoryFileReader getRepositoryFileReader(final ExecOptions execOptions) {
+    public RepositoryFileReader resolveRepositoryFileReader(final ExecOptions execOptions) {
         if (execOptions.getGithub() != null) {
-            val githubCoordinates = execOptions.getGithub().getCoords().split("/");
             if (execOptions.getGithub().getEnterpriseUrl() != null) {
                 return new GithubRepositoryFileReader(
                         execOptions.getGithub().getToken(),
                         execOptions.getGithub().getEnterpriseUrl().toString(),
-                        githubCoordinates[0],
-                        githubCoordinates[1],
+                        execOptions.getGithub().getOwner(),
+                        execOptions.getGithub().getRepository(),
                         execOptions.getGithub().getRef()
                 );
             }
-            return new GithubRepositoryFileReader(execOptions.getGithub().getToken(), githubCoordinates[0], githubCoordinates[1], execOptions.getGithub().getRef());
+            return new GithubRepositoryFileReader(
+                    execOptions.getGithub().getToken(),
+                    execOptions.getGithub().getOwner(),
+                    execOptions.getGithub().getRepository(),
+                    execOptions.getGithub().getRef()
+            );
         }
         return LocalRepositoryFileReader.create(execOptions.getRepositoryRoot());
     }

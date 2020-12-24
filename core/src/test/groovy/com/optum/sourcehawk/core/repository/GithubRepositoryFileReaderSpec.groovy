@@ -5,6 +5,41 @@ import spock.lang.Unroll
 
 class GithubRepositoryFileReaderSpec extends Specification {
 
+    // TODO: mock server
+
+    def "public github > exists (file found)"() {
+        given:
+        String owner = "optum"
+        String repo = "sourcehawk"
+        String ref = "main"
+
+        when:
+        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, owner, repo, ref)
+
+        then:
+        githubRepositoryFileReader
+
+        when:
+        boolean exists = githubRepositoryFileReader.exists("README.md")
+
+        then:
+        exists
+    }
+
+    def "public github - exists (not found)"() {
+        when:
+        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, "optum", "sourcehawk", "nope")
+
+        then:
+        githubRepositoryFileReader
+
+        when:
+        boolean exists = githubRepositoryFileReader.exists("abc.txt")
+
+        then:
+        !exists
+    }
+
     def "public github > read (file found)"() {
         given:
         String owner = "optum"
@@ -91,7 +126,8 @@ class GithubRepositoryFileReaderSpec extends Specification {
 
         then:
         requestProperties
-        requestProperties.size() == 1
+        requestProperties.size() == 2
+        requestProperties["Accept"] == "text/plain"
         requestProperties["Authorization"] == "token abc"
     }
 
@@ -100,7 +136,9 @@ class GithubRepositoryFileReaderSpec extends Specification {
         Map<String, String> requestProperties = GithubRepositoryFileReader.constructRequestProperties(null)
 
         then:
-        !requestProperties
+        requestProperties
+        requestProperties.size() == 1
+        requestProperties["Accept"] == "text/plain"
     }
 
     def "constructor - enterprise"() {

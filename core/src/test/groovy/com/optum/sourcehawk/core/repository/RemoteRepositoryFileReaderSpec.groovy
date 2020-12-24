@@ -25,6 +25,21 @@ class RemoteRepositoryFileReaderSpec extends Specification {
         thrown(NullPointerException)
     }
 
+    def "getInputStream - not found"() {
+        given:
+        HttpURLConnection mockHttpUrlConnection = Mock()
+
+        when:
+        Optional<InputStream> inputStreamOptional = RemoteRepositoryFileReader.getInputStream(mockHttpUrlConnection)
+
+        then:
+        1 * mockHttpUrlConnection.getInputStream() >> { throw new FileNotFoundException("404") }
+        0 * _
+
+        and:
+        !inputStreamOptional.isPresent()
+    }
+
     private static class GenericRemoteRepositoryFileReader extends RemoteRepositoryFileReader {
 
         protected GenericRemoteRepositoryFileReader() {

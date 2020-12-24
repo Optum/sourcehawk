@@ -2,8 +2,9 @@ package com.optum.sourcehawk.core.repository;
 
 import com.optum.sourcehawk.core.utils.StringUtils;
 import lombok.NonNull;
+import lombok.val;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -16,7 +17,7 @@ public class GithubRepositoryFileReader extends RemoteRepositoryFileReader {
     /**
      * The default public Github raw URL
      */
-    private static final String DEFAULT_BASE_URL = "https://raw.githubusercontent.com";
+    public static final String DEFAULT_BASE_URL = "https://raw.githubusercontent.com";
 
     /**
      * Constructs an instance of this reader with the provided Github Enterprise URL
@@ -54,7 +55,7 @@ public class GithubRepositoryFileReader extends RemoteRepositoryFileReader {
      * @param ref the Github ref
      * @return the constructed base URL with a trailing {@value #SEPARATOR}
      */
-    private static String constructBaseUrl(final String githubUrl, final boolean githubEnterprise, final String owner, final String repo, final String ref) {
+    public static String constructBaseUrl(final String githubUrl, final boolean githubEnterprise, final String owner, final String repo, final String ref) {
         final String baseUrl;
         if (githubUrl.endsWith(SEPARATOR)) {
             baseUrl = githubUrl;
@@ -77,10 +78,12 @@ public class GithubRepositoryFileReader extends RemoteRepositoryFileReader {
      * @return the request properties
      */
     private static Map<String, String> constructRequestProperties(final String githubToken) {
+        val requestProperties = new HashMap<String, String>();
+        requestProperties.put("Accept", "text/plain");
         if (StringUtils.isNotBlankOrEmpty(githubToken)) {
-            return Collections.singletonMap("Authorization", String.format("token %s", githubToken));
+            requestProperties.put("Authorization", String.format("token %s", githubToken));
         }
-        return Collections.emptyMap();
+        return requestProperties;
     }
 
 }

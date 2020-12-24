@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * The Sourcehawk command (default CLI entry point)
+ * The Sourcehawk command (default CLI entry point for all sub-commands)
  *
  * @author Brian Wyka
  * @author Christian Oestreich
@@ -17,7 +17,7 @@ import java.util.Properties;
 @CommandLine.Command(
         name = SourcehawkConstants.NAME_LOWERCASE,
         aliases = "shawk",
-        description = "Watch over your source like a hawk...",
+        description = "Watch over your source like a hawk",
         mixinStandardHelpOptions = true,
         versionProvider = Sourcehawk.VersionProvider.class,
         subcommands = {

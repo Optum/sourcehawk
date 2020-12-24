@@ -1,6 +1,7 @@
 package com.optum.sourcehawk.cli;
 
 import com.optum.sourcehawk.core.scan.FixResult;
+import com.optum.sourcehawk.core.utils.Try;
 import com.optum.sourcehawk.exec.ExecOptions;
 import com.optum.sourcehawk.exec.fix.FixExecutor;
 import com.optum.sourcehawk.exec.fix.FixResultFactory;
@@ -18,18 +19,24 @@ import java.util.Optional;
  */
 @Slf4j
 @CommandLine.Command(
-        name = FixCommand.COMMAND_NAME,
+        name = "fix",
         aliases = { "correct", "resolve" },
         description = "Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made."
 )
 public class FixCommand extends AbstractExecCommand {
 
-    static final String COMMAND_NAME = "fix";
+    /**
+     * The local file system options group
+     */
+    @SuppressWarnings("unused")
+    @CommandLine.ArgGroup(exclusive = false)
+    private CommandOptions.FileSystem fileSystem;
 
-    @CommandLine.Option(
-            names = {"-d", "--dry-run"},
-            description = "Display fixes which would be performed, but do not perform them"
-    )
+    /**
+     * Whether or not this should be executed as a dry run, without applying fixes
+     */
+    @SuppressWarnings("unused")
+    @CommandLine.Option(names = {"-d", "--dry-run"}, description = "Display fixes which would be performed, but do not perform them")
     private boolean dryRun;
 
     /**
@@ -48,7 +55,9 @@ public class FixCommand extends AbstractExecCommand {
      */
     @Override
     public Integer call() {
-        val execOptions = buildExecOptions();
+        val execOptionsBuilder = buildExecOptions().toBuilder();
+        Optional.ofNullable(fileSystem).map(fs -> fs.repositoryRoot).ifPresent(execOptionsBuilder::repositoryRoot);
+        val execOptions = execOptionsBuilder.build();
         val fixResult = execute(execOptions, dryRun);
         FixResultLogger.log(fixResult, execOptions);
         if (fixResult.isError()) {
@@ -67,11 +76,7 @@ public class FixCommand extends AbstractExecCommand {
      * @return the fix result
      */
     private static FixResult execute(final ExecOptions execOptions, final boolean dryRun) {
-        try {
-            return FixExecutor.fix(execOptions, dryRun);
-        } catch (final Exception e) {
-            return FixResultFactory.error("GLOBAL", Optional.ofNullable(e.getMessage()).orElse("Unknown error"));
-        }
+        return Try.attemptOrDefault(() -> FixExecutor.fix(execOptions, dryRun), FixResultFactory::globalError);
     }
 
 }

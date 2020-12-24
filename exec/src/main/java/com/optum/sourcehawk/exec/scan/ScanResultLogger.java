@@ -55,11 +55,9 @@ public class ScanResultLogger {
                 ExecLoggers.CONSOLE_RAW.info(formatMarkdown(scanResult, execOptions.getVerbosity()));
                 break;
             case CONSOLE:
-                if (ExecLoggers.HIGHLIGHT.isInfoEnabled() && execOptions.getVerbosity() == Verbosity.HIGH) {
-                    ExecLoggers.HIGHLIGHT.info(generateHeader());
-                }
                 if (execOptions.getVerbosity() == Verbosity.HIGH) {
-                    ExecLoggers.CONSOLE_RAW.info(formatExecOptions(execOptions));
+                    ExecLoggers.HIGHLIGHT.info(String.format(">_ %s", String.join(" ", SourcehawkConstants.NAME.toUpperCase().split(""))));
+                    ExecLoggers.CONSOLE_RAW.info(execOptions.toString());
                 }
                 handleTextualOutput(scanResult, execOptions, ExecLoggers.MESSAGE_ANSI);
                 break;
@@ -153,30 +151,6 @@ public class ScanResultLogger {
     }
 
     /**
-     * Generate the header for plain text output
-     *
-     * @return the generated header
-     */
-    private String generateHeader() {
-        return String.format(">_ %s", String.join(" ", SourcehawkConstants.NAME.toUpperCase().split("")));
-    }
-
-    /**
-     * Format the exec options for plain text output
-     *
-     * @param execOptions the exec options
-     * @return the formatted exec options
-     */
-    private String formatExecOptions(final ExecOptions execOptions) {
-        return System.lineSeparator()
-                + "Repository Root... " + execOptions.getRepositoryRoot() + System.lineSeparator()
-                + "Config File....... " + execOptions.getConfigurationFileLocation() + System.lineSeparator()
-                + "Verbosity......... " + execOptions.getVerbosity() + System.lineSeparator()
-                + "Output Format..... " + execOptions.getOutputFormat() + System.lineSeparator()
-                + "Fail on Warnings.. " + execOptions.isFailOnWarnings() + System.lineSeparator();
-    }
-
-    /**
      * Log the scan messages if appropriate
      *
      * @param messages the scan result messages'
@@ -195,8 +169,7 @@ public class ScanResultLogger {
                     case WARNING:
                         logger = scanMessageLogger::warn;
                         break;
-                    default:
-                        logger = scanMessageLogger::info;
+                    default: logger = scanMessageLogger::info;
                 }
                 logger.accept(messageDescriptor.getMessage());
             }

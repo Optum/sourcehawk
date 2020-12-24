@@ -10,6 +10,7 @@ import lombok.val;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * A factory for creating instances of {@link FixResult}
@@ -69,6 +70,16 @@ public class FixResultFactory {
                 .messages(Collections.singletonMap(repositoryPath, Collections.singleton(messageDescriptor)))
                 .formattedMessages(Collections.singleton(messageDescriptor.toString()))
                 .build();
+    }
+
+    /**
+     * Create the fix result for situations where there is an error executing the fix
+     *
+     * @param throwable the exception / error which occurred
+     * @return the fix result
+     */
+    public FixResult globalError(final Throwable throwable) {
+        return error("GLOBAL", Optional.ofNullable(throwable.getMessage()).orElse(String.format("Unknown error: %s", throwable.getClass().getCanonicalName())));
     }
 
     /**

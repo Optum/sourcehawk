@@ -3,6 +3,7 @@ package com.optum.sourcehawk.core.repository;
 import lombok.NonNull;
 import lombok.val;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -60,14 +61,35 @@ abstract class RemoteRepositoryFileReader implements RepositoryFileReader {
 
     /** {@inheritDoc} */
     @Override
+    public boolean exists(final String repositoryFilePath) throws IOException {
+        return urlExists(constructAbsoluteUrl(baseUrl, repositoryFilePath));
+    }
+
+    /** {@inheritDoc} */
+    @Override
     public Optional<InputStream> read(final String repositoryFilePath) throws IOException {
         val absoluteUrl = constructAbsoluteUrl(baseUrl, repositoryFilePath);
         if (urlExists(absoluteUrl)) {
             val httpUrlConnection = (HttpURLConnection) absoluteUrl.openConnection();
             requestProperties.forEach(httpUrlConnection::setRequestProperty);
-            return Optional.of(httpUrlConnection.getInputStream());
+            return getInputStream(httpUrlConnection);
         }
         return Optional.empty();
+    }
+
+    /**
+     * Get the input stream from the {@link HttpURLConnection}
+     *
+     * @param httpUrlConnection the HTTP URL connection
+     * @return the input stream if present
+     * @throws IOException if any error occurs opening the input stream
+     */
+    private static Optional<InputStream> getInputStream(final HttpURLConnection httpUrlConnection) throws IOException {
+        try {
+            return Optional.of(httpUrlConnection.getInputStream());
+        } catch (final FileNotFoundException ignored) {
+            return Optional.empty();
+        }
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.exec.fix
 
+import com.optum.sourcehawk.core.constants.SourcehawkConstants
 import com.optum.sourcehawk.core.scan.FixResult
 import com.optum.sourcehawk.exec.ConfigurationException
 import com.optum.sourcehawk.exec.ExecOptions

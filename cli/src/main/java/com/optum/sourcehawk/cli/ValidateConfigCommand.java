@@ -31,19 +31,21 @@ import java.util.stream.Collectors;
  * @author Brian Wyka
  */
 @CommandLine.Command(
-        name = ValidateConfigCommand.COMMAND_NAME,
-        aliases = { "vc" },
+        name = "validate-config",
+        aliases = { "vc", "validate" },
         description = "Validate Sourcehawk configuration file format and syntax",
         mixinStandardHelpOptions = true
 )
 public class ValidateConfigCommand implements Callable<Integer> {
 
-    static final String COMMAND_NAME = "validate-config";
-
+    /**
+     * The configuration file path
+     */
+    @SuppressWarnings("unused")
     @CommandLine.Parameters(
             index = "0",
             arity = "1",
-            description = "The path to the configuration file, use '-' to supply configuration from stdin",
+            description = "The path to the configuration file. Use '-' to supply configuration from stdin",
             defaultValue = SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME,
             showDefaultValue = CommandLine.Help.Visibility.ALWAYS
     )
