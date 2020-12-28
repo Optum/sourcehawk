@@ -74,8 +74,7 @@ public class GithubScanCommand implements Callable<Integer> {
         val configFileProvided = Optional.ofNullable(parentCommand.spec)
                 .map(CommandLine.Model.CommandSpec::commandLine)
                 .map(CommandLine::getParseResult)
-                .filter(parseResult -> parseResult.hasMatchedOption(CommandOptions.ConfigFile.OPTION_PATH)
-                        || parseResult.hasMatchedOption(CommandOptions.ConfigFile.OPTION_PATH_LONG))
+                .filter(GithubScanCommand::configFileProvided)
                 .isPresent();
         val githubBuilder = parseCoordinates();
         Optional.ofNullable(github.token).filter(StringUtils::isNotBlankOrEmpty).ifPresent(githubBuilder::token);
@@ -85,6 +84,10 @@ public class GithubScanCommand implements Callable<Integer> {
             execOptionsBuilder.configurationFileLocation(constructRemoteConfigFileLocation(github, githubOptions));
         }
         return parentCommand.call(execOptionsBuilder.github(githubOptions).build());
+    }
+
+    private static boolean configFileProvided(final CommandLine.ParseResult parseResult) {
+        return parseResult.hasMatchedOption(CommandOptions.ConfigFile.OPTION_PATH) || parseResult.hasMatchedOption(CommandOptions.ConfigFile.OPTION_PATH_LONG);
     }
 
     /**

@@ -173,7 +173,7 @@ public final class ScanExecutor {
                                                   final String repositoryFilePath,  final String severity, final FileEnforcer fileEnforcer) throws IOException {
         try (val fileInputStream = repositoryFileReader.read(repositoryFilePath)
                 .orElseThrow(() -> new IOException(String.format("File not found: %s", repositoryFilePath)))) {
-            val enforcerResult = fileEnforcer.enforce(fileInputStream);
+            val enforcerResult = fileEnforcer.enforce(fileInputStream.mark(););
             return ScanResultFactory.enforcerResult(execOptions, repositoryFilePath, Severity.parse(severity), enforcerResult);
         }
     }
