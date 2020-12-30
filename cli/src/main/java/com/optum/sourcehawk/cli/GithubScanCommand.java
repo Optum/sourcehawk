@@ -1,16 +1,16 @@
 package com.optum.sourcehawk.cli;
 
 import com.optum.sourcehawk.core.constants.SourcehawkConstants;
+import com.optum.sourcehawk.core.data.Pair;
+import com.optum.sourcehawk.core.data.RemoteRef;
 import com.optum.sourcehawk.core.repository.GithubRepositoryFileReader;
-import com.optum.sourcehawk.core.utils.StringUtils;
-import com.optum.sourcehawk.exec.ExecOptions;
+import com.optum.sourcehawk.core.repository.RepositoryFileReader;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import picocli.CommandLine;
 
 import java.net.URL;
 import java.util.Optional;
-import java.util.concurrent.Callable;
 
 /**
  * CLI entry point for executing Sourcehawk scan github command.
@@ -23,28 +23,9 @@ import java.util.concurrent.Callable;
 @CommandLine.Command(
         name = "github",
         aliases = "gh",
-        description = "Runs a Sourcehawk scan on remote Github source code instead of local file system",
-        mixinStandardHelpOptions = true,
-        subcommands = { CommandLine.HelpCommand.class }
+        description = "Runs a Sourcehawk scan on remote Github source code instead of local file system"
 )
-public class GithubScanCommand implements Callable<Integer> {
-
-    private static final char COORDINATES_DELIMITER = '/';
-    private static final char REF_DELIMITER = '@';
-
-    /**
-     * The command spec
-     */
-    @SuppressWarnings("unused")
-    @CommandLine.Spec
-    private CommandLine.Model.CommandSpec spec;
-
-    /**
-     * Reference to the parent scan command
-     */
-    @SuppressWarnings("unused")
-    @CommandLine.ParentCommand
-    private ScanCommand parentCommand;
+public class GithubScanCommand extends AbstractRemoteScanCommand {
 
     /**
      * The github options
@@ -62,85 +43,31 @@ public class GithubScanCommand implements Callable<Integer> {
         AbstractExecCommand.execute(new GithubScanCommand(), args);
     }
 
-    /**
-     * Execute the scan
-     *
-     * @return the exit code
-     */
+    /** {@inheritDoc} */
     @Override
-    public Integer call() {
-        val parentExecOptions = parentCommand.buildExecOptions();
-        val execOptionsBuilder = parentExecOptions.toBuilder();
-        val configFileProvided = Optional.ofNullable(parentCommand.spec)
-                .map(CommandLine.Model.CommandSpec::commandLine)
-                .map(CommandLine::getParseResult)
-                .filter(GithubScanCommand::configFileProvided)
-                .isPresent();
-        val githubBuilder = parseCoordinates();
-        Optional.ofNullable(github.token).filter(StringUtils::isNotBlankOrEmpty).ifPresent(githubBuilder::token);
-        Optional.ofNullable(github.enterpriseUrl).ifPresent(githubBuilder::enterpriseUrl);
-        val githubOptions = githubBuilder.build();
-        if (StringUtils.equals(SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME, parentExecOptions.getConfigurationFileLocation()) && !configFileProvided) {
-            execOptionsBuilder.configurationFileLocation(constructRemoteConfigFileLocation(github, githubOptions));
+    protected RepositoryFileReader createRepositoryFileReader(final RemoteRef remoteRef) {
+        if (github.enterpriseUrl != null) {
+            return new GithubRepositoryFileReader(github.token, github.enterpriseUrl.toString(), remoteRef);
         }
-        return parentCommand.call(execOptionsBuilder.github(githubOptions).build());
+        return new GithubRepositoryFileReader(github.token, remoteRef);
     }
 
-    private static boolean configFileProvided(final CommandLine.ParseResult parseResult) {
-        return parseResult.hasMatchedOption(CommandOptions.ConfigFile.OPTION_PATH) || parseResult.hasMatchedOption(CommandOptions.ConfigFile.OPTION_PATH_LONG);
+    /** {@inheritDoc} */
+    @Override
+    protected Pair<RemoteRef.Type, String> getRawRemoteReference() {
+        return Pair.of(RemoteRef.Type.GITHUB, github.remoteReference);
     }
 
-    /**
-     * Construct the remote config file location
-     *
-     * @param github the github command options
-     * @param githubOptions the github exec options
-     * @return the config file remote location
-     */
-    private static String constructRemoteConfigFileLocation(final CommandOptions.Github github, final ExecOptions.GithubOptions githubOptions) {
+    /** {@inheritDoc} */
+    @Override
+    protected String constructRemoteConfigFileLocation(final RemoteRef remoteRef) {
         val githubEnterpriseUrl = Optional.ofNullable(github.enterpriseUrl).map(URL::toString);
         val githubRepoBaseUrl = GithubRepositoryFileReader.constructBaseUrl(
-                githubEnterpriseUrl.orElse(GithubRepositoryFileReader.DEFAULT_BASE_URL),
+                githubEnterpriseUrl.orElseGet(RemoteRef.Type.GITHUB::getBaseUrl),
                 githubEnterpriseUrl.isPresent(),
-                githubOptions.getOwner(),
-                githubOptions.getRepository(),
-                githubOptions.getRef()
+                remoteRef
         );
         return githubRepoBaseUrl + SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME;
-    }
-
-    /**
-     * Parse the coordinates to github options
-     *
-     * @return the github options builder
-     */
-    private ExecOptions.GithubOptions.GithubOptionsBuilder parseCoordinates() {
-        val githubBuilder = ExecOptions.GithubOptions.builder();
-        if (github.coordinates.indexOf(COORDINATES_DELIMITER) == -1) {
-            val message = String.format("%s invalid, must contain '%s' separator between owner and repository",
-                    CommandOptions.Github.COORDINATES_LABEL, COORDINATES_DELIMITER);
-            throw new CommandLine.ParameterException(spec.commandLine(), message);
-        }
-        final String rawCoordinates;
-        if (github.coordinates.indexOf(REF_DELIMITER) == -1) {
-            rawCoordinates = github.coordinates;
-        } else {
-            val refDelimiterIndex= github.coordinates.indexOf(REF_DELIMITER);
-            rawCoordinates = github.coordinates.substring(0, refDelimiterIndex);
-            val ref = Optional.of(github.coordinates.substring(refDelimiterIndex + 1))
-                    .filter(StringUtils::isNotBlankOrEmpty)
-                    .orElseThrow(() -> new CommandLine.ParameterException(spec.commandLine(), String.format("Github ref must be provided after '%s'", REF_DELIMITER)));
-            githubBuilder.ref(ref);
-        }
-        val coordinates = rawCoordinates.split(String.valueOf(COORDINATES_DELIMITER));
-        if (StringUtils.isBlankOrEmpty(coordinates[0])) {
-            throw new CommandLine.ParameterException(spec.commandLine(), "Github owner must not be empty");
-        }
-        if (coordinates.length < 2 || (StringUtils.isBlankOrEmpty(coordinates[1]))) {
-            throw new CommandLine.ParameterException(spec.commandLine(), "Github repository must not be empty");
-        }
-        return githubBuilder.owner(coordinates[0])
-                .repository(coordinates[1]);
     }
 
 }

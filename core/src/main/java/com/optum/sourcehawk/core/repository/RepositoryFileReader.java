@@ -12,6 +12,15 @@ import java.util.Optional;
 public interface RepositoryFileReader {
 
     /**
+     *  Determine if the reader supports glob patterns
+     *
+     * @return true if reader supports glob patterns, false otherwise
+     */
+    default boolean supportsGlobPatterns() {
+        return false;
+    }
+
+    /**
      * Determine if the file at the given path exists
      *
      * @param repositoryFilePath the repository file path

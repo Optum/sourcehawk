@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.cli;
 
+import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
 import com.optum.sourcehawk.core.scan.ScanResult;
 import com.optum.sourcehawk.core.utils.Try;
 import com.optum.sourcehawk.exec.ExecOptions;
@@ -22,7 +23,7 @@ import java.util.Optional;
         name = "scan",
         aliases = { "flyover", "survey" },
         description = "Runs a Sourcehawk scan on the source code",
-        subcommands = GithubScanCommand.class
+        subcommands = { GithubScanCommand.class, BitbucketScanCommand.class }
 )
 public class ScanCommand extends AbstractExecCommand {
 
@@ -50,7 +51,9 @@ public class ScanCommand extends AbstractExecCommand {
     @Override
     public Integer call() {
         val execOptionsBuilder = buildExecOptions().toBuilder();
-        Optional.ofNullable(fileSystem).map(fs -> fs.repositoryRoot).ifPresent(execOptionsBuilder::repositoryRoot);
+        val repositoryRootOptional = Optional.ofNullable(fileSystem).map(fs -> fs.repositoryRoot);
+        repositoryRootOptional.ifPresent(path -> execOptionsBuilder.repositoryRoot(path)
+                .repositoryFileReader(LocalRepositoryFileReader.create(path)));
         return call(execOptionsBuilder.build());
     }
 

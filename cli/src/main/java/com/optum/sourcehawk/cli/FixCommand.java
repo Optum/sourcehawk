@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.cli;
 
+import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
 import com.optum.sourcehawk.core.scan.FixResult;
 import com.optum.sourcehawk.core.utils.Try;
 import com.optum.sourcehawk.exec.ExecOptions;
@@ -10,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import picocli.CommandLine;
 
+import java.nio.file.Path;
 import java.util.Optional;
 
 /**
@@ -56,7 +58,9 @@ public class FixCommand extends AbstractExecCommand {
     @Override
     public Integer call() {
         val execOptionsBuilder = buildExecOptions().toBuilder();
-        Optional.ofNullable(fileSystem).map(fs -> fs.repositoryRoot).ifPresent(execOptionsBuilder::repositoryRoot);
+        val repositoryRootOptional = Optional.ofNullable(fileSystem).map(fs -> fs.repositoryRoot);
+        repositoryRootOptional.ifPresent(path -> execOptionsBuilder.repositoryRoot(path)
+                .repositoryFileReader(LocalRepositoryFileReader.create(path)));
         val execOptions = execOptionsBuilder.build();
         val fixResult = execute(execOptions, dryRun);
         FixResultLogger.log(fixResult, execOptions);

@@ -122,12 +122,44 @@ class CommandOptions {
         URL enterpriseUrl;
 
         @CommandLine.Parameters(
-                paramLabel = COORDINATES_LABEL,
-                description = "The Github coordinates - owner/repo@ref combination, i.e - owner/repo, owner/repo@main,  owner/repo@v1.4, or owner/repo@a6de43fa51c",
+                paramLabel = REMOTE_REFERENCE_LABEL,
+                description = "The Github remote reference - owner/repo@ref combination, i.e - owner/repo, owner/repo@main,  owner/repo@v1.4, or owner/repo@a6de43fa51c",
                 arity = "1"
         )
-        String coordinates;
-        static final String COORDINATES_LABEL = "GITHUB-COORDINATES";
+        String remoteReference;
+        static final String REMOTE_REFERENCE_LABEL = "REMOTE-REFERENCE";
+
+    }
+
+    /**
+     * Bitbucket options
+     *
+     * @author Brian Wyka
+     */
+    static class Bitbucket {
+
+        @CommandLine.Option(
+                names = {"-t", "--token"},
+                paramLabel = "bitbucket-token",
+                description = "The Bitbucket token for authorizing requests, recommended for preventing rate limiting or accessing private repositories"
+        )
+        String token;
+
+        @CommandLine.Option(
+                names = {"-S", "--server-url"},
+                paramLabel = "bitbucket-server-url",
+                description = "The Bitbucket server URL to use instead of public Bitbucket, i.e - https://bitbucket.example.com"
+        )
+        URL serverUrl;
+
+        @CommandLine.Parameters(
+                paramLabel = REMOTE_REFERENCE_LABEL,
+                description = "The Bitbucket remote reference - project/repo@ref combination, "
+                        + "i.e - project/repo, project/repo@master,  project/repo@v1.4, or project/repo@a6de43fa51c",
+                arity = "1"
+        )
+        String remoteReference;
+        static final String REMOTE_REFERENCE_LABEL = "REMOTE-REFERENCE";
 
     }
 

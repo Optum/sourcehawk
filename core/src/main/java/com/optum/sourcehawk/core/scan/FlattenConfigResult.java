@@ -59,26 +59,4 @@ public class FlattenConfigResult implements Serializable {
         return new FlattenConfigResult(null, true, StringUtils.defaultString(message, "No error message provided"));
     }
 
-    /**
-     * Encapsulates all of the traits of a message
-     *
-     * @author Christian Oestreich
-     */
-    @Value
-    @Builder
-    public static class MessageDescriptor {
-
-        @NonNull String repositoryPath;
-        @NonNull String message;
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        public String toString() {
-            return String.format("%s :: %s", repositoryPath, message);
-        }
-
-    }
-
 }

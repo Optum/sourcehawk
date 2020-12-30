@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.cli;
 
+import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
 import com.optum.sourcehawk.core.scan.OutputFormat;
 import com.optum.sourcehawk.core.scan.Verbosity;
 import com.optum.sourcehawk.exec.ExecOptions;

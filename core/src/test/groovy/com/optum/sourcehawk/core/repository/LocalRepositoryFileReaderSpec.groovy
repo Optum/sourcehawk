@@ -21,6 +21,20 @@ class LocalRepositoryFileReaderSpec extends Specification {
         thrown(NullPointerException)
     }
 
+    def "supportsGlobPatterns"() {
+        given:
+        URL resource = IoUtil.getResource('/file.txt')
+        File fileResource = new File(resource.toURI())
+        Path repositoryRoot = Paths.get(fileResource.getParentFile().getAbsolutePath())
+        RepositoryFileReader repositoryFileReader = LocalRepositoryFileReader.create(repositoryRoot)
+
+        when:
+        boolean supportsGlobPatterns = repositoryFileReader.supportsGlobPatterns()
+
+        then:
+        supportsGlobPatterns
+    }
+
     def "exists - file found"() {
         given:
         URL resource = IoUtil.getResource('/file.txt')

@@ -1,13 +1,15 @@
 package com.optum.sourcehawk.exec;
 
 import com.optum.sourcehawk.core.constants.SourcehawkConstants;
+import com.optum.sourcehawk.core.data.RemoteRef;
+import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
+import com.optum.sourcehawk.core.repository.RepositoryFileReader;
 import com.optum.sourcehawk.core.scan.OutputFormat;
 import com.optum.sourcehawk.core.scan.Verbosity;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Value;
 
-import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -55,54 +57,16 @@ public class ExecOptions {
     boolean failOnWarnings = false;
 
     /**
-     * Whether or not this will be executed against Github
+     * Repository file reader
      */
-    GithubOptions github;
+    @NonNull
+    @Builder.Default
+    RepositoryFileReader repositoryFileReader = LocalRepositoryFileReader.create(Paths.get("."));
 
     /**
-     * The Github exec options
-     *
-     * @author Brian Wyka
+     * The remote reference
      */
-    @Value
-    @Builder
-    public static class GithubOptions {
-
-        /**
-         * The default Github ref
-         */
-        public static final String DEFAULT_REF = "main";
-
-        /**
-         * The Github personal access token (optional)
-         */
-        String token;
-
-        /**
-         * THe Github owner
-         */
-        @NonNull
-        String owner;
-
-        /**
-         * THe Github repository
-         */
-        @NonNull
-        String repository;
-
-        /**
-         * The Github reference
-         */
-        @NonNull
-        @Builder.Default
-        String ref = DEFAULT_REF;
-
-        /**
-         * The Github Enterprise URL (optional)
-         */
-        URL enterpriseUrl;
-
-    }
+    RemoteRef remoteRef;
 
     /**
      * Print a string representation of the exec options
@@ -112,10 +76,10 @@ public class ExecOptions {
     @Override
     public String toString() {
         String string =  System.lineSeparator();
-        if (github == null) {
+        if (remoteRef == null) {
             string += "Repository Root... " + repositoryRoot + System.lineSeparator();
         } else {
-            string += "Github............ " + String.format("%s/%s@%s", github.owner, github.repository, github.ref) + System.lineSeparator();
+            string += "Remote Reference.. " + remoteRef.toString() + System.lineSeparator();
         }
         string += "Config File....... " + configurationFileLocation + System.lineSeparator();
         string += "Verbosity......... " + verbosity + System.lineSeparator();

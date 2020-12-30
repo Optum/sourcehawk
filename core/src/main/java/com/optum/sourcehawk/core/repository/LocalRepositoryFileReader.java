@@ -39,6 +39,14 @@ public class LocalRepositoryFileReader implements RepositoryFileReader {
      * {@inheritDoc}
      */
     @Override
+    public boolean supportsGlobPatterns() {
+        return true;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
     public boolean exists(final String repositoryFilePath) {
         return Files.exists(directory.resolve(Paths.get(repositoryFilePath)));
     }

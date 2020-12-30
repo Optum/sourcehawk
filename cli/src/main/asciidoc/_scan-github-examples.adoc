@@ -28,7 +28,7 @@ sourcehawk scan -f JSON github optum/sourcehawk@develop
 .Scan repository on Github enterprise with an auth token
 [source,sh]
 ----
-sourcehawk scan github -E https://github.example.com --token abc123 optum/sourcehawk@develop
+sourcehawk scan github -E https://github.example.com --token abc123 optum/sourcehawk
 ----
 
 .Use a shorter alias

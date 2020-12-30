@@ -11,7 +11,7 @@ import spock.lang.AutoCleanup
 import spock.lang.Shared
 import spock.lang.Specification
 
-class ScanGithubCommandSpec extends Specification {
+class GithubScanSubCommandSpec extends Specification {
 
     @Shared
     @AutoCleanup

@@ -1,23 +1,57 @@
 package com.optum.sourcehawk.core.repository
 
+import com.optum.sourcehawk.core.data.RemoteRef
+import org.mockserver.configuration.ConfigurationProperties
+import org.mockserver.integration.ClientAndServer
+import org.mockserver.matchers.Times
+import org.mockserver.model.HttpRequest
+import org.mockserver.model.HttpResponse
+import spock.lang.AutoCleanup
+import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
 class GithubRepositoryFileReaderSpec extends Specification {
 
-    // TODO: mock server
+    @Shared
+    @AutoCleanup
+    ClientAndServer clientAndServer
 
-    def "public github > exists (file found)"() {
+    @Shared
+    String enterpriseUrl
+
+    def setupSpec() {
+        clientAndServer = ClientAndServer.startClientAndServer("http://127.0.0.1", 8121)
+        ConfigurationProperties.logLevel("WARN")
+        enterpriseUrl = "${clientAndServer.remoteAddress.hostString}:${clientAndServer.port}"
+    }
+
+    def setup() {
+        clientAndServer.reset()
+    }
+
+    def "supportsGlobPatterns"() {
         given:
-        String owner = "optum"
-        String repo = "sourcehawk"
-        String ref = "main"
+        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main")
+        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, enterpriseUrl, remoteRef)
 
         when:
-        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, owner, repo, ref)
+        boolean supportsGlobPatterns = githubRepositoryFileReader.supportsGlobPatterns()
 
         then:
-        githubRepositoryFileReader
+        !supportsGlobPatterns
+    }
+
+    def "exists (found)"() {
+        given:
+        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main")
+        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, enterpriseUrl, remoteRef)
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("HEAD")
+                        .withPath("/raw/owner/repo/main/README.md"),
+                        Times.exactly(1))
+                .respond(HttpResponse.response().withStatusCode(200))
 
         when:
         boolean exists = githubRepositoryFileReader.exists("README.md")
@@ -26,31 +60,40 @@ class GithubRepositoryFileReaderSpec extends Specification {
         exists
     }
 
-    def "public github - exists (not found)"() {
-        when:
-        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, "optum", "sourcehawk", "nope")
+    def "exists (not found)"() {
+        given:
+        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@nope")
+        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, enterpriseUrl, remoteRef)
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("HEAD")
+                        .withPath("/raw/owner/repo/main/README.md"),
+                        Times.exactly(1))
+                .respond(HttpResponse.notFoundResponse())
 
-        then:
-        githubRepositoryFileReader
-
         when:
-        boolean exists = githubRepositoryFileReader.exists("abc.txt")
+        boolean exists = githubRepositoryFileReader.exists("README.md")
 
         then:
         !exists
     }
 
-    def "public github > read (file found)"() {
+    def "read (found)"() {
         given:
-        String owner = "optum"
-        String repo = "sourcehawk"
-        String ref = "main"
-
-        when:
-        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, owner, repo, ref)
-
-        then:
-        githubRepositoryFileReader
+        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main")
+        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, enterpriseUrl, remoteRef)
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("HEAD")
+                        .withPath("/raw/owner/repo/main/README.md"),
+                        Times.exactly(1))
+                .respond(HttpResponse.response().withStatusCode(200))
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("GET")
+                        .withPath("/raw/owner/repo/main/README.md"),
+                        Times.exactly(2))
+                .respond(HttpResponse.response().withStatusCode(200).withBody("# Title".bytes))
 
         when:
         Optional<InputStream> inputStream = githubRepositoryFileReader.read("README.md")
@@ -67,37 +110,32 @@ class GithubRepositoryFileReaderSpec extends Specification {
         inputStream.isPresent()
     }
 
-    @Unroll
-    def "public github - read (not found) - #owner/#repo/#ref - #repositoryFilePath"() {
-        when:
-        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, owner, repo, ref)
+    def "read (not found)"() {
+        given:
+        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@master")
+        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, remoteRef)
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("HEAD")
+                        .withPath("/raw/owner/repo/master/README.md"),
+                        Times.exactly(1))
+                .respond(HttpResponse.notFoundResponse())
 
-        then:
-        githubRepositoryFileReader
-
         when:
-        Optional<InputStream> inputStream = githubRepositoryFileReader.read(repositoryFilePath)
+        Optional<InputStream> inputStream = githubRepositoryFileReader.read("README.md")
 
         then:
         !inputStream
-
-        where:
-        owner    | repo          | ref       | repositoryFilePath
-        "optum2" | "sourcehawk"  | "main"    | "README.md"
-        "optum"  | "sourcehawk2" | "main"    | "README.md"
-        "optum"  | "sourcehawk"  | "main2"   | "README.md"
-        "optum"  | "sourcehawk"  | "main"    | "README2.md"
+        !inputStream.isPresent()
     }
 
     def "constructBaseUrl - public github"() {
         given:
         String githubUrl = "https://raw.githubusercontent.com"
-        String owner = "owner"
-        String repo = "repo"
-        String ref = "main"
+        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main")
 
         when:
-        String baseUrl = GithubRepositoryFileReader.constructBaseUrl(githubUrl, false, owner, repo, ref)
+        String baseUrl = GithubRepositoryFileReader.constructBaseUrl(githubUrl, false, remoteRef)
 
         then:
         baseUrl == "https://raw.githubusercontent.com/owner/repo/main/"
@@ -106,12 +144,10 @@ class GithubRepositoryFileReaderSpec extends Specification {
     @Unroll
     def "constructBaseUrl - enterprise github"() {
         given:
-        String owner = "owner"
-        String repo = "repo"
-        String ref = "main"
+        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main")
 
         when:
-        String baseUrl = GithubRepositoryFileReader.constructBaseUrl(githubUrl, true, owner, repo, ref)
+        String baseUrl = GithubRepositoryFileReader.constructBaseUrl(githubUrl, true, remoteRef)
 
         then:
         baseUrl == "https://github.example.com/raw/owner/repo/main/"
@@ -122,7 +158,7 @@ class GithubRepositoryFileReaderSpec extends Specification {
 
     def "constructRequestProperties"() {
         when:
-        Map<String, String> requestProperties = GithubRepositoryFileReader.constructRequestProperties("abc")
+        Map<String, String> requestProperties = GithubRepositoryFileReader.constructRequestProperties("token ", "abc")
 
         then:
         requestProperties
@@ -133,7 +169,7 @@ class GithubRepositoryFileReaderSpec extends Specification {
 
     def "constructRequestProperties - null"() {
         when:
-        Map<String, String> requestProperties = GithubRepositoryFileReader.constructRequestProperties(null)
+        Map<String, String> requestProperties = GithubRepositoryFileReader.constructRequestProperties("token ", null)
 
         then:
         requestProperties
@@ -142,50 +178,59 @@ class GithubRepositoryFileReaderSpec extends Specification {
     }
 
     def "constructor - enterprise"() {
+        given:
+        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main")
+
         expect:
-        new GithubRepositoryFileReader(null, "https://github.example.com", "owner", "repo", "ref")
-        new GithubRepositoryFileReader("abc", "https://github.example.com", "owner", "repo", "ref")
+        new GithubRepositoryFileReader(null, "https://github.example.com", remoteRef)
+        new GithubRepositoryFileReader("abc", "https://github.example.com", remoteRef)
     }
 
     def "constructors - null parameter"() {
         when:
-        new GithubRepositoryFileReader("abc", null, "owner", "repo", "ref")
+        new GithubRepositoryFileReader(null, null, null)
 
         then:
         thrown(NullPointerException)
 
         when:
-        new GithubRepositoryFileReader("abc", "https://github.example.com", null, "repo", "ref")
+        new GithubRepositoryFileReader("abc", null, null)
 
         then:
         thrown(NullPointerException)
 
         when:
-        new GithubRepositoryFileReader("abc", "https://github.example.com", "owner", null, "ref")
+        new GithubRepositoryFileReader("abc", null, RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main"))
 
         then:
         thrown(NullPointerException)
 
         when:
-        new GithubRepositoryFileReader("abc", "https://github.example.com", "owner", "repo", null)
+        new GithubRepositoryFileReader("abc", "https://github.example.com", null)
 
         then:
         thrown(NullPointerException)
 
         when:
-        new GithubRepositoryFileReader("abc", null, "repo", "ref")
+        new GithubRepositoryFileReader(null, "https://github.example.com", null)
 
         then:
         thrown(NullPointerException)
 
         when:
-        new GithubRepositoryFileReader("abc","owner", null, "ref")
+        new GithubRepositoryFileReader(null, null, RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main"))
 
         then:
         thrown(NullPointerException)
 
         when:
-        new GithubRepositoryFileReader("abc","owner", "repo", null)
+        new GithubRepositoryFileReader("abc", null)
+
+        then:
+        thrown(NullPointerException)
+
+        when:
+        new GithubRepositoryFileReader(null, null)
 
         then:
         thrown(NullPointerException)

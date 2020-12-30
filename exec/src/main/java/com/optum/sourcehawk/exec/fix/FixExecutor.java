@@ -1,13 +1,11 @@
 package com.optum.sourcehawk.exec.fix;
 
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
-import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
-import com.optum.sourcehawk.core.repository.RepositoryFileReader;
+import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import com.optum.sourcehawk.core.scan.FixResult;
 import com.optum.sourcehawk.core.utils.FileUtils;
 import com.optum.sourcehawk.enforcer.EnforcerConstants;
 import com.optum.sourcehawk.enforcer.file.FileResolver;
-import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import com.optum.sourcehawk.exec.ConfigurationReader;
 import com.optum.sourcehawk.exec.ExecOptions;
 import lombok.AccessLevel;
@@ -59,11 +57,10 @@ public final class FixExecutor {
         if (sourcehawkConfiguration == null) {
             return FixResultFactory.error(execOptions.getConfigurationFileLocation(), "Scan configuration file not found or remote configuration read issue");
         }
-        val repositoryFileReader = LocalRepositoryFileReader.create(execOptions.getRepositoryRoot());
         return sourcehawkConfiguration.getFileProtocols().stream()
                 .filter(FileProtocol::isRequired)
                 .flatMap(fileProtocol -> fileProtocol.getEnforcers().stream()
-                        .flatMap(enforcer -> fixBasedOnEnforcer(execOptions, fileProtocol, repositoryFileReader, dryRun, enforcer)))
+                        .flatMap(enforcer -> fixBasedOnEnforcer(execOptions, fileProtocol, dryRun, enforcer)))
                 .reduce(FixResult.builder().build(), FixResult::reduce);
     }
 
@@ -72,13 +69,11 @@ public final class FixExecutor {
      *
      * @param execOptions the exec options
      * @param fileProtocol the file protocol
-     * @param repositoryFileReader the repository file reader
      * @param dryRun whether or not this is a dry run
      * @param enforcer the raw enforcer object map
      * @return the scan result
      */
-    private static Stream<FixResult> fixBasedOnEnforcer(final ExecOptions execOptions, final FileProtocol fileProtocol, final RepositoryFileReader repositoryFileReader,
-                                                        final boolean dryRun, final Map<String, Object> enforcer) {
+    private static Stream<FixResult> fixBasedOnEnforcer(final ExecOptions execOptions, final FileProtocol fileProtocol, final boolean dryRun, final Map<String, Object> enforcer) {
         final Optional<FileResolver> fileResolverOptional;
         try {
             fileResolverOptional = ConfigurationReader.convertFileEnforcerToFileResolver(enforcer);
@@ -101,7 +96,7 @@ public final class FixExecutor {
             return Stream.of(FixResultFactory.fileNotFound(fileProtocol));
         }
         return repositoryPaths.stream()
-                .map(repositoryPath -> fixFile(execOptions, fileProtocol, repositoryFileReader, dryRun, fileResolverOptional.get(), repositoryPath));
+                .map(repositoryPath -> fixFile(execOptions, fileProtocol, dryRun, fileResolverOptional.get(), repositoryPath));
     }
 
     /**
@@ -109,16 +104,15 @@ public final class FixExecutor {
      *
      * @param execOptions the exec options
      * @param fileProtocol the file protocol
-     * @param repositoryFileReader the repository file reader
      * @param dryRun whether or not this is a dry run
      * @param fileResolver the file resolver
      * @param repositoryPath the repository path
      * @return the fix result
      */
-    private static FixResult fixFile(final ExecOptions execOptions, final FileProtocol fileProtocol, final RepositoryFileReader repositoryFileReader,
-                                     final boolean dryRun, final FileResolver fileResolver, final Path repositoryPath) {
+    private static FixResult fixFile(final ExecOptions execOptions, final FileProtocol fileProtocol, final boolean dryRun,
+                                     final FileResolver fileResolver, final Path repositoryPath) {
         val relativeRepositoryPath = FileUtils.deriveRelativePath(execOptions.getRepositoryRoot().toString(), repositoryPath.toString());
-        try (val fileInputStream = repositoryFileReader.read(relativeRepositoryPath)
+        try (val fileInputStream = execOptions.getRepositoryFileReader().read(relativeRepositoryPath)
                 .orElseThrow(() -> new IOException(String.format("File not found: %s", relativeRepositoryPath)));
              val fixWriter = new StringWriter()) {
             val fixResult = FixResultFactory.resolverResult(fileProtocol, fileResolver.resolve(fileInputStream, fixWriter), dryRun);
