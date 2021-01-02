@@ -8,7 +8,7 @@
     <parent>
         <artifactId>sourcehawk</artifactId>
         <groupId>com.optum.sourcehawk</groupId>
-        <version>0.4.5-SNAPSHOT</version>
+        <version>0.5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>sourcehawk-cli</artifactId>
@@ -79,6 +79,16 @@
         <dependency>
             <groupId>cglib</groupId>
             <artifactId>cglib-nodep</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-netty</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mock-server</groupId>
+            <artifactId>mockserver-client-java</artifactId>
             <scope>test</scope>
         </dependency>
 
@@ -216,6 +226,11 @@
                         <artifactId>picocli-codegen</artifactId>
                         <version>${picocli.version}</version>
                         <type>jar</type>
+                    </dependency>
+                    <dependency>
+                        <groupId>ch.qos.logback</groupId>
+                        <artifactId>logback-classic</artifactId>
+                        <version>${logback.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>

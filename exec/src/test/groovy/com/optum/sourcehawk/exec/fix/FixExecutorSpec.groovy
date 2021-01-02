@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.exec.fix
 
+import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader
 import com.optum.sourcehawk.core.scan.FixResult
 import com.optum.sourcehawk.exec.ConfigurationException
 import com.optum.sourcehawk.exec.ExecOptions
@@ -222,6 +223,7 @@ class FixExecutorSpec extends FileBaseSpecification {
         Path lombokConfigPath = Files.copy(Paths.get(updateRepoRoot).resolve("lombok.config"), directory.toPath().resolve("lombok.config"))
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(directory.toPath().toAbsolutePath())
+                .repositoryFileReader(LocalRepositoryFileReader.create(directory.toPath().toAbsolutePath()))
                 .build()
 
         when:
@@ -264,6 +266,7 @@ class FixExecutorSpec extends FileBaseSpecification {
         Path lombokConfigPath = Files.copy(Paths.get(updateRepoRoot).resolve("lombok.config"), directory.toPath().resolve("lombok.config"))
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(directory.toPath().toAbsolutePath())
+                .repositoryFileReader(LocalRepositoryFileReader.create(directory.toPath().toAbsolutePath()))
                 .build()
 
         when:

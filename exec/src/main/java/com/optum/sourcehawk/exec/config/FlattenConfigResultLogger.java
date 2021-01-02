@@ -1,4 +1,4 @@
-package com.optum.sourcehawk.exec.flattenconfig;
+package com.optum.sourcehawk.exec.config;
 
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileWriter;
 import com.optum.sourcehawk.core.scan.FlattenConfigResult;

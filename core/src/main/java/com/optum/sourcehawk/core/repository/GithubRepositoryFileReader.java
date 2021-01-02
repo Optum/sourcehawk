@@ -1,10 +1,8 @@
 package com.optum.sourcehawk.core.repository;
 
-import com.optum.sourcehawk.core.utils.StringUtils;
+import com.optum.sourcehawk.core.data.RemoteRef;
 import lombok.NonNull;
-
-import java.util.Collections;
-import java.util.Map;
+import lombok.val;
 
 /**
  * A {@link RemoteRepositoryFileReader} implementation which reads files from remote Github repositories
@@ -14,34 +12,29 @@ import java.util.Map;
 public class GithubRepositoryFileReader extends RemoteRepositoryFileReader {
 
     /**
-     * The default public Github raw URL
+     * The authorization token prefix
      */
-    private static final String DEFAULT_BASE_URL = "https://raw.githubusercontent.com";
+    private static final String AUTHORIZATION_TOKEN_PREFIX = "token ";
 
     /**
      * Constructs an instance of this reader with the provided Github Enterprise URL
      *
      * @param token the github token (optional)
      * @param githubEnterpriseUrl the Github enterprise URL
-     * @param owner the Github owner
-     * @param repo the Github repository
-     * @param ref the Github ref, i.e. - main, v2.3, ab436dea2, etc...
+     * @param remoteRef the remote reference
      */
-    public GithubRepositoryFileReader(final String token, @NonNull final String githubEnterpriseUrl, @NonNull final String owner,
-                                      @NonNull final String repo, @NonNull final String ref) {
-        super(constructBaseUrl(githubEnterpriseUrl, true, owner, repo, ref), constructRequestProperties(token));
+    public GithubRepositoryFileReader(final String token, @NonNull final String githubEnterpriseUrl, @NonNull final RemoteRef remoteRef) {
+        super(constructBaseUrl(githubEnterpriseUrl, true, remoteRef), constructRequestProperties(AUTHORIZATION_TOKEN_PREFIX, token));
     }
 
     /**
      * Constructs an instance of this reader with the provided owner, repo, and ref
      *
      * @param token the github token (optional)
-     * @param owner the Github owner
-     * @param repo the Github repository
-     * @param ref the Github ref, i.e. - main, v2.3, ab436dea2, etc...
+     * @param remoteRef the remote reference
      */
-    public GithubRepositoryFileReader(final String token, @NonNull final String owner, @NonNull final String repo, @NonNull final String ref) {
-        super(constructBaseUrl(DEFAULT_BASE_URL, false, owner, repo, ref), constructRequestProperties(token));
+    public GithubRepositoryFileReader(final String token, @NonNull final RemoteRef remoteRef) {
+        super(constructBaseUrl(RemoteRef.Type.GITHUB.getBaseUrl(), false, remoteRef), constructRequestProperties(AUTHORIZATION_TOKEN_PREFIX, token));
     }
 
     /**
@@ -49,38 +42,13 @@ public class GithubRepositoryFileReader extends RemoteRepositoryFileReader {
      *
      * @param githubUrl the Github URL
      * @param githubEnterprise true if Github Enterprise, false otherwise
-     * @param owner the Github owner
-     * @param repo the Github repo
-     * @param ref the Github ref
+     * @param remoteRef the remote reference
      * @return the constructed base URL with a trailing {@value #SEPARATOR}
      */
-    private static String constructBaseUrl(final String githubUrl, final boolean githubEnterprise, final String owner, final String repo, final String ref) {
-        final String baseUrl;
-        if (githubUrl.endsWith(SEPARATOR)) {
-            baseUrl = githubUrl;
-        } else {
-            baseUrl = githubUrl + SEPARATOR;
-        }
-        final String githubBaseUrl;
-        if (githubEnterprise) {
-            githubBaseUrl = baseUrl + "raw" + SEPARATOR;
-        } else {
-            githubBaseUrl = baseUrl;
-        }
-        return githubBaseUrl + owner + SEPARATOR + repo + SEPARATOR + ref + SEPARATOR;
-    }
-
-    /**
-     * Construct the request properties for the provided github token
-     *
-     * @param githubToken the github token
-     * @return the request properties
-     */
-    private static Map<String, String> constructRequestProperties(final String githubToken) {
-        if (StringUtils.isNotBlankOrEmpty(githubToken)) {
-            return Collections.singletonMap("Authorization", String.format("token %s", githubToken));
-        }
-        return Collections.emptyMap();
+    public static String constructBaseUrl(final String githubUrl, final boolean githubEnterprise, final RemoteRef remoteRef) {
+        val baseUrl = githubUrl.endsWith(SEPARATOR) ? githubUrl.substring(0, githubUrl.length() - 1) : githubUrl;
+        val githubBaseUrl = githubEnterprise ? baseUrl + "/raw" : baseUrl;
+        return String.format("%s/%s/%s/%s/", githubBaseUrl, remoteRef.getNamespace(), remoteRef.getRepository(), remoteRef.getRef());
     }
 
 }

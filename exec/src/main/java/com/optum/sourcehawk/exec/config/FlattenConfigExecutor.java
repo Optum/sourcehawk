@@ -1,4 +1,4 @@
-package com.optum.sourcehawk.exec.flattenconfig;
+package com.optum.sourcehawk.exec.config;
 
 import com.fasterxml.jackson.core.ObjectCodec;
 import com.fasterxml.jackson.core.io.IOContext;

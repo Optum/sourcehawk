@@ -1,6 +1,8 @@
 package com.optum.sourcehawk.exec
 
-
+import com.optum.sourcehawk.core.data.RemoteRef
+import com.optum.sourcehawk.core.repository.GithubRepositoryFileReader
+import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader
 import com.optum.sourcehawk.core.scan.Verbosity
 import spock.lang.Specification
 
@@ -21,11 +23,8 @@ class ExecOptionsSpec extends Specification {
         execOptions.configurationFileLocation == "sourcehawk.yml"
         execOptions.verbosity == Verbosity.HIGH
         !execOptions.failOnWarnings
-        !execOptions.github
-
-        and:
-        execOptions == ExecOptions.builder().build()
-        execOptions.hashCode() == ExecOptions.builder().build().hashCode()
+        execOptions.repositoryFileReader instanceof LocalRepositoryFileReader
+        !execOptions.remoteRef
 
         and:
         execOptions.toString()
@@ -48,20 +47,20 @@ class ExecOptionsSpec extends Specification {
         execOptions.configurationFileLocation == "Sourcehawk"
         execOptions.verbosity == Verbosity.ZERO
         execOptions.failOnWarnings
-        !execOptions.github
+        execOptions.repositoryFileReader instanceof LocalRepositoryFileReader
+        !execOptions.remoteRef
     }
 
     def "builder - github"() {
         given:
+        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main")
         ExecOptions.ExecOptionsBuilder builder = ExecOptions.builder()
                 .repositoryRoot(Paths.get("/"))
                 .configurationFileLocation("Sourcehawk")
                 .verbosity(Verbosity.ZERO)
                 .failOnWarnings(true)
-                .github(ExecOptions.GithubOptions.builder()
-                        .coords("owner/repo")
-                        .ref("ref")
-                        .build())
+                .repositoryFileReader(new GithubRepositoryFileReader("token", remoteRef))
+                .remoteRef(remoteRef)
 
         when:
         ExecOptions execOptions = builder.build()
@@ -72,37 +71,8 @@ class ExecOptionsSpec extends Specification {
         execOptions.configurationFileLocation == "Sourcehawk"
         execOptions.verbosity == Verbosity.ZERO
         execOptions.failOnWarnings
-        execOptions.github
-        execOptions.github.coords == "owner/repo"
-        execOptions.github.ref == "ref"
-    }
-
-    def "builder - github - optionals"() {
-        given:
-        ExecOptions.ExecOptionsBuilder builder = ExecOptions.builder()
-                .repositoryRoot(Paths.get("/"))
-                .configurationFileLocation("Sourcehawk")
-                .verbosity(Verbosity.ZERO)
-                .failOnWarnings(true)
-                .github(ExecOptions.GithubOptions.builder()
-                        .token("token")
-                        .coords("owner/repo")
-                        .ref("ref")
-                        .enterpriseUrl(new URL("https://github.example.com"))
-                        .build())
-
-        when:
-        ExecOptions execOptions = builder.build()
-
-        then:
-        execOptions
-        execOptions.repositoryRoot == Paths.get("/")
-        execOptions.configurationFileLocation == "Sourcehawk"
-        execOptions.verbosity == Verbosity.ZERO
-        execOptions.failOnWarnings
-        execOptions.github
-        execOptions.github.coords == "owner/repo"
-        execOptions.github.ref == "ref"
+        execOptions.repositoryFileReader instanceof GithubRepositoryFileReader
+        execOptions.remoteRef == remoteRef
     }
 
     def "builder - NPE"() {
@@ -133,12 +103,10 @@ class ExecOptionsSpec extends Specification {
 
         then:
         thrown(NullPointerException)
-    }
 
-    def "builder - github - NPE"() {
         when:
-        ExecOptions.GithubOptions.builder()
-                .build()
+        ExecOptions.builder()
+                .repositoryFileReader(null)
 
         then:
         thrown(NullPointerException)

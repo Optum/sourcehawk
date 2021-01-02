@@ -18,9 +18,5 @@
   {
     "name" : "com.optum.sourcehawk.core.scan.FlattenConfigResult",
     "allPublicMethods" : true
-  },
-  {
-    "name" : "com.optum.sourcehawk.core.scan.FlattenConfigResult$MessageDescriptor",
-    "allPublicMethods" : true
   }
 ]

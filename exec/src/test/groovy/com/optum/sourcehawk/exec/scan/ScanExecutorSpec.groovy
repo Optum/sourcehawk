@@ -1,16 +1,13 @@
 package com.optum.sourcehawk.exec.scan
 
-import com.optum.sourcehawk.core.repository.GithubRepositoryFileReader
+import com.optum.sourcehawk.core.protocol.file.FileProtocol
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader
 import com.optum.sourcehawk.core.repository.RepositoryFileReader
 import com.optum.sourcehawk.core.scan.ScanResult
-import com.optum.sourcehawk.core.protocol.file.FileProtocol
 import com.optum.sourcehawk.exec.ConfigurationException
 import com.optum.sourcehawk.exec.ExecOptions
 import com.optum.sourcehawk.exec.FileBaseSpecification
 import com.optum.sourcehawk.exec.scan.ScanExecutor
-
-import java.nio.file.Paths
 
 class ScanExecutorSpec extends FileBaseSpecification {
 
@@ -18,6 +15,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         given:
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -33,6 +31,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(repositoryRoot.resolve("sourcehawk.yml").toAbsolutePath().toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -48,6 +47,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(repositoryRoot.resolve(".test/override.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -63,6 +63,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(repositoryRoot.resolve(".test/glob-example.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -78,6 +79,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(repositoryRoot.resolve(".test/bad-url.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -93,6 +95,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(repositoryRoot.resolve(".test/local.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -108,6 +111,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation("https://raw.githubusercontent.com/optum/sourcehawk-parent/main/.sourcehawk/config.yml")
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -123,6 +127,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation("Sourcehawk")
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -138,6 +143,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(testResourcesRoot.resolve("sourcehawk-file-not-found.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -157,6 +163,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(testResourcesRoot.resolve("sourcehawk-file-not-found-enforcers.yml").toString())
                 .failOnWarnings(true)
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -175,6 +182,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(testResourcesRoot.resolve("sourcehawk-no-enforcers.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -193,6 +201,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(testResourcesRoot.resolve("sourcehawk-failed-enforcer.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -212,6 +221,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(testResourcesRoot.resolve("sourcehawk-failed-enforcer-only-warning.yml").toString())
                 .failOnWarnings(true)
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -230,6 +240,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(testResourcesRoot.resolve("sourcehawk-failed-enforcer-only-warning.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -248,6 +259,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
                 .configurationFileLocation(testResourcesRoot.resolve(".i-like-scans.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
         when:
@@ -263,10 +275,11 @@ class ScanExecutorSpec extends FileBaseSpecification {
 
     def "enforceFileExists - repository file reader error"() {
         given:
+        RepositoryFileReader mockRepositoryFileReader = Mock()
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
+                .repositoryFileReader(mockRepositoryFileReader)
                 .build()
-        RepositoryFileReader mockRepositoryFileReader = Mock()
         FileProtocol fileProtocol = FileProtocol.builder()
                 .name("bicycle")
                 .repositoryPath("/two/wheels")
@@ -274,10 +287,10 @@ class ScanExecutorSpec extends FileBaseSpecification {
                 .build()
 
         when:
-        ScanResult scanResult = ScanExecutor.enforceFileExists(execOptions, mockRepositoryFileReader, fileProtocol)
+        ScanResult scanResult = ScanExecutor.enforceFileExists(execOptions, fileProtocol)
 
         then:
-        1 * mockRepositoryFileReader.read(_ as String) >> {
+        1 * mockRepositoryFileReader.exists(_ as String) >> {
             throw new IOException("BOOM")
         }
         0 * _
@@ -289,10 +302,11 @@ class ScanExecutorSpec extends FileBaseSpecification {
 
     def "enforceFileProtocol - enforcer conversion error"() {
         given:
+        RepositoryFileReader mockRepositoryFileReader = Mock()
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
+                .repositoryFileReader(mockRepositoryFileReader)
                 .build()
-        RepositoryFileReader mockRepositoryFileReader = Mock()
         FileProtocol fileProtocol = FileProtocol.builder()
                 .name("bicycle")
                 .repositoryPath("/two/wheels")
@@ -301,7 +315,7 @@ class ScanExecutorSpec extends FileBaseSpecification {
                 .build()
 
         when:
-        ScanResult scanResult = ScanExecutor.enforceFileProtocol(execOptions, mockRepositoryFileReader, fileProtocol)
+        ScanResult scanResult = ScanExecutor.enforceFileProtocol(execOptions, fileProtocol)
 
         then:
         0 * _
@@ -311,60 +325,23 @@ class ScanExecutorSpec extends FileBaseSpecification {
         !scanResult.passed
     }
 
-    def "enforceFileProtocol - glob pattern no enforcers"() {
+    def "processFileProtocol - glob pattern no enforcers"() {
         given:
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
         FileProtocol fileProtocol = FileProtocol.builder()
                 .name("test")
                 .repositoryPath("file.txt")
                 .build()
-        RepositoryFileReader repositoryFileReader = LocalRepositoryFileReader.create(repositoryRoot)
 
         when:
-        ScanResult scanResult = ScanExecutor.enforceFileProtocol(execOptions, fileProtocol, repositoryFileReader)
+        ScanResult scanResult = ScanExecutor.processFileProtocol(execOptions, fileProtocol)
 
         then:
         scanResult
         scanResult.errorCount == 1
-    }
-
-    def "getRepositoryFileReader - local"() {
-        given:
-        ExecOptions execOptions = ExecOptions.builder()
-                .repositoryRoot(repositoryRoot)
-                .build()
-
-        expect:
-        ScanExecutor.getRepositoryFileReader(execOptions) instanceof LocalRepositoryFileReader
-    }
-
-    def "getRepositoryFileReader - github"() {
-        given:
-        ExecOptions execOptions = ExecOptions.builder()
-                .github(ExecOptions.GithubOptions.builder()
-                        .coords("owner/repo")
-                        .ref("ref")
-                        .build())
-                .build()
-
-        expect:
-        ScanExecutor.getRepositoryFileReader(execOptions) instanceof GithubRepositoryFileReader
-    }
-
-    def "getRepositoryFileReader - github enterprise"() {
-        given:
-        ExecOptions execOptions = ExecOptions.builder()
-                .github(ExecOptions.GithubOptions.builder()
-                        .coords("owner/repo")
-                        .ref("ref")
-                        .enterpriseUrl(new URL("https://github.example.com"))
-                        .build())
-                .build()
-
-        expect:
-        ScanExecutor.getRepositoryFileReader(execOptions) instanceof GithubRepositoryFileReader
     }
 
 }

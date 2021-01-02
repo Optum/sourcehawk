@@ -1,0 +1,38 @@
+
+= Examples
+
+.Read the manual
+[source,sh]
+----
+man sourcehawk-scan-github
+----
+
+.Scan repository `main` branch located at https://github.com/optum/sourcehawk
+[source,sh]
+----
+sourcehawk scan github optum/sourcehawk
+----
+
+.Scan using a custom configuration file
+[source,sh]
+----
+sourcehawk scan -c sourcehawk-custom.yml github optum/sourcehawk
+----
+
+.Scan repository `develop` branch located at https://github.com/optum/sourcehawk and format output as JSON
+[source,sh]
+----
+sourcehawk scan -f JSON github optum/sourcehawk@develop
+----
+
+.Scan repository on Github enterprise with an auth token
+[source,sh]
+----
+sourcehawk scan github -E https://github.example.com --token abc123 optum/sourcehawk
+----
+
+.Use a shorter alias
+[source,sh]
+----
+sourcehawk scan gh optum/sourcehawk
+----

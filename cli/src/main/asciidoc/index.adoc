@@ -43,6 +43,18 @@ include::_scan-examples.adoc[leveloffset=3]
 
 '''
 
+include::{generateddocs}/scan-github.adoc[leveloffset=2,tag=picocli-generated-full-manpage]
+
+include::_scan-github-examples.adoc[leveloffset=3]
+
+'''
+
+include::{generateddocs}/scan-bitbucket.adoc[leveloffset=2,tag=picocli-generated-full-manpage]
+
+include::_scan-bitbucket-examples.adoc[leveloffset=3]
+
+'''
+
 include::{generateddocs}/fix.adoc[leveloffset=2,tag=picocli-generated-full-manpage]
 
 include::_fix-examples.adoc[leveloffset=3]

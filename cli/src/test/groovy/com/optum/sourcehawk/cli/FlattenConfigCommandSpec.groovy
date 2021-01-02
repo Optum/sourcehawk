@@ -1,7 +1,10 @@
 package com.optum.sourcehawk.cli
 
-
+import com.optum.sourcehawk.core.constants.SourcehawkConstants
 import spock.lang.Unroll
+
+import java.nio.file.Path
+import java.nio.file.Paths
 
 class FlattenConfigCommandSpec extends CliBaseSpecification {
 
@@ -70,7 +73,7 @@ class FlattenConfigCommandSpec extends CliBaseSpecification {
 
     def "main: console remote"() {
         given:
-        String[] args = ["-cfu", "https://raw.githubusercontent.com/optum/sourcehawk-parent/main/.sourcehawk/config.yml"]
+        String[] args = ["-U", "https://raw.githubusercontent.com/optum/sourcehawk-parent/main/.sourcehawk/config.yml"]
 
         when:
         FlattenConfigCommand.main(args)
@@ -144,4 +147,40 @@ class FlattenConfigCommandSpec extends CliBaseSpecification {
         where:
         arg << ["-n", "--none"]
     }
+
+    def "getConfigurationFileLocation - URL"() {
+        given:
+        URL configFileUrl = new URL("https://raw.githubusercontent.com/optum/sourcehawk/main/sourcehawk.yml")
+        FlattenConfigCommand flattenConfigCommand = new FlattenConfigCommand(configFile: new CommandOptions.ConfigFile(url: configFileUrl))
+
+        when:
+        String configurationFileLocation = flattenConfigCommand.getConfigurationFileLocation()
+
+        then:
+        configurationFileLocation == configFileUrl.toString()
+    }
+
+    def "getConfigurationFileLocation - local"() {
+        given:
+        Path configFilePath = Paths.get("sourcehawk.yml")
+        FlattenConfigCommand flattenConfigCommand = new FlattenConfigCommand(configFile: new CommandOptions.ConfigFile(path: configFilePath))
+
+        when:
+        String configurationFileLocation = flattenConfigCommand.getConfigurationFileLocation()
+
+        then:
+        configurationFileLocation == configFilePath.toString()
+    }
+
+    def "getConfigurationFileLocation - default"() {
+        given:
+        FlattenConfigCommand flattenConfigCommand = new FlattenConfigCommand()
+
+        when:
+        String configurationFileLocation = flattenConfigCommand.getConfigurationFileLocation()
+
+        then:
+        configurationFileLocation == SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME
+    }
+
 }

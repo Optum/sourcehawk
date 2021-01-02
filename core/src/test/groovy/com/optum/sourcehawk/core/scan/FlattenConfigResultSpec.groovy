@@ -16,6 +16,13 @@ class FlattenConfigResultSpec extends Specification {
         flattenResult.content == "hello".bytes
         !flattenResult.error
         flattenResult.formattedMessage == "Success"
+
+        and:
+        flattenResult.toString() == FlattenConfigResult.builder()
+                .formattedMessage("Success")
+                .content("hello".bytes)
+                .error(false)
+                .build().toString()
     }
 
     def "success"() {
@@ -37,4 +44,5 @@ class FlattenConfigResultSpec extends Specification {
         flattenResult.formattedMessage == "Bad"
         flattenResult.error
     }
+
 }

@@ -30,4 +30,9 @@ class SourcehawkConfigurationSpec extends Specification {
         !sourceHawkConfiguration.fileProtocols
     }
 
+    def "empty"() {
+        expect:
+        SourcehawkConfiguration.empty() == SourcehawkConfiguration.empty()
+    }
+
 }

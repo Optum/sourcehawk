@@ -1,8 +1,7 @@
-package com.optum.sourcehawk.exec.flattenconfig
+package com.optum.sourcehawk.exec.config
 
 import com.optum.sourcehawk.core.scan.FlattenConfigResult
 import com.optum.sourcehawk.exec.FileBaseSpecification
-import com.optum.sourcehawk.exec.flattenconfig.FlattenConfigExecutor
 import org.spockframework.util.IoUtil
 
 class FlattenConfigExecutorSpec extends FileBaseSpecification {

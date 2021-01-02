@@ -2,6 +2,7 @@ package com.optum.sourcehawk.cli
 
 import com.optum.sourcehawk.core.scan.ScanResult
 import com.optum.sourcehawk.exec.ExecOptions
+import picocli.CommandLine
 import spock.lang.Unroll
 
 class ScanCommandSpec extends CliBaseSpecification {
@@ -23,13 +24,15 @@ class ScanCommandSpec extends CliBaseSpecification {
     }
 
     @Unroll
-    def "main: #args (passed)"() {
+    def "commandLine.execute: #args (passed)"() {
+        given:
+        CommandLine commandLine = new CommandLine(new ScanCommand())
+
         when:
-        ScanCommand.main(args)
+        int exitCode = commandLine.execute(args)
 
         then:
-        SystemExit systemExit = thrown(SystemExit)
-        systemExit.status == 0
+        exitCode == 0
 
         where:
         args << [
@@ -40,70 +43,61 @@ class ScanCommandSpec extends CliBaseSpecification {
                 [ "--verbosity", "HIGH", repositoryRoot.toString() ] as String[],
                 [ "-f", "JSON", repositoryRoot.toString() ] as String[],
                 [ "--output-format", "JSON", repositoryRoot.toString() ] as String[],
-                [ "-fow", repositoryRoot.toString() ] as String[],
+                [ "-w", repositoryRoot.toString() ] as String[],
                 [ "--fail-on-warnings", repositoryRoot.toString() ] as String[]
         ]
     }
 
-    def "main: #args (invalid github org)"() {
-        when:
-        ScanCommand.main([ "--github-coords", "owner" ] as String[])
-
-        then:
-        SystemExit systemExit = thrown(SystemExit)
-        systemExit.status == 1
-    }
-
-    def "main: enforcer fails (failed)"() {
+    def "commandLine.execute: enforcer fails (failed)"() {
         given:
         String[] args = ["-c", "sourcehawk-failed-enforcer.yml", testResourcesRoot.toString()]
+        CommandLine commandLine = new CommandLine(new ScanCommand())
 
         when:
-        ScanCommand.main(args)
+        int exitCode = commandLine.execute(args)
 
         then:
-        SystemExit systemExit = thrown(SystemExit)
-        systemExit.status == 1
+        exitCode == 1
     }
 
-    def "main: configuration file not found (failed)"() {
+    def "commandLine.execute: configuration file not found (failed)"() {
         given:
         String[] args = ["-c", "sourcehawk.yml"]
+        CommandLine commandLine = new CommandLine(new ScanCommand())
 
         when:
-        ScanCommand.main(args)
+        int exitCode = commandLine.execute(args)
 
         then:
-        SystemExit systemExit = thrown(SystemExit)
-        systemExit.status == 1
+        exitCode == 1
     }
 
     @Unroll
-    def "main: parse error"() {
+    def "commandLine.execute: parse error"() {
         given:
         String[] args = new String[] { arg }
+        CommandLine commandLine = new CommandLine(new ScanCommand())
 
         when:
-        ScanCommand.main(args)
+        int exitCode = commandLine.execute(args)
 
         then:
-        SystemExit systemExit = thrown(SystemExit)
-        systemExit.status == 2
+        exitCode == 2
 
         where:
         arg << [ "-n", "--none" ]
     }
 
-    def "main: multiple exclusive options"() {
+    def "commandLine.execute: multiple exclusive options"() {
         given:
-        String[] args = new String[] { "-cfu", "http://www.example.com", "-c", "sourcehawk.yml" }
+        String[] args = new String[] { "-U", "http://www.example.com", "-c", "sourcehawk.yml" }
+        CommandLine commandLine = new CommandLine(new ScanCommand())
 
         when:
-        ScanCommand.main(args)
+        int exitCode = commandLine.execute(args)
 
         then:
-        SystemExit systemExit = thrown(SystemExit)
-        systemExit.status == 2
+        exitCode == 2
     }
 
     def "execute - exception"() {

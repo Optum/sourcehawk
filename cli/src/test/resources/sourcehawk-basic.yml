@@ -1,0 +1,13 @@
+
+file-protocols:
+  - name: Lombok
+    repository-path: lombok.config
+    required: true
+    severity: ERROR
+    enforcers:
+      - enforcer: .common.StringPropertyEquals
+        property-name: config.stopBubbling
+        expected-property-value: true
+      - enforcer: .common.StringPropertyEquals
+        property-name: lombok.addLombokGeneratedAnnotation
+        expected-property-value: true

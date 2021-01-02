@@ -11,6 +11,7 @@ import lombok.val;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.function.IntConsumer;
 
 /**
@@ -76,6 +77,16 @@ public class ScanResultFactory {
                 .formattedMessages(Collections.singleton(message))
                 .errorCount(1)
                 .build();
+    }
+
+    /**
+     * Create the scan result for situations where there is an exception executing the scan
+     *
+     * @param throwable the exception / error which occurred
+     * @return the scan result
+     */
+    public ScanResult globalError(final Throwable throwable) {
+        return error("GLOBAL", Optional.ofNullable(throwable.getMessage()).orElse("Unknown error"));
     }
 
     /**

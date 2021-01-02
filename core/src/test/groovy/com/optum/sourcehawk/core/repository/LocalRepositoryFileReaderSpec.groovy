@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.core.repository
 
+import org.spockframework.util.IoUtil
 import spock.lang.Specification
 
 import java.nio.file.Path
@@ -20,9 +21,51 @@ class LocalRepositoryFileReaderSpec extends Specification {
         thrown(NullPointerException)
     }
 
+    def "supportsGlobPatterns"() {
+        given:
+        URL resource = IoUtil.getResource('/file.txt')
+        File fileResource = new File(resource.toURI())
+        Path repositoryRoot = Paths.get(fileResource.getParentFile().getAbsolutePath())
+        RepositoryFileReader repositoryFileReader = LocalRepositoryFileReader.create(repositoryRoot)
+
+        when:
+        boolean supportsGlobPatterns = repositoryFileReader.supportsGlobPatterns()
+
+        then:
+        supportsGlobPatterns
+    }
+
+    def "exists - file found"() {
+        given:
+        URL resource = IoUtil.getResource('/file.txt')
+        File fileResource = new File(resource.toURI())
+        Path repositoryRoot = Paths.get(fileResource.getParentFile().getAbsolutePath())
+        RepositoryFileReader repositoryFileReader = LocalRepositoryFileReader.create(repositoryRoot)
+
+        when:
+        boolean exists = repositoryFileReader.exists('file.txt')
+
+        then:
+        exists
+    }
+
+    def "exists - file not found"() {
+        given:
+        URL resource = IoUtil.getResource('/file.txt')
+        File fileResource = new File(resource.toURI())
+        Path repositoryRoot = Paths.get(fileResource.getParentFile().getAbsolutePath())
+        RepositoryFileReader repositoryFileReader = LocalRepositoryFileReader.create(repositoryRoot)
+
+        when:
+        boolean exists = repositoryFileReader.exists('nope.txt')
+
+        then:
+        !exists
+    }
+
     def "read - file found"() {
         given:
-        URL resource = getClass().getClassLoader().getResource('file.txt')
+        URL resource = IoUtil.getResource('/file.txt')
         File fileResource = new File(resource.toURI())
         Path repositoryRoot = Paths.get(fileResource.getParentFile().getAbsolutePath())
         RepositoryFileReader repositoryFileReader = LocalRepositoryFileReader.create(repositoryRoot)
@@ -38,7 +81,7 @@ class LocalRepositoryFileReaderSpec extends Specification {
 
     def "read - file not found"() {
         given:
-        URL resource = getClass().getClassLoader().getResource('file.txt')
+        URL resource = IoUtil.getResource('/file.txt')
         File fileResource = new File(resource.toURI())
         Path repositoryRoot = Paths.get(fileResource.getParentFile().getAbsolutePath())
         RepositoryFileReader repositoryFileReader = LocalRepositoryFileReader.create(repositoryRoot)

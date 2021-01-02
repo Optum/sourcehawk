@@ -28,7 +28,7 @@ class AbstractExecCommandSpec extends Specification {
         execOptions
         execOptions.repositoryRoot == Paths.get(".")
         execOptions.outputFormat == OutputFormat.CONSOLE
-        execOptions.configurationFileLocation == SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME
+        execOptions.configurationFileLocation == "sourcehawk.yml"
         execOptions.verbosity == Verbosity.HIGH
         !execOptions.failOnWarnings
     }
@@ -36,38 +36,14 @@ class AbstractExecCommandSpec extends Specification {
     def "buildExecOptions - provided options"() {
         given:
         AbstractExecCommand command = new ScanCommand(
-                repositoryRootPath: Paths.get("/abc"),
-                configFile: new AbstractExecCommand.ConfigFileExclusiveOptions(
-                        path: Paths.get(".sh.yml")
-                ),
-                outputFormat: OutputFormat.TEXT,
-                verbosity: Verbosity.MEDIUM,
-                failOnWarnings: true
-        )
-
-        when:
-        ExecOptions execOptions = command.buildExecOptions()
-
-        then:
-        execOptions
-        execOptions.repositoryRoot
-        execOptions.outputFormat == OutputFormat.TEXT
-        execOptions.configurationFileLocation == ".sh.yml"
-        execOptions.verbosity == Verbosity.MEDIUM
-        !execOptions.failOnWarnings
-    }
-
-    @Unroll
-    def "buildExecOptions - provided options - repository path null/empty"() {
-        given:
-        AbstractExecCommand command = new ScanCommand(
-                repositoryRootPath: repositoryRootPath,
-                configFile: new AbstractExecCommand.ConfigFileExclusiveOptions(
-                        path: Paths.get(".sh.yml")
-                ),
-                outputFormat: OutputFormat.TEXT,
-                verbosity: Verbosity.MEDIUM,
-                failOnWarnings: true
+                exec: new CommandOptions.Exec(
+                        configFile: new CommandOptions.ConfigFile(
+                                path: Paths.get("sh.yml")
+                        ),
+                        outputFormat: OutputFormat.TEXT,
+                        verbosity: Verbosity.MEDIUM,
+                        failOnWarnings: false
+                )
         )
 
         when:
@@ -77,7 +53,33 @@ class AbstractExecCommandSpec extends Specification {
         execOptions
         execOptions.repositoryRoot == Paths.get(".")
         execOptions.outputFormat == OutputFormat.TEXT
-        execOptions.configurationFileLocation == ".sh.yml"
+        execOptions.configurationFileLocation == "sh.yml"
+        execOptions.verbosity == Verbosity.MEDIUM
+        !execOptions.failOnWarnings
+    }
+
+    @Unroll
+    def "buildExecOptions - provided options - repository path null/empty"() {
+        given:
+        AbstractExecCommand command = new ScanCommand(
+                exec: new CommandOptions.Exec(
+                    configFile: new CommandOptions.ConfigFile(
+                            path: Paths.get("sh.yml")
+                    ),
+                    outputFormat: OutputFormat.TEXT,
+                    verbosity: Verbosity.MEDIUM,
+                    failOnWarnings: false
+                )
+        )
+
+        when:
+        ExecOptions execOptions = command.buildExecOptions()
+
+        then:
+        execOptions
+        execOptions.repositoryRoot == Paths.get(".")
+        execOptions.outputFormat == OutputFormat.TEXT
+        execOptions.configurationFileLocation == "sh.yml"
         execOptions.verbosity == Verbosity.MEDIUM
         !execOptions.failOnWarnings
 
@@ -89,12 +91,13 @@ class AbstractExecCommandSpec extends Specification {
     def "buildExecOptions - provided options (#outputFormat) - verbosity downgraded"() {
         given:
         AbstractExecCommand command = new FixCommand(
-                repositoryRootPath: Paths.get("/abc"),
-                configFile: new AbstractExecCommand.ConfigFileExclusiveOptions(
-                        url: new URL("https://raw.githubusercontent.com/optum/sourcehawk-parent/sourcehawk.yml")
-                ),
-                outputFormat: outputFormat,
-                verbosity: Verbosity.HIGH
+                exec: new CommandOptions.Exec(
+                        configFile: new CommandOptions.ConfigFile(
+                                url: new URL("https://raw.githubusercontent.com/optum/sourcehawk-parent/sourcehawk.yml")
+                        ),
+                        outputFormat: outputFormat,
+                        verbosity: Verbosity.HIGH
+                )
         )
 
         when:
@@ -102,104 +105,13 @@ class AbstractExecCommandSpec extends Specification {
 
         then:
         execOptions
-        execOptions.repositoryRoot == Paths.get("/abc")
+        execOptions.repositoryRoot == Paths.get(".")
         execOptions.outputFormat == outputFormat
         execOptions.configurationFileLocation == "https://raw.githubusercontent.com/optum/sourcehawk-parent/sourcehawk.yml"
         execOptions.verbosity == Verbosity.ZERO
 
         where:
-        outputFormat << [OutputFormat.JSON, OutputFormat.MARKDOWN ]
-    }
-
-    def "buildExecOptions - github"() {
-        given:
-        AbstractExecCommand command = new ScanCommand(
-                repositoryRootPath: Paths.get("/abc"),
-                configFile: new AbstractExecCommand.ConfigFileExclusiveOptions(
-                        path: Paths.get(".sh.yml")
-                ),
-                outputFormat: OutputFormat.TEXT,
-                verbosity: Verbosity.MEDIUM,
-                failOnWarnings: true,
-                github: new AbstractExecCommand.GithubOptions(
-                        coords: "owner/repo"
-                )
-        )
-
-        when:
-        ExecOptions execOptions = command.buildExecOptions()
-
-        then:
-        execOptions
-        execOptions.repositoryRoot
-        execOptions.outputFormat == OutputFormat.TEXT
-        execOptions.configurationFileLocation == ".sh.yml"
-        execOptions.verbosity == Verbosity.MEDIUM
-        !execOptions.failOnWarnings
-        execOptions.github
-        !execOptions.github.token
-        execOptions.github.coords
-        execOptions.github.ref == "main"
-        !execOptions.github.enterpriseUrl
-    }
-    def "buildExecOptions - github (additional options)"() {
-        given:
-        AbstractExecCommand command = new ScanCommand(
-                repositoryRootPath: Paths.get("/abc"),
-                configFile: new AbstractExecCommand.ConfigFileExclusiveOptions(
-                        path: Paths.get(".sh.yml")
-                ),
-                outputFormat: OutputFormat.TEXT,
-                verbosity: Verbosity.MEDIUM,
-                failOnWarnings: true,
-                github: new AbstractExecCommand.GithubOptions(
-                        token: "abc",
-                        coords: "owner/repo",
-                        ref: "develop",
-                        enterpriseUrl: new URL("https://github.example.com")
-                )
-        )
-
-        when:
-        ExecOptions execOptions = command.buildExecOptions()
-
-        then:
-        execOptions
-        execOptions.repositoryRoot
-        execOptions.outputFormat == OutputFormat.TEXT
-        execOptions.configurationFileLocation == ".sh.yml"
-        execOptions.verbosity == Verbosity.MEDIUM
-        !execOptions.failOnWarnings
-        execOptions.github
-        execOptions.github.token == "abc"
-        execOptions.github.coords
-        execOptions.github.ref == "develop"
-        execOptions.github.enterpriseUrl.toString() == "https://github.example.com"
-    }
-
-    def "buildExecOptions - github (invalid coords)"() {
-        given:
-        AbstractExecCommand command = new ScanCommand(
-                repositoryRootPath: Paths.get("/abc"),
-                configFile: new AbstractExecCommand.ConfigFileExclusiveOptions(
-                        path: Paths.get(".sh.yml")
-                ),
-                outputFormat: OutputFormat.TEXT,
-                verbosity: Verbosity.MEDIUM,
-                failOnWarnings: true,
-                github: new AbstractExecCommand.GithubOptions(
-                        token: "abc",
-                        coords: "owner",
-                        ref: "develop",
-                        enterpriseUrl: new URL("https://github.example.com")
-                )
-        )
-
-        when:
-        command.buildExecOptions()
-
-        then:
-        thrown(IllegalArgumentException)
+        outputFormat << [ OutputFormat.JSON, OutputFormat.MARKDOWN ]
     }
 
 }
