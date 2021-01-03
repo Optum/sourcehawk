@@ -1,5 +1,6 @@
-package com.optum.sourcehawk.core.scan
+package com.optum.sourcehawk.core.data
 
+import com.optum.sourcehawk.core.data.OutputFormat
 import spock.lang.Specification
 import spock.lang.Unroll
 

@@ -2,7 +2,7 @@ package com.optum.sourcehawk.exec.fix;
 
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
-import com.optum.sourcehawk.core.scan.FixResult;
+import com.optum.sourcehawk.core.result.FixResult;
 import com.optum.sourcehawk.core.utils.FileUtils;
 import com.optum.sourcehawk.enforcer.EnforcerConstants;
 import com.optum.sourcehawk.enforcer.file.FileResolver;

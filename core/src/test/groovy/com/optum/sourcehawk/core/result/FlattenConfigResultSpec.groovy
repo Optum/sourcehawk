@@ -1,4 +1,4 @@
-package com.optum.sourcehawk.core.scan
+package com.optum.sourcehawk.core.result
 
 import spock.lang.Specification
 
@@ -7,7 +7,7 @@ class FlattenConfigResultSpec extends Specification {
     def "happy path constructors"() {
         when:
         def flattenResult = FlattenConfigResult.builder()
-                .formattedMessage("Success")
+                .message("Success")
                 .content("hello".bytes)
                 .error(false)
                 .build()
@@ -15,11 +15,11 @@ class FlattenConfigResultSpec extends Specification {
         then:
         flattenResult.content == "hello".bytes
         !flattenResult.error
-        flattenResult.formattedMessage == "Success"
+        flattenResult.message == "Success"
 
         and:
         flattenResult.toString() == FlattenConfigResult.builder()
-                .formattedMessage("Success")
+                .message("Success")
                 .content("hello".bytes)
                 .error(false)
                 .build().toString()
@@ -31,7 +31,7 @@ class FlattenConfigResultSpec extends Specification {
 
         then:
         flattenResult.content == "hello".bytes
-        flattenResult.formattedMessage == "Flatten successful"
+        flattenResult.message == "Flatten successful"
         !flattenResult.error
     }
 
@@ -41,7 +41,7 @@ class FlattenConfigResultSpec extends Specification {
 
         then:
         !flattenResult.content
-        flattenResult.formattedMessage == "Bad"
+        flattenResult.message == "Bad"
         flattenResult.error
     }
 

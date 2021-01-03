@@ -1,7 +1,7 @@
 package com.optum.sourcehawk.exec.config;
 
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileWriter;
-import com.optum.sourcehawk.core.scan.FlattenConfigResult;
+import com.optum.sourcehawk.core.result.FlattenConfigResult;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.exec.ExecLoggers;
 import lombok.experimental.UtilityClass;
@@ -15,7 +15,7 @@ import java.util.Optional;
  * A logger for flatten config results
  *
  * @author Christian Oestreich
- * @see com.optum.sourcehawk.core.scan.FlattenConfigResult
+ * @see com.optum.sourcehawk.core.result.FlattenConfigResult
  */
 @UtilityClass
 public class FlattenConfigResultLogger {
@@ -49,7 +49,7 @@ public class FlattenConfigResultLogger {
         try {
             val outputPath = getOutputPath(outputFilePath);
             LocalRepositoryFileWriter.writer().write(outputPath, flattenConfigResult.getContent());
-            ExecLoggers.CONSOLE_RAW.info(flattenConfigResult.getFormattedMessage());
+            ExecLoggers.CONSOLE_RAW.info(flattenConfigResult.getMessage());
             ExecLoggers.CONSOLE_RAW.info("Output to {}", outputPath);
         } catch (final Exception e) {
             ExecLoggers.CONSOLE_RAW.error("Error writing flattened configuration to file: {}", e.getMessage());
@@ -77,7 +77,7 @@ public class FlattenConfigResultLogger {
     private static void handleConsoleOutput(final FlattenConfigResult flattenConfigResult) {
         if (flattenConfigResult != null && flattenConfigResult.getContent() != null) {
             if (flattenConfigResult.isError()) {
-                ExecLoggers.CONSOLE_RAW.error(flattenConfigResult.getFormattedMessage());
+                ExecLoggers.CONSOLE_RAW.error(flattenConfigResult.getMessage());
             } else {
                 ExecLoggers.CONSOLE_RAW.info(new String(flattenConfigResult.getContent(), Charset.defaultCharset()));
             }

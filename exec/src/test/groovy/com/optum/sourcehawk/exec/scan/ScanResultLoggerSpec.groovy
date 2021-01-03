@@ -1,11 +1,10 @@
 package com.optum.sourcehawk.exec.scan
 
-import com.optum.sourcehawk.core.scan.OutputFormat
-import com.optum.sourcehawk.core.scan.ScanResult
-import com.optum.sourcehawk.core.scan.Severity
-import com.optum.sourcehawk.core.scan.Verbosity
+import com.optum.sourcehawk.core.data.OutputFormat
+import com.optum.sourcehawk.core.data.Severity
+import com.optum.sourcehawk.core.data.Verbosity
+import com.optum.sourcehawk.core.result.ScanResult
 import com.optum.sourcehawk.exec.ExecOptions
-import com.optum.sourcehawk.exec.scan.ScanResultLogger
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -20,7 +19,7 @@ class ScanResultLoggerSpec extends Specification {
                 .build()
 
         when:
-        ScanResultLogger.log(scanResult, execOptions)
+        ScanResultLogger.create().log(scanResult, execOptions)
 
         then:
         noExceptionThrown()
@@ -49,7 +48,7 @@ class ScanResultLoggerSpec extends Specification {
                 .build()
 
         when:
-        ScanResultLogger.log(scanResult, execOptions)
+        ScanResultLogger.create().log(scanResult, execOptions)
 
         then:
         noExceptionThrown()
@@ -60,8 +59,8 @@ class ScanResultLoggerSpec extends Specification {
 
     def "formatJson"() {
         expect:
-        ScanResultLogger.formatJson(null)
-        ScanResultLogger.formatJson(ScanResult.builder().build())
+        ScanResultLogger.create().formatJson(null)
+        ScanResultLogger.create().formatJson(ScanResult.builder().build())
     }
 
     def "formatMarkdown - passed (HIGH Verbosity)"() {
@@ -69,11 +68,11 @@ class ScanResultLoggerSpec extends Specification {
         ScanResult scanResult = ScanResult.passed()
 
         when:
-        String markdown = ScanResultLogger.formatMarkdown(scanResult, Verbosity.HIGH)
+        String markdown = ScanResultLogger.create().formatMarkdown(scanResult, Verbosity.HIGH)
 
         then:
         markdown
-        markdown == """## Sourcehawk Scan
+        markdown == """## Sourcehawk
 
 Scan passed without any errors"""
     }
@@ -88,17 +87,17 @@ Scan passed without any errors"""
                 .build()
 
         when:
-        String markdown = ScanResultLogger.formatMarkdown(scanResult, Verbosity.HIGH)
+        String markdown = ScanResultLogger.create().formatMarkdown(scanResult, Verbosity.HIGH)
 
         then:
         markdown
-        markdown == """## Sourcehawk Scan
+        markdown == """## Sourcehawk
 
 Scan passed. Errors: 0, Warning(s): 1
 
 ### Results
 
-[WARNING] file.txt :: msg
+* [WARNING] file.txt :: msg
 """
     }
 
@@ -118,17 +117,17 @@ Scan passed. Errors: 0, Warning(s): 1
                 .build()
 
         when:
-        String markdown = ScanResultLogger.formatMarkdown(scanResult, Verbosity.HIGH)
+        String markdown = ScanResultLogger.create().formatMarkdown(scanResult, Verbosity.HIGH)
 
         then:
         markdown
-        markdown == """## Sourcehawk Scan
+        markdown == """## Sourcehawk
 
 Scan resulted in failure. Error(s): 1, Warning(s): 0
 
 ### Results
 
-[ERROR] file.ext :: WRONG!
+* [ERROR] file.ext :: WRONG!
 """
     }
 

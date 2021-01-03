@@ -1,4 +1,4 @@
-package com.optum.sourcehawk.core.scan;
+package com.optum.sourcehawk.core.data;
 
 import com.optum.sourcehawk.core.utils.StringUtils;
 
@@ -9,7 +9,7 @@ import com.optum.sourcehawk.core.utils.StringUtils;
  */
 public enum Severity {
 
-    RECOMMENDATION,
+    INFO,
     WARNING,
     ERROR;
 

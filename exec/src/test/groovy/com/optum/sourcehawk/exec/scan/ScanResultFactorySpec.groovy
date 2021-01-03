@@ -1,13 +1,12 @@
 package com.optum.sourcehawk.exec.scan
 
-import com.optum.sourcehawk.core.scan.ScanResult
-import com.optum.sourcehawk.core.scan.Severity
+import com.optum.sourcehawk.core.result.ScanResult
+import com.optum.sourcehawk.core.data.Severity
 import com.optum.sourcehawk.enforcer.EnforcerResult
 import com.optum.sourcehawk.enforcer.file.common.StringPropertyEquals
 import com.optum.sourcehawk.core.protocol.file.FileProtocol
 import com.optum.sourcehawk.exec.ExecOptions
 import com.optum.sourcehawk.exec.FileBaseSpecification
-import com.optum.sourcehawk.exec.scan.ScanResultFactory
 
 import java.nio.file.Paths
 
@@ -254,7 +253,7 @@ class ScanResultFactorySpec extends FileBaseSpecification {
         ScanResult.ScanResultBuilder builder = ScanResult.builder()
 
         when:
-        ScanResultFactory.acceptCount(builder, Severity.RECOMMENDATION, 5)
+        ScanResultFactory.acceptCount(builder, Severity.INFO, 5)
 
         then:
         noExceptionThrown()

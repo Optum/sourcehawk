@@ -1,23 +1,18 @@
 package com.optum.sourcehawk.exec.config;
 
-import com.fasterxml.jackson.core.ObjectCodec;
-import com.fasterxml.jackson.core.io.IOContext;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
-import com.optum.sourcehawk.core.scan.FlattenConfigResult;
+import com.optum.sourcehawk.core.result.FlattenConfigResult;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.exec.ConfigurationReader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
-import org.yaml.snakeyaml.DumperOptions;
 
 import java.io.IOException;
-import java.io.Writer;
 import java.nio.file.Paths;
 
 /**
@@ -71,29 +66,11 @@ public final class FlattenConfigExecutor {
      * Handle exceptions from Serialization
      *
      * @param configurationFileLocation the configuration location
-     * @param e                         the exception
-     * @return an error flatten result
+     * @param e the exception
+     * @return an error flatten config result
      */
     private static FlattenConfigResult handleException(final String configurationFileLocation, final IOException e) {
-        val message = String.format("Error flattening sourcehawk configuration at %s with error: %s", configurationFileLocation, e.getMessage());
-        return FlattenConfigResult.error(message);
-    }
-
-    private static class YamlGenerator extends YAMLGenerator {
-
-        public YamlGenerator(final IOContext ctxt, final int jsonFeatures, final int yamlFeatures, final ObjectCodec codec, final Writer out,
-                             final DumperOptions.Version version) throws IOException {
-            super(ctxt, jsonFeatures, yamlFeatures, codec, out, version);
-        }
-
-        protected DumperOptions buildDumperOptions(int jsonFeatures, int yamlFeatures, DumperOptions.Version version) {
-            val dumperOptions = super.buildDumperOptions(jsonFeatures, yamlFeatures, version);
-            dumperOptions.setIndicatorIndent(2);
-            dumperOptions.setIndent(4);
-            dumperOptions.setPrettyFlow(true);
-            return dumperOptions;
-        }
-
+        return FlattenConfigResult.error(String.format("Error flattening sourcehawk configuration at %s with error: %s", configurationFileLocation, e.getMessage()));
     }
 
 }

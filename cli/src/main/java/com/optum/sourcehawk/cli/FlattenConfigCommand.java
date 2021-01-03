@@ -1,7 +1,7 @@
 package com.optum.sourcehawk.cli;
 
 import com.optum.sourcehawk.core.constants.SourcehawkConstants;
-import com.optum.sourcehawk.core.scan.FlattenConfigResult;
+import com.optum.sourcehawk.core.result.FlattenConfigResult;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.core.utils.Try;
 import com.optum.sourcehawk.exec.ExecLoggers;
@@ -65,7 +65,7 @@ public class FlattenConfigCommand implements Callable<Integer> {
         }
         val flattenConfigResult = execute(configurationFileLocation);
         if (flattenConfigResult.isError()) {
-            ExecLoggers.CONSOLE_RAW.info(flattenConfigResult.getFormattedMessage());
+            ExecLoggers.CONSOLE_RAW.info(flattenConfigResult.getMessage());
             return CommandLine.ExitCode.SOFTWARE;
         }
         FlattenConfigResultLogger.log(flattenConfigResult, outputPath);
