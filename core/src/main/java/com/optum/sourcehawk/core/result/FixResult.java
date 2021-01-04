@@ -1,4 +1,4 @@
-package com.optum.sourcehawk.core.scan;
+package com.optum.sourcehawk.core.result;
 
 import com.optum.sourcehawk.core.utils.MapUtils;
 import lombok.Builder;
@@ -57,7 +57,7 @@ public class FixResult implements Serializable {
      * All of the messages associated with the scan
      * <p>
      * Key: Repository File Path
-     * Value: Collection of {@link ScanResult.MessageDescriptor}
+     * Value: Collection of {@link MessageDescriptor}
      */
     @NonNull
     @Builder.Default
@@ -109,7 +109,7 @@ public class FixResult implements Serializable {
     }
 
     /**
-     * Encapsulates all of the traits of a message
+     * Encapsulates all of the traits of a fix result message
      *
      * @author Brian Wyka
      */
@@ -120,9 +120,7 @@ public class FixResult implements Serializable {
         @NonNull String repositoryPath;
         @NonNull String message;
 
-        /**
-         * {@inheritDoc}
-         */
+        /** {@inheritDoc} */
         @Override
         public String toString() {
             return String.format("%s :: %s", repositoryPath, message);

@@ -1,6 +1,6 @@
 package com.optum.sourcehawk.cli
 
-import com.optum.sourcehawk.core.scan.ScanResult
+import com.optum.sourcehawk.core.result.ScanResult
 import com.optum.sourcehawk.exec.ExecOptions
 import picocli.CommandLine
 import spock.lang.Unroll

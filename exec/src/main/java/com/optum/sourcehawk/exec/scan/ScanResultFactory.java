@@ -1,8 +1,8 @@
 package com.optum.sourcehawk.exec.scan;
 
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
-import com.optum.sourcehawk.core.scan.ScanResult;
-import com.optum.sourcehawk.core.scan.Severity;
+import com.optum.sourcehawk.core.result.ScanResult;
+import com.optum.sourcehawk.core.data.Severity;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.exec.ExecOptions;
 import lombok.experimental.UtilityClass;

@@ -3,7 +3,7 @@ package com.optum.sourcehawk.exec
 import com.optum.sourcehawk.core.data.RemoteRef
 import com.optum.sourcehawk.core.repository.GithubRepositoryFileReader
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader
-import com.optum.sourcehawk.core.scan.Verbosity
+import com.optum.sourcehawk.core.data.Verbosity
 import spock.lang.Specification
 
 import java.nio.file.Paths

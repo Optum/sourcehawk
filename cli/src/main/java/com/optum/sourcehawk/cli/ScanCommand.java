@@ -1,7 +1,7 @@
 package com.optum.sourcehawk.cli;
 
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader;
-import com.optum.sourcehawk.core.scan.ScanResult;
+import com.optum.sourcehawk.core.result.ScanResult;
 import com.optum.sourcehawk.core.utils.Try;
 import com.optum.sourcehawk.exec.ExecOptions;
 import com.optum.sourcehawk.exec.scan.ScanExecutor;
@@ -26,6 +26,11 @@ import java.util.Optional;
         subcommands = { GithubScanCommand.class, BitbucketScanCommand.class }
 )
 public class ScanCommand extends AbstractExecCommand {
+
+    /**
+     * The scan result logger
+     */
+    private static final ScanResultLogger SCAN_RESULT_LOGGER = ScanResultLogger.create();
 
     /**
      * The local file system options group
@@ -65,7 +70,7 @@ public class ScanCommand extends AbstractExecCommand {
      */
     Integer call(final ExecOptions execOptions) {
         val scanResult = execute(execOptions);
-        ScanResultLogger.log(scanResult, execOptions);
+        SCAN_RESULT_LOGGER.log(scanResult, execOptions);
         if (scanResult.isPassed()) {
             return CommandLine.ExitCode.OK;
         }

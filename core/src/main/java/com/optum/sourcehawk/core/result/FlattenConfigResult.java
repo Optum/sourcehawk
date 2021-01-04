@@ -1,4 +1,4 @@
-package com.optum.sourcehawk.core.scan;
+package com.optum.sourcehawk.core.result;
 
 import com.optum.sourcehawk.core.utils.StringUtils;
 import lombok.Builder;
@@ -31,14 +31,12 @@ public class FlattenConfigResult implements Serializable {
     boolean error = false;
 
     /**
-     * Messages formatted for reporting
-     * <p>
-     * Format: [SEVERITY] repositoryFilePath :: message
+     * The result message
      */
     @NonNull
     @Builder.Default
     @SuppressWarnings("squid:S1948") // Lombok generates private modifier
-    String formattedMessage = "Flatten successful";
+    String message = "Configuration flattened successfully";
 
 
     /**

@@ -1,7 +1,7 @@
 package com.optum.sourcehawk.exec.fix;
 
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
-import com.optum.sourcehawk.core.scan.FixResult;
+import com.optum.sourcehawk.core.result.FixResult;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.enforcer.ResolverResult;
 import lombok.experimental.UtilityClass;

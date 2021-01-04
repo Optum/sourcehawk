@@ -1,6 +1,6 @@
 package com.optum.sourcehawk.exec.config
 
-import com.optum.sourcehawk.core.scan.FlattenConfigResult
+import com.optum.sourcehawk.core.result.FlattenConfigResult
 import com.optum.sourcehawk.exec.FileBaseSpecification
 import org.spockframework.util.IoUtil
 
@@ -12,7 +12,7 @@ class FlattenConfigExecutorSpec extends FileBaseSpecification {
 
         then:
         flattenConfigResult.error
-        flattenConfigResult.formattedMessage == "Error flattening sourcehawk configuration at test with error: message"
+        flattenConfigResult.message == "Error flattening sourcehawk configuration at test with error: message"
     }
 
     def "flatten"() {
@@ -21,7 +21,7 @@ class FlattenConfigExecutorSpec extends FileBaseSpecification {
 
         then:
         !flattenConfigResult.error
-        flattenConfigResult.formattedMessage == "Flatten successful"
+        flattenConfigResult.message == "Flatten successful"
         new String(flattenConfigResult.content).trim() == IoUtil.getResourceAsStream("/sourcehawk-flattened-base.yml").text.trim()
     }
 
@@ -31,7 +31,7 @@ class FlattenConfigExecutorSpec extends FileBaseSpecification {
 
         then:
         flattenConfigResult.error
-        flattenConfigResult.formattedMessage
+        flattenConfigResult.message
 
         where:
         configFileLocation << ["", " ", null]
@@ -43,7 +43,7 @@ class FlattenConfigExecutorSpec extends FileBaseSpecification {
 
         then:
         flattenConfigResult.error
-        flattenConfigResult.formattedMessage
+        flattenConfigResult.message
     }
 
 }

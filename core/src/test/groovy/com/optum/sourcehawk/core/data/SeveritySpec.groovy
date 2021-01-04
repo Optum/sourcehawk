@@ -1,5 +1,6 @@
-package com.optum.sourcehawk.core.scan
+package com.optum.sourcehawk.core.data
 
+import com.optum.sourcehawk.core.data.Severity
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -11,7 +12,7 @@ class SeveritySpec extends Specification {
         Severity.parse(name)
 
         where:
-        name << ['recommendation', 'RECOMMENDATION', 'warning', 'WARNING', 'error', 'ERROR']
+        name << ['info', 'INFO', 'warning', 'WARNING', 'error', 'ERROR']
     }
 
     @Unroll
@@ -20,7 +21,7 @@ class SeveritySpec extends Specification {
         Severity.parse(name) == Severity.ERROR
 
         where:
-        name << ['', ' ', null, 'info', 'WR', 'err', 'no', 'warn']
+        name << ['', ' ', null, 'information', 'WR', 'err', 'no', 'warn']
     }
 
 }

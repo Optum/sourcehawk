@@ -1,6 +1,6 @@
 package com.optum.sourcehawk.exec.config
 
-import com.optum.sourcehawk.core.scan.FlattenConfigResult
+import com.optum.sourcehawk.core.result.FlattenConfigResult
 import com.optum.sourcehawk.exec.FileBaseSpecification
 
 class FlattenConfigLoggerSpec extends FileBaseSpecification {

@@ -3,7 +3,7 @@ package com.optum.sourcehawk.exec.scan
 import com.optum.sourcehawk.core.protocol.file.FileProtocol
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader
 import com.optum.sourcehawk.core.repository.RepositoryFileReader
-import com.optum.sourcehawk.core.scan.ScanResult
+import com.optum.sourcehawk.core.result.ScanResult
 import com.optum.sourcehawk.exec.ConfigurationException
 import com.optum.sourcehawk.exec.ExecOptions
 import com.optum.sourcehawk.exec.FileBaseSpecification

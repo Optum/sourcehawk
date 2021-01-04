@@ -1,8 +1,8 @@
 package com.optum.sourcehawk.cli
 
-import com.optum.sourcehawk.core.constants.SourcehawkConstants
-import com.optum.sourcehawk.core.scan.OutputFormat
-import com.optum.sourcehawk.core.scan.Verbosity
+
+import com.optum.sourcehawk.core.data.OutputFormat
+import com.optum.sourcehawk.core.data.Verbosity
 import com.optum.sourcehawk.exec.ExecOptions
 import spock.lang.Specification
 import spock.lang.Unroll

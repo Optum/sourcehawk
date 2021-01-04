@@ -2,8 +2,8 @@ package com.optum.sourcehawk.exec.scan;
 
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
-import com.optum.sourcehawk.core.scan.ScanResult;
-import com.optum.sourcehawk.core.scan.Severity;
+import com.optum.sourcehawk.core.result.ScanResult;
+import com.optum.sourcehawk.core.data.Severity;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.core.utils.FileUtils;
 import com.optum.sourcehawk.core.utils.Try;

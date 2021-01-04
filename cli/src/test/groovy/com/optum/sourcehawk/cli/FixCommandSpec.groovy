@@ -1,6 +1,6 @@
 package com.optum.sourcehawk.cli
 
-import com.optum.sourcehawk.core.scan.FixResult
+import com.optum.sourcehawk.core.result.FixResult
 import com.optum.sourcehawk.exec.ExecOptions
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder

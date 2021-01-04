@@ -1,4 +1,4 @@
-package com.optum.sourcehawk.core.scan
+package com.optum.sourcehawk.core.result
 
 import spock.lang.Specification
 

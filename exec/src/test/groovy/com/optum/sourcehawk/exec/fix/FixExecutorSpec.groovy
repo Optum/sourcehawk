@@ -1,7 +1,7 @@
 package com.optum.sourcehawk.exec.fix
 
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader
-import com.optum.sourcehawk.core.scan.FixResult
+import com.optum.sourcehawk.core.result.FixResult
 import com.optum.sourcehawk.exec.ConfigurationException
 import com.optum.sourcehawk.exec.ExecOptions
 import com.optum.sourcehawk.exec.FileBaseSpecification
@@ -309,7 +309,5 @@ class FixExecutorSpec extends FileBaseSpecification {
         then:
         result.error
     }
-
-     // TODO: temporary testing directory
 
 }
