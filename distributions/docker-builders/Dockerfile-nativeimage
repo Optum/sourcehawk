@@ -1,5 +1,5 @@
 # Oracle GraalVM Java Base Container
-ARG FROM=ghcr.io/graalvm/graalvm-ce:21.0.0-java8
+ARG FROM=ghcr.io/graalvm/graalvm-ce:java8-21.0.0
 FROM ${FROM}
 
 # Install native-image tool
