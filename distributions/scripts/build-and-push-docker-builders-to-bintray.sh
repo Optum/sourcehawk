@@ -18,8 +18,8 @@ BINTRAY_REPO="builders"
 REGISTRY="optum-docker-builders.bintray.io"
 
 # Native Image
-docker build -t $REGISTRY/nativeimage:graalvm-ce-21.0.0-java8 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=oracle/graalvm-ce:21.0.0-java8 .
-docker build -t $REGISTRY/nativeimage:graalvm-ce-21.0.0-java11 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=oracle/graalvm-ce:21.0.0-java11 .
+docker build -t $REGISTRY/nativeimage:graalvm-ce-21.0.0-java8 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:21.0.0-java8 .
+docker build -t $REGISTRY/nativeimage:graalvm-ce-21.0.0-java11 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:21.0.0-java11 .
 
 # RPM Build
 docker build -t $REGISTRY/rpmbuild:centos7 -f "$DOCKER_BUILDERS_DIR/Dockerfile-rpmbuild" --build-arg FROM=centos:7 .
