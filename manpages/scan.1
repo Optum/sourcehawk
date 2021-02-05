@@ -2,12 +2,12 @@
 .\"     Title: scan
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.10
-.\"      Date: 2020-11-16
+.\"      Date: 2021-02-05
 .\"    Manual: Scan Manual
 .\"    Source: 
 .\"  Language: English
 .\"
-.TH "SCAN" "1" "2020-11-16" "" "Scan Manual"
+.TH "SCAN" "1" "2021-02-05" "" "Scan Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -28,30 +28,25 @@
 .  LINKSTYLE blue R < >
 .\}
 .SH "NAME"
-scan \- Runs a scan on the source code
+scan \- Runs a Sourcehawk scan on the source code
 .SH "SYNOPSIS"
 .sp
-\fBscan\fP [\fB\-hV\fP] [\fB\-fow\fP] [\fB\-f\fP=\fI<outputFormat>\fP] [\fB\-v\fP=\fI<verbosity>\fP] [[\fB\-c\fP=\fIconfig\-file\-path\fP] |
-\fB\-cfu\fP=\fIconfig\-file\-url\fP] [\fIREPO\-ROOT\fP] [COMMAND]
+\fBscan\fP [\fB\-hV\fP] [[\fB\-v\fP=\fI<verbosity>\fP] [\fB\-f\fP=\fI<outputFormat>\fP] [\fB\-w\fP] [[\fB\-c\fP=\fIconfig\-file\-path\fP] |
+\fB\-U\fP=\fIconfig\-file\-url\fP]] [[\fIREPOSITORY\-ROOT\fP]] [COMMAND]
 .SH "DESCRIPTION"
 .sp
-Runs a scan on the source code
+Runs a Sourcehawk scan on the source code
 .SH "OPTIONS"
 .sp
-\fB\-c\fP, \fB\-cf, \-\-config\-file\fP=\fIconfig\-file\-path\fP
+\fB\-c\fP, \fB\-\-config\-file\fP=\fIconfig\-file\-path\fP
 .RS 4
-The configuration file, can be relative to REPO\-ROOT, or absolute
+The configuration file, can be relative, or absolute
 .sp
 .if n .RS 4
 .nf
 Default: sourcehawk.yml
 .fi
 .if n .RE
-.RE
-.sp
-\fB\-cfu, \-\-config\-file\-url\fP=\fIconfig\-file\-url\fP
-.RS 4
-The configuration file URL
 .RE
 .sp
 \fB\-f\fP, \fB\-\-output\-format\fP=\fI<outputFormat>\fP
@@ -65,20 +60,14 @@ Default: CONSOLE
 .if n .RE
 .RE
 .sp
-\fB\-fow, \-\-fail\-on\-warnings\fP
-.RS 4
-Whether
-.sp
-.if n .RS 4
-.nf
-Default: false
-.fi
-.if n .RE
-.RE
-.sp
 \fB\-h\fP, \fB\-\-help\fP
 .RS 4
 Show this help message and exit.
+.RE
+.sp
+\fB\-U\fP, \fB\-\-config\-file\-url\fP=\fIconfig\-file\-url\fP
+.RS 4
+A remote URL which resolves to a configuration file
 .RE
 .sp
 \fB\-v\fP, \fB\-\-verbosity\fP=\fI<verbosity>\fP
@@ -96,9 +85,20 @@ Default: HIGH
 .RS 4
 Print version information and exit.
 .RE
+.sp
+\fB\-w\fP, \fB\-\-fail\-on\-warnings\fP
+.RS 4
+Whether to fail the scan if only warnings are found
+.sp
+.if n .RS 4
+.nf
+Default: false
+.fi
+.if n .RE
+.RE
 .SH "ARGUMENTS"
 .sp
-[\fIREPO\-ROOT\fP]
+[\fIREPOSITORY\-ROOT\fP]
 .RS 4
 The repository root on the file system to scan relative to, defaults to current directory
 .RE
@@ -107,4 +107,14 @@ The repository root on the file system to scan relative to, defaults to current 
 \fBhelp\fP
 .RS 4
 Displays help information about the specified command
+.RE
+.sp
+\fBgithub\fP, \fBgh\fP
+.RS 4
+Runs a Sourcehawk scan on remote Github source code instead of local file system
+.RE
+.sp
+\fBbitbucket\fP, \fBbb\fP
+.RS 4
+Runs a Sourcehawk scan on remote Bitbucket source code instead of local file system
 .RE

@@ -2,12 +2,12 @@
 .\"     Title: sourcehawk-fix
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.10
-.\"      Date: 2020-11-16
+.\"      Date: 2021-02-05
 .\"    Manual: Sourcehawk Manual
 .\"    Source: 
 .\"  Language: English
 .\"
-.TH "SOURCEHAWK\-FIX" "1" "2020-11-16" "" "Sourcehawk Manual"
+.TH "SOURCEHAWK\-FIX" "1" "2021-02-05" "" "Sourcehawk Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -28,31 +28,26 @@
 .  LINKSTYLE blue R < >
 .\}
 .SH "NAME"
-sourcehawk\-fix \- Fix source based on configuration
+sourcehawk\-fix \- Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made.
 .SH "SYNOPSIS"
 .sp
-\fBsourcehawk fix\fP [\fB\-dhV\fP] [\fB\-f\fP=\fI<outputFormat>\fP] [\fB\-v\fP=\fI<verbosity>\fP]
-[[\fB\-c\fP=\fIconfig\-file\-path\fP] | \fB\-cfu\fP=\fIconfig\-file\-url\fP] [\fIREPO\-ROOT\fP]
-[COMMAND]
+\fBsourcehawk fix\fP [\fB\-dhV\fP] [[\fB\-v\fP=\fI<verbosity>\fP] [\fB\-f\fP=\fI<outputFormat>\fP] [\fB\-w\fP]
+[[\fB\-c\fP=\fIconfig\-file\-path\fP] | \fB\-U\fP=\fIconfig\-file\-url\fP]]
+[[\fIREPOSITORY\-ROOT\fP]] [COMMAND]
 .SH "DESCRIPTION"
 .sp
-Fix source based on configuration
+Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made.
 .SH "OPTIONS"
 .sp
-\fB\-c\fP, \fB\-cf, \-\-config\-file\fP=\fIconfig\-file\-path\fP
+\fB\-c\fP, \fB\-\-config\-file\fP=\fIconfig\-file\-path\fP
 .RS 4
-The configuration file, can be relative to REPO\-ROOT, or absolute
+The configuration file, can be relative, or absolute
 .sp
 .if n .RS 4
 .nf
 Default: sourcehawk.yml
 .fi
 .if n .RE
-.RE
-.sp
-\fB\-cfu, \-\-config\-file\-url\fP=\fIconfig\-file\-url\fP
-.RS 4
-The configuration file URL
 .RE
 .sp
 \fB\-d\fP, \fB\-\-dry\-run\fP
@@ -76,6 +71,11 @@ Default: CONSOLE
 Show this help message and exit.
 .RE
 .sp
+\fB\-U\fP, \fB\-\-config\-file\-url\fP=\fIconfig\-file\-url\fP
+.RS 4
+A remote URL which resolves to a configuration file
+.RE
+.sp
 \fB\-v\fP, \fB\-\-verbosity\fP=\fI<verbosity>\fP
 .RS 4
 Verbosity of output, valid values: ZERO, LOW, MEDIUM, HIGH
@@ -91,9 +91,20 @@ Default: HIGH
 .RS 4
 Print version information and exit.
 .RE
+.sp
+\fB\-w\fP, \fB\-\-fail\-on\-warnings\fP
+.RS 4
+Whether to fail the scan if only warnings are found
+.sp
+.if n .RS 4
+.nf
+Default: false
+.fi
+.if n .RE
+.RE
 .SH "ARGUMENTS"
 .sp
-[\fIREPO\-ROOT\fP]
+[\fIREPOSITORY\-ROOT\fP]
 .RS 4
 The repository root on the file system to scan relative to, defaults to current directory
 .RE

@@ -650,7 +650,7 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 <h1>&gt;_ S O U R C E H A W K</h1>
 <div class="details">
 <span id="author" class="author">Brian Wyka | Christian Oestreich</span><br>
-<span id="revnumber">version 0.2.3</span>
+<span id="revnumber">version 0.5.1</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -658,10 +658,8 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 <li><a href="#_installation">1. Installation</a>
 <ul class="sectlevel2">
 <li><a href="#_linux">1.1. Linux</a></li>
-<li><a href="#_debian">1.2. Debian</a></li>
-<li><a href="#_yum">1.3. yum</a></li>
-<li><a href="#_mac_darwin">1.4. Mac / Darwin</a></li>
-<li><a href="#_windows">1.5. Windows</a></li>
+<li><a href="#_mac_darwin">1.2. Mac / Darwin</a></li>
+<li><a href="#_windows">1.3. Windows</a></li>
 </ul>
 </li>
 <li><a href="#_commands">2. Commands</a>
@@ -669,7 +667,10 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 <li><a href="#_sourcehawk1">2.1. sourcehawk(1)</a></li>
 <li><a href="#_validate_config1">2.2. validate-config(1)</a></li>
 <li><a href="#_scan1">2.3. scan(1)</a></li>
-<li><a href="#_fix1">2.4. fix(1)</a></li>
+<li><a href="#_scan_github1">2.4. scan-github(1)</a></li>
+<li><a href="#_scan_bitbucket1">2.5. scan-bitbucket(1)</a></li>
+<li><a href="#_fix1">2.6. fix(1)</a></li>
+<li><a href="#_flatten_config1">2.7. flatten-config(1)</a></li>
 </ul>
 </li>
 </ul>
@@ -712,56 +713,26 @@ Sourcehawk, please visit <a href="https://optum.github.io/sourcehawk-docs/" targ
 <div class="sect2">
 <h3 id="_linux"><a class="anchor" href="#_linux"></a>1.1. Linux</h3>
 <div class="paragraph">
-<p>This installation only includes the binary executable.  Executable will be saved to <code>/usr/local/bin</code></p>
-</div>
-<div class="sect3">
-<h4 id="_terminal_one_liner"><a class="anchor" href="#_terminal_one_liner"></a>Terminal One-Liner</h4>
-<div class="listingblock primary">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="sh">curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-linux.sh | bash</code></pre>
-</div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-Support for installation from an RPM repository will be added in a future release.
-</td>
-</tr>
-</table>
-</div>
-</div>
-<div class="sect3">
-<h4 id="_manual_install"><a class="anchor" href="#_manual_install"></a>Manual Install</h4>
-<div class="paragraph">
-<p>If you don&#8217;t have access to <code>/usr/local/bin</code>, you will need to install manually.</p>
+<p>Sourcehawk can be installed from Bintray through most linux package managers including:</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
-<p>Download the <code>linux</code> binary from the <a href="https://github.com/Optum/sourcehawk/releases/latest">releases</a> page.</p>
+<p><strong>Debian</strong> - <a href="https://bintray.com/beta/#/optum/deb/sourcehawk?tab=overview">Bintray Package</a></p>
 </li>
 <li>
-<p>Rename the binary to <code>sourcehawk</code> and add to a directory on your <code>PATH</code>, i.e. - <code>~/bin</code>, or <code>~/.local/bin</code></p>
+<p><strong>Ubuntu</strong> - <a href="https://bintray.com/beta/#/optum/ubuntu/sourcehawk?tab=overview">Bintray Package</a></p>
+</li>
+<li>
+<p><strong>Centos</strong> - <a href="https://bintray.com/beta/#/optum/centos/sourcehawk?tab=overview">Bintray Package</a></p>
+</li>
+<li>
+<p><strong>Fedora</strong> - <a href="https://bintray.com/beta/#/optum/fedora/sourcehawk?tab=overview">Bintray Package</a></p>
 </li>
 </ol>
 </div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_debian"><a class="anchor" href="#_debian"></a>1.2. Debian</h3>
 <div class="paragraph">
-<p>In addition to the executable binary, this installation will include bash completion scripts, and manpages.</p>
-</div>
-<div class="sect3">
-<h4 id="_terminal_one_liner_2"><a class="anchor" href="#_terminal_one_liner_2"></a>Terminal One-Liner</h4>
-<div class="listingblock secondary">
-<div class="content">
-<pre class="CodeRay highlight"><code data-lang="sh">curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-debian.sh | bash</code></pre>
-</div>
+<p>See below for OS-specific installation instructions&#8230;&#8203;</p>
 </div>
 <div class="admonitionblock important">
 <table>
@@ -770,58 +741,192 @@ Support for installation from an RPM repository will be added in a future releas
 <div class="title">Important</div>
 </td>
 <td class="content">
-This requires <code>sudo</code> permissions
+These installations all require <code>sudo</code> permission.
 </td>
 </tr>
 </table>
 </div>
-</div>
 <div class="sect3">
-<h4 id="_manual_install_2"><a class="anchor" href="#_manual_install_2"></a>Manual Install</h4>
-<div class="paragraph">
-<p>If you don&#8217;t have <code>sudo</code> access, you may be able to install manually, it is recommended to use the linux approach documented above.</p>
-</div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="_yum"><a class="anchor" href="#_yum"></a>1.3. yum</h3>
+<h4 id="_debian"><a class="anchor" href="#_debian"></a>Debian</h4>
 <div class="paragraph">
 <p>In addition to the executable binary, this installation will include bash completion scripts, and manpages.</p>
 </div>
-<div class="sect3">
-<h4 id="_terminal_one_liner_3"><a class="anchor" href="#_terminal_one_liner_3"></a>Terminal One-Liner</h4>
-<div class="listingblock secondary">
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add the Bintray public key <code>379CE192D401AB61</code> to your system</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="sh">curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-yum.sh | bash</code></pre>
+<pre>apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61</pre>
 </div>
 </div>
-<div class="admonitionblock important">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Important</div>
-</td>
-<td class="content">
-This requires <code>sudo</code> permissions
-</td>
-</tr>
-</table>
+<div class="olist arabic">
+<ol class="arabic" start="2">
+<li>
+<p>Add the Bintray source and update repository indexes</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>echo "deb https://dl.bintray.com/optum/deb buster main" | sudo tee -a /etc/apt/sources.list
+sudo apt update</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>If you aren&#8217;t on <code>buster</code>, replace  it your respective distribution, i.e - <code>jessie</code>, or <code>stretch</code>.  If you don&#8217;t know your
+distribution you may be able to find it by using the following command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">cat /etc/os-release | grep VERSION_CODENAME | cut -f2 -d'='</code></pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="3">
+<li>
+<p>Install the latest version of <code>sourcehawk</code></p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo apt install sourcehawk</pre>
+</div>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_manual_install_3"><a class="anchor" href="#_manual_install_3"></a>Manual Install</h4>
+<h4 id="_ubuntu"><a class="anchor" href="#_ubuntu"></a>Ubuntu</h4>
 <div class="paragraph">
-<p>If you don&#8217;t have <code>sudo</code> access, you may be able to install manually, it is recommended to use the linux approach documented above.</p>
+<p>This distribution includes bash completion scripts as well as manpages.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Add the Bintray public key <code>379CE192D401AB61</code> to your system</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 379CE192D401AB61</pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="2">
+<li>
+<p>Add the Bintray source and update repository indexes</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>echo "deb https://dl.bintray.com/optum/ubuntu focal main" | sudo tee -a /etc/apt/sources.list
+sudo apt update</pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Currently, <code>focal</code> is the only distribution published.  Let us know if you need others by creating an issue on Github.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="3">
+<li>
+<p>Install the latest version of <code>sourcehawk</code></p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo apt install sourcehawk</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_centos"><a class="anchor" href="#_centos"></a>Centos</h4>
+<div class="paragraph">
+<p>This distribution includes bash completion scripts as well as manpages.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download the Bintray repository file and add it to the <code>yum</code> repos</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl https://api.bintray.com/optum/centos/rpm -o bintray-optum-centos.repo
+sudo mv bintray-optum-centos.repo /etc/yum.repos.d/</pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="2">
+<li>
+<p>Install the latest version of <code>sourcehawk</code></p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo yum install sourcehawk</pre>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_fedora"><a class="anchor" href="#_fedora"></a>Fedora</h4>
+<div class="paragraph">
+<p>This distribution includes bash completion scripts as well as manpages.</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Download the Bintray repository file and add it <code>dnf</code> config manager</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>curl https://api.bintray.com/optum/fedora/rpm -o bintray-optum-fedora.repo
+sudo mv bintray-optum-fedora.repo /etc/yum.repos.d/</pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="2">
+<li>
+<p>Add the repository to <code>dnf</code> config manager and enable it</p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo dnf config-manager --add-repo /etc/yum.repos.d/bintray-optum-fedora.repo
+dnf config-manager --set-enabled bintray-optum-fedora</pre>
+</div>
+</div>
+<div class="olist arabic">
+<ol class="arabic" start="3">
+<li>
+<p>Install the latest version of <code>sourcehawk</code></p>
+</li>
+</ol>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre>sudo dnf install sourcehawk</pre>
+</div>
 </div>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_mac_darwin"><a class="anchor" href="#_mac_darwin"></a>1.4. Mac / Darwin</h3>
+<h3 id="_mac_darwin"><a class="anchor" href="#_mac_darwin"></a>1.2. Mac / Darwin</h3>
 <div class="paragraph">
-<p>This installation only includes the binary executable.  Executable will be saved to <code>/usr/local/bin</code></p>
+<p>This installation only includes the binary executable.  Executable will be saved to <code>/usr/bin</code></p>
 </div>
 <div class="sect3">
-<h4 id="_terminal_one_liner_4"><a class="anchor" href="#_terminal_one_liner_4"></a>Terminal One-Liner</h4>
+<h4 id="_terminal_one_liner"><a class="anchor" href="#_terminal_one_liner"></a>Terminal One-Liner</h4>
 <div class="listingblock secondary">
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="sh">curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-mac.sh | bash</code></pre>
@@ -841,9 +946,9 @@ Support for installation through <code>homebrew</code> will be added in a future
 </div>
 </div>
 <div class="sect3">
-<h4 id="_manual_install_4"><a class="anchor" href="#_manual_install_4"></a>Manual Install</h4>
+<h4 id="_manual_install"><a class="anchor" href="#_manual_install"></a>Manual Install</h4>
 <div class="paragraph">
-<p>If you don&#8217;t have access to <code>/usr/local/bin</code>, you will need to install manually.</p>
+<p>If you don&#8217;t have access to <code>/usr/bin</code>, you will need to install manually.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -858,9 +963,7 @@ Support for installation through <code>homebrew</code> will be added in a future
 </div>
 </div>
 <div class="sect2">
-<h3 id="_windows"><a class="anchor" href="#_windows"></a>1.5. Windows</h3>
-<div class="sect3">
-<h4 id="_manual_install_5"><a class="anchor" href="#_manual_install_5"></a>Manual Install</h4>
+<h3 id="_windows"><a class="anchor" href="#_windows"></a>1.3. Windows</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -890,7 +993,6 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 </div>
 </div>
 </div>
-</div>
 <div class="sect1">
 <h2 id="_commands"><a class="anchor" href="#_commands"></a>2. Commands</h2>
 <div class="sectionbody">
@@ -899,7 +1001,7 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <div class="sect3">
 <h4 id="_name"><a class="anchor" href="#_name"></a>Name</h4>
 <div class="paragraph">
-<p>sourcehawk - Watch over your source like a hawk&#8230;&#8203;</p>
+<p>sourcehawk - Watch over your source like a hawk</p>
 </div>
 </div>
 <div class="sect3">
@@ -911,7 +1013,7 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <div class="sect3">
 <h4 id="_description"><a class="anchor" href="#_description"></a>Description</h4>
 <div class="paragraph">
-<p>Watch over your source like a hawk&#8230;&#8203;</p>
+<p>Watch over your source like a hawk</p>
 </div>
 </div>
 <div class="sect3">
@@ -939,15 +1041,19 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 </dd>
 <dt class="hdlist1"><strong>scan</strong>, <strong>flyover</strong>, <strong>survey</strong></dt>
 <dd>
-<p>Runs a scan on the source code</p>
+<p>Runs a Sourcehawk scan on the source code</p>
 </dd>
-<dt class="hdlist1"><strong>validate-config</strong>, <strong>vc</strong></dt>
+<dt class="hdlist1"><strong>validate-config</strong>, <strong>vc</strong>, <strong>validate</strong></dt>
 <dd>
-<p>Validate configuration</p>
+<p>Validate Sourcehawk configuration file format and syntax</p>
 </dd>
 <dt class="hdlist1"><strong>fix</strong>, <strong>correct</strong>, <strong>resolve</strong></dt>
 <dd>
-<p>Fix source based on configuration</p>
+<p>Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made.</p>
+</dd>
+<dt class="hdlist1"><strong>flatten-config</strong>, <strong>fc</strong>, <strong>flatten</strong></dt>
+<dd>
+<p>Flatten the sourcehawk configuration onto system by recursively reading and merging local and remote configurations will output to console by default</p>
 </dd>
 </dl>
 </div>
@@ -959,7 +1065,7 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <div class="sect3">
 <h4 id="_name_2"><a class="anchor" href="#_name_2"></a>Name</h4>
 <div class="paragraph">
-<p>validate-config - Validate configuration</p>
+<p>validate-config - Validate Sourcehawk configuration file format and syntax</p>
 </div>
 </div>
 <div class="sect3">
@@ -971,7 +1077,7 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <div class="sect3">
 <h4 id="_description_2"><a class="anchor" href="#_description_2"></a>Description</h4>
 <div class="paragraph">
-<p>Validate configuration</p>
+<p>Validate Sourcehawk configuration file format and syntax</p>
 </div>
 </div>
 <div class="sect3">
@@ -995,7 +1101,7 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <dl>
 <dt class="hdlist1"><em>&lt;configFilePath&gt;</em></dt>
 <dd>
-<p>The path to the configuration file, use '-' to supply configuration from stdin</p>
+<p>The path to the configuration file. Use '-' to supply configuration from stdin</p>
 <div class="literalblock">
 <div class="content">
 <pre>Default: sourcehawk.yml</pre>
@@ -1003,6 +1109,39 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 </div>
 </dd>
 </dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_examples"><a class="anchor" href="#_examples"></a>Examples</h4>
+<div class="listingblock">
+<div class="title">Read the manual</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">man sourcehawk-validate-config</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use the default configuration file in the current directory</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk validate-config</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use the standard input</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">cat ~/sourcehawk.yml | sourcehawk validate-config -</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use an absolute file path with a command alias</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk vc /path/to/sourcehawk.yml</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use a relative file path and default configuration file in directory</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk validate-config .sourcehawk</code></pre>
+</div>
 </div>
 <hr>
 </div>
@@ -1012,38 +1151,34 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <div class="sect3">
 <h4 id="_name_3"><a class="anchor" href="#_name_3"></a>Name</h4>
 <div class="paragraph">
-<p>scan - Runs a scan on the source code</p>
+<p>scan - Runs a Sourcehawk scan on the source code</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_synopsis_3"><a class="anchor" href="#_synopsis_3"></a>Synopsis</h4>
 <div class="paragraph">
-<p><strong>scan</strong> [<strong>-hV</strong>] [<strong>-fow</strong>] [<strong>-f</strong>=<em>&lt;outputFormat&gt;</em>] [<strong>-v</strong>=<em>&lt;verbosity&gt;</em>] [[<strong>-c</strong>=<em>config-file-path</em>] |
-     <strong>-cfu</strong>=<em>config-file-url</em>] [<em>REPO-ROOT</em>] [COMMAND]</p>
+<p><strong>scan</strong> [<strong>-hV</strong>] [[<strong>-v</strong>=<em>&lt;verbosity&gt;</em>] [<strong>-f</strong>=<em>&lt;outputFormat&gt;</em>] [<strong>-w</strong>] [[<strong>-c</strong>=<em>config-file-path</em>] |
+     <strong>-U</strong>=<em>config-file-url</em>]] [[<em>REPOSITORY-ROOT</em>]] [COMMAND]</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_description_3"><a class="anchor" href="#_description_3"></a>Description</h4>
 <div class="paragraph">
-<p>Runs a scan on the source code</p>
+<p>Runs a Sourcehawk scan on the source code</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_options_3"><a class="anchor" href="#_options_3"></a>Options</h4>
 <div class="dlist">
 <dl>
-<dt class="hdlist1"><strong>-c</strong>, <strong>-cf, --config-file</strong>=<em>config-file-path</em></dt>
+<dt class="hdlist1"><strong>-c</strong>, <strong>--config-file</strong>=<em>config-file-path</em></dt>
 <dd>
-<p>The configuration file, can be relative to REPO-ROOT, or absolute</p>
+<p>The configuration file, can be relative, or absolute</p>
 <div class="literalblock">
 <div class="content">
 <pre>Default: sourcehawk.yml</pre>
 </div>
 </div>
-</dd>
-<dt class="hdlist1"><strong>-cfu, --config-file-url</strong>=<em>config-file-url</em></dt>
-<dd>
-<p>The configuration file URL</p>
 </dd>
 <dt class="hdlist1"><strong>-f</strong>, <strong>--output-format</strong>=<em>&lt;outputFormat&gt;</em></dt>
 <dd>
@@ -1054,18 +1189,13 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 </div>
 </div>
 </dd>
-<dt class="hdlist1"><strong>-fow, --fail-on-warnings</strong></dt>
-<dd>
-<p>Whether</p>
-<div class="literalblock">
-<div class="content">
-<pre>Default: false</pre>
-</div>
-</div>
-</dd>
 <dt class="hdlist1"><strong>-h</strong>, <strong>--help</strong></dt>
 <dd>
 <p>Show this help message and exit.</p>
+</dd>
+<dt class="hdlist1"><strong>-U</strong>, <strong>--config-file-url</strong>=<em>config-file-url</em></dt>
+<dd>
+<p>A remote URL which resolves to a configuration file</p>
 </dd>
 <dt class="hdlist1"><strong>-v</strong>, <strong>--verbosity</strong>=<em>&lt;verbosity&gt;</em></dt>
 <dd>
@@ -1080,6 +1210,15 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <dd>
 <p>Print version information and exit.</p>
 </dd>
+<dt class="hdlist1"><strong>-w</strong>, <strong>--fail-on-warnings</strong></dt>
+<dd>
+<p>Whether to fail the scan if only warnings are found</p>
+<div class="literalblock">
+<div class="content">
+<pre>Default: false</pre>
+</div>
+</div>
+</dd>
 </dl>
 </div>
 </div>
@@ -1087,7 +1226,7 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <h4 id="_arguments_2"><a class="anchor" href="#_arguments_2"></a>Arguments</h4>
 <div class="dlist">
 <dl>
-<dt class="hdlist1">[<em>REPO-ROOT</em>]</dt>
+<dt class="hdlist1">[<em>REPOSITORY-ROOT</em>]</dt>
 <dd>
 <p>The repository root on the file system to scan relative to, defaults to current directory</p>
 </dd>
@@ -1102,48 +1241,311 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <dd>
 <p>Displays help information about the specified command</p>
 </dd>
+<dt class="hdlist1"><strong>github</strong>, <strong>gh</strong></dt>
+<dd>
+<p>Runs a Sourcehawk scan on remote Github source code instead of local file system</p>
+</dd>
+<dt class="hdlist1"><strong>bitbucket</strong>, <strong>bb</strong></dt>
+<dd>
+<p>Runs a Sourcehawk scan on remote Bitbucket source code instead of local file system</p>
+</dd>
 </dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_examples_2"><a class="anchor" href="#_examples_2"></a>Examples</h4>
+<div class="listingblock">
+<div class="title">Read the manual</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">man sourcehawk-scan</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use the default configuration file in the current directory</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use a remote configuration file</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan --config-file-url https://raw.githubsercontent.com/optum/sourcehawk-parent/main/sourcehawk.yml</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Fail on warnings, and output in markdown format to file</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan -f MARKDOWN --fail-on-warnings &gt; sourcehawk-scan-results.md</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Output in JSON format and pretty print with jq</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan --output-format JSON | jq</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan an external source directory and output with medium verbosity</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan --verbosity MEDIUM /path/to/source</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use a super awesome alias</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk flyover /flight/path</code></pre>
+</div>
 </div>
 <hr>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_fix1"><a class="anchor" href="#_fix1"></a>2.4. fix(1)</h3>
+<h3 id="_scan_github1"><a class="anchor" href="#_scan_github1"></a>2.4. scan-github(1)</h3>
 <div class="sect3">
 <h4 id="_name_4"><a class="anchor" href="#_name_4"></a>Name</h4>
 <div class="paragraph">
-<p>fix - Fix source based on configuration</p>
+<p>scan-github - Runs a Sourcehawk scan on remote Github source code instead of local file system</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_synopsis_4"><a class="anchor" href="#_synopsis_4"></a>Synopsis</h4>
 <div class="paragraph">
-<p><strong>fix</strong> [<strong>-dhV</strong>] [<strong>-f</strong>=<em>&lt;outputFormat&gt;</em>] [<strong>-v</strong>=<em>&lt;verbosity&gt;</em>] [[<strong>-c</strong>=<em>config-file-path</em>] |
-    <strong>-cfu</strong>=<em>config-file-url</em>] [<em>REPO-ROOT</em>] [COMMAND]</p>
+<p><strong>scan github</strong> [<strong>-hV</strong>] [[<strong>-t</strong>=<em>github-token</em>] [<strong>-E</strong>=<em>github-enterprise-url</em>]
+            <em>REMOTE-REFERENCE</em>] [COMMAND]</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_description_4"><a class="anchor" href="#_description_4"></a>Description</h4>
 <div class="paragraph">
-<p>Fix source based on configuration</p>
+<p>Runs a Sourcehawk scan on remote Github source code instead of local file system</p>
 </div>
 </div>
 <div class="sect3">
 <h4 id="_options_4"><a class="anchor" href="#_options_4"></a>Options</h4>
 <div class="dlist">
 <dl>
-<dt class="hdlist1"><strong>-c</strong>, <strong>-cf, --config-file</strong>=<em>config-file-path</em></dt>
+<dt class="hdlist1"><strong>-E</strong>, <strong>--enterprise-url</strong>=<em>github-enterprise-url</em></dt>
 <dd>
-<p>The configuration file, can be relative to REPO-ROOT, or absolute</p>
+<p>The Github enterprise URL to use instead of public Github, i.e - <a href="https://github.example.com" class="bare">https://github.example.com</a></p>
+</dd>
+<dt class="hdlist1"><strong>-h</strong>, <strong>--help</strong></dt>
+<dd>
+<p>Show this help message and exit.</p>
+</dd>
+<dt class="hdlist1"><strong>-t</strong>, <strong>--token</strong>=<em>github-token</em></dt>
+<dd>
+<p>The Github token for authorizing requests, recommended for preventing rate limiting or accessing private repositories</p>
+</dd>
+<dt class="hdlist1"><strong>-V</strong>, <strong>--version</strong></dt>
+<dd>
+<p>Print version information and exit.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_arguments_3"><a class="anchor" href="#_arguments_3"></a>Arguments</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><em>REMOTE-REFERENCE</em></dt>
+<dd>
+<p>The Github remote reference - owner/repo@ref combination, i.e - owner/repo, owner/repo@main,  owner/repo@v1.4, or owner/repo@a6de43fa51c</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_commands_4"><a class="anchor" href="#_commands_4"></a>Commands</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>help</strong></dt>
+<dd>
+<p>Displays help information about the specified command</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_examples_3"><a class="anchor" href="#_examples_3"></a>Examples</h4>
+<div class="listingblock">
+<div class="title">Read the manual</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">man sourcehawk-scan-github</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan repository <code>main</code> branch located at <a href="https://github.com/optum/sourcehawk" class="bare">https://github.com/optum/sourcehawk</a></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan github optum/sourcehawk</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan using a custom configuration file</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan -c sourcehawk-custom.yml github optum/sourcehawk</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan repository <code>develop</code> branch located at <a href="https://github.com/optum/sourcehawk" class="bare">https://github.com/optum/sourcehawk</a> and format output as JSON</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan -f JSON github optum/sourcehawk@develop</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan repository on Github enterprise with an auth token</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan github -E https://github.example.com --token abc123 optum/sourcehawk</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use a shorter alias</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan gh optum/sourcehawk</code></pre>
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_scan_bitbucket1"><a class="anchor" href="#_scan_bitbucket1"></a>2.5. scan-bitbucket(1)</h3>
+<div class="sect3">
+<h4 id="_name_5"><a class="anchor" href="#_name_5"></a>Name</h4>
+<div class="paragraph">
+<p>scan-bitbucket - Runs a Sourcehawk scan on remote Bitbucket source code instead of local file system</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_synopsis_5"><a class="anchor" href="#_synopsis_5"></a>Synopsis</h4>
+<div class="paragraph">
+<p><strong>scan bitbucket</strong> [<strong>-hV</strong>] [[<strong>-t</strong>=<em>bitbucket-token</em>] [<strong>-S</strong>=<em>bitbucket-server-url</em>]
+               <em>REMOTE-REFERENCE</em>] [COMMAND]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_description_5"><a class="anchor" href="#_description_5"></a>Description</h4>
+<div class="paragraph">
+<p>Runs a Sourcehawk scan on remote Bitbucket source code instead of local file system</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_options_5"><a class="anchor" href="#_options_5"></a>Options</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>-h</strong>, <strong>--help</strong></dt>
+<dd>
+<p>Show this help message and exit.</p>
+</dd>
+<dt class="hdlist1"><strong>-S</strong>, <strong>--server-url</strong>=<em>bitbucket-server-url</em></dt>
+<dd>
+<p>The Bitbucket server URL to use instead of public Bitbucket, i.e - <a href="https://bitbucket.example.com" class="bare">https://bitbucket.example.com</a></p>
+</dd>
+<dt class="hdlist1"><strong>-t</strong>, <strong>--token</strong>=<em>bitbucket-token</em></dt>
+<dd>
+<p>The Bitbucket token for authorizing requests, recommended for preventing rate limiting or accessing private repositories</p>
+</dd>
+<dt class="hdlist1"><strong>-V</strong>, <strong>--version</strong></dt>
+<dd>
+<p>Print version information and exit.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_arguments_4"><a class="anchor" href="#_arguments_4"></a>Arguments</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><em>REMOTE-REFERENCE</em></dt>
+<dd>
+<p>The Bitbucket remote reference - project/repo@ref combination, i.e - project/repo, project/repo@master,  project/repo@v1.4, or project/repo@a6de43fa51c</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_commands_5"><a class="anchor" href="#_commands_5"></a>Commands</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>help</strong></dt>
+<dd>
+<p>Displays help information about the specified command</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_examples_4"><a class="anchor" href="#_examples_4"></a>Examples</h4>
+<div class="listingblock">
+<div class="title">Read the manual</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">man sourcehawk-scan-github</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan repository <code>master</code> branch located at <a href="https://bitbucket.org/optum/sourcehawk" class="bare">https://bitbucket.org/optum/sourcehawk</a></div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan bitbucket optum/sourcehawk</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan using a custom configuration file</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan -c sourcehawk-custom.yml bitbucket optum/sourcehawk</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan repository <code>develop</code> branch located at <a href="https://bitbucket.org/optum/sourcehawk" class="bare">https://bitbucket.org/optum/sourcehawk</a> and format output as JSON</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan -f JSON bitbucket optum/sourcehawk@develop</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan repository on Bitbucket server with an auth token</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan bitbucket -S https://bitbucket.example.com --token abc123 optum/sourcehawk</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use a shorter alias</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan bb optum/sourcehawk</code></pre>
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_fix1"><a class="anchor" href="#_fix1"></a>2.6. fix(1)</h3>
+<div class="sect3">
+<h4 id="_name_6"><a class="anchor" href="#_name_6"></a>Name</h4>
+<div class="paragraph">
+<p>fix - Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_synopsis_6"><a class="anchor" href="#_synopsis_6"></a>Synopsis</h4>
+<div class="paragraph">
+<p><strong>fix</strong> [<strong>-dhV</strong>] [[<strong>-v</strong>=<em>&lt;verbosity&gt;</em>] [<strong>-f</strong>=<em>&lt;outputFormat&gt;</em>] [<strong>-w</strong>] [[<strong>-c</strong>=<em>config-file-path</em>] |
+    <strong>-U</strong>=<em>config-file-url</em>]] [[<em>REPOSITORY-ROOT</em>]] [COMMAND]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_description_6"><a class="anchor" href="#_description_6"></a>Description</h4>
+<div class="paragraph">
+<p>Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_options_6"><a class="anchor" href="#_options_6"></a>Options</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>-c</strong>, <strong>--config-file</strong>=<em>config-file-path</em></dt>
+<dd>
+<p>The configuration file, can be relative, or absolute</p>
 <div class="literalblock">
 <div class="content">
 <pre>Default: sourcehawk.yml</pre>
 </div>
 </div>
-</dd>
-<dt class="hdlist1"><strong>-cfu, --config-file-url</strong>=<em>config-file-url</em></dt>
-<dd>
-<p>The configuration file URL</p>
 </dd>
 <dt class="hdlist1"><strong>-d</strong>, <strong>--dry-run</strong></dt>
 <dd>
@@ -1162,6 +1564,10 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <dd>
 <p>Show this help message and exit.</p>
 </dd>
+<dt class="hdlist1"><strong>-U</strong>, <strong>--config-file-url</strong>=<em>config-file-url</em></dt>
+<dd>
+<p>A remote URL which resolves to a configuration file</p>
+</dd>
 <dt class="hdlist1"><strong>-v</strong>, <strong>--verbosity</strong>=<em>&lt;verbosity&gt;</em></dt>
 <dd>
 <p>Verbosity of output, valid values: ZERO, LOW, MEDIUM, HIGH</p>
@@ -1175,14 +1581,23 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <dd>
 <p>Print version information and exit.</p>
 </dd>
+<dt class="hdlist1"><strong>-w</strong>, <strong>--fail-on-warnings</strong></dt>
+<dd>
+<p>Whether to fail the scan if only warnings are found</p>
+<div class="literalblock">
+<div class="content">
+<pre>Default: false</pre>
+</div>
+</div>
+</dd>
 </dl>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_arguments_3"><a class="anchor" href="#_arguments_3"></a>Arguments</h4>
+<h4 id="_arguments_5"><a class="anchor" href="#_arguments_5"></a>Arguments</h4>
 <div class="dlist">
 <dl>
-<dt class="hdlist1">[<em>REPO-ROOT</em>]</dt>
+<dt class="hdlist1">[<em>REPOSITORY-ROOT</em>]</dt>
 <dd>
 <p>The repository root on the file system to scan relative to, defaults to current directory</p>
 </dd>
@@ -1190,7 +1605,7 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 </div>
 </div>
 <div class="sect3">
-<h4 id="_commands_4"><a class="anchor" href="#_commands_4"></a>Commands</h4>
+<h4 id="_commands_6"><a class="anchor" href="#_commands_6"></a>Commands</h4>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>help</strong></dt>
@@ -1200,14 +1615,139 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 </dl>
 </div>
 </div>
+<div class="sect3">
+<h4 id="_examples_5"><a class="anchor" href="#_examples_5"></a>Examples</h4>
+<div class="listingblock">
+<div class="title">Read the manual</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">man sourcehawk-fix</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use the default configuration file in the current directory</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk fix</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Run a dry run of what would be fixed</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk fix --dry-run</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use a remote configuration file</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">shawk fix --config-file-url https://raw.githubusercontent.com/optum/sourcehawk/main/sourcehawk.yml</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use an alias</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk correct</code></pre>
+</div>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_flatten_config1"><a class="anchor" href="#_flatten_config1"></a>2.7. flatten-config(1)</h3>
+<div class="sect3">
+<h4 id="_name_7"><a class="anchor" href="#_name_7"></a>Name</h4>
+<div class="paragraph">
+<p>flatten-config - Flatten the sourcehawk configuration onto system by recursively reading and merging local and remote configurations will output to console by default</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_synopsis_7"><a class="anchor" href="#_synopsis_7"></a>Synopsis</h4>
+<div class="paragraph">
+<p><strong>flatten-config</strong> [<strong>-hV</strong>] [<strong>-o</strong>=<em>&lt;outputPath&gt;</em>] [[<strong>-c</strong>=<em>config-file-path</em>] |
+               <strong>-U</strong>=<em>config-file-url</em>]</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_description_7"><a class="anchor" href="#_description_7"></a>Description</h4>
+<div class="paragraph">
+<p>Flatten the sourcehawk configuration onto system by recursively reading and merging local and remote configurations will output to console by default</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_options_7"><a class="anchor" href="#_options_7"></a>Options</h4>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>-c</strong>, <strong>--config-file</strong>=<em>config-file-path</em></dt>
+<dd>
+<p>The configuration file, can be relative, or absolute</p>
+<div class="literalblock">
+<div class="content">
+<pre>Default: sourcehawk.yml</pre>
+</div>
+</div>
+</dd>
+<dt class="hdlist1"><strong>-h</strong>, <strong>--help</strong></dt>
+<dd>
+<p>Show this help message and exit.</p>
+</dd>
+<dt class="hdlist1"><strong>-o</strong>, <strong>--output</strong>=<em>&lt;outputPath&gt;</em></dt>
+<dd>
+<p>Optional param to directly output flattened configuration to file system</p>
+</dd>
+<dt class="hdlist1"><strong>-U</strong>, <strong>--config-file-url</strong>=<em>config-file-url</em></dt>
+<dd>
+<p>A remote URL which resolves to a configuration file</p>
+</dd>
+<dt class="hdlist1"><strong>-V</strong>, <strong>--version</strong></dt>
+<dd>
+<p>Print version information and exit.</p>
+</dd>
+</dl>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_examples_6"><a class="anchor" href="#_examples_6"></a>Examples</h4>
+<div class="listingblock">
+<div class="title">Run with output flatten to console</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk flatten-config</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use a remote configuration file</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">shawk flatten --config-file-url https://raw.githubusercontent.com/optum/sourcehawk/main/sourcehawk.yml</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Run with output flatten to file</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk fc &gt; sourcehawk-flattened.yml</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Run with output flatten to file</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk fc --output sourcehawk-flattened.yml</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Use an alias</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk fc
+sourcehawk flatten
+sourcehawk flat
+sourcehawk merge
+sourcehawk converge</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.2.3<br>
-Last updated 2020-11-16 02:34:17 UTC
+Version 0.5.1<br>
+Last updated 2021-02-05 02:36:31 UTC
 </div>
 </div>
 <style>

@@ -1,0 +1,72 @@
+'\" t
+.\"     Title: sourcehawk-scan-bitbucket
+.\"    Author: [see the "AUTHOR(S)" section]
+.\" Generator: Asciidoctor 2.0.10
+.\"      Date: 2021-02-05
+.\"    Manual: Sourcehawk Manual
+.\"    Source: 
+.\"  Language: English
+.\"
+.TH "SOURCEHAWK\-SCAN\-BITBUCKET" "1" "2021-02-05" "" "Sourcehawk Manual"
+.ie \n(.g .ds Aq \(aq
+.el       .ds Aq '
+.ss \n[.ss] 0
+.nh
+.ad l
+.de URL
+\fI\\$2\fP <\\$1>\\$3
+..
+.als MTO URL
+.if \n[.g] \{\
+.  mso www.tmac
+.  am URL
+.    ad l
+.  .
+.  am MTO
+.    ad l
+.  .
+.  LINKSTYLE blue R < >
+.\}
+.SH "NAME"
+sourcehawk\-scan\-bitbucket \- Runs a Sourcehawk scan on remote Bitbucket source code instead of local file system
+.SH "SYNOPSIS"
+.sp
+\fBsourcehawk scan bitbucket\fP [\fB\-hV\fP] [[\fB\-t\fP=\fIbitbucket\-token\fP] [\fB\-S\fP=\fIbitbucket\-server\-url\fP]
+\fIREMOTE\-REFERENCE\fP] [COMMAND]
+.SH "DESCRIPTION"
+.sp
+Runs a Sourcehawk scan on remote Bitbucket source code instead of local file system
+.SH "OPTIONS"
+.sp
+\fB\-h\fP, \fB\-\-help\fP
+.RS 4
+Show this help message and exit.
+.RE
+.sp
+\fB\-S\fP, \fB\-\-server\-url\fP=\fIbitbucket\-server\-url\fP
+.RS 4
+The Bitbucket server URL to use instead of public Bitbucket, i.e \- \c
+.URL "https://bitbucket.example.com" "" ""
+.RE
+.sp
+\fB\-t\fP, \fB\-\-token\fP=\fIbitbucket\-token\fP
+.RS 4
+The Bitbucket token for authorizing requests, recommended for preventing rate limiting or accessing private repositories
+.RE
+.sp
+\fB\-V\fP, \fB\-\-version\fP
+.RS 4
+Print version information and exit.
+.RE
+.SH "ARGUMENTS"
+.sp
+\fIREMOTE\-REFERENCE\fP
+.RS 4
+The Bitbucket remote reference \- project/repo@ref combination, i.e \- project/repo, project/repo@master,  project/repo@v1.4, or project/repo@a6de43fa51c
+.RE
+.SH "COMMANDS"
+.sp
+\fBhelp\fP
+.RS 4
+Displays help information about the specified command
+.RE

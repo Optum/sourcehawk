@@ -2,12 +2,12 @@
 .\"     Title: sourcehawk
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.10
-.\"      Date: 2020-11-16
+.\"      Date: 2021-02-05
 .\"    Manual: Sourcehawk Manual
-.\"    Source: Sourcehawk v0.2.3
+.\"    Source: Sourcehawk v0.5.1
 .\"  Language: English
 .\"
-.TH "SOURCEHAWK" "1" "2020-11-16" "Sourcehawk v0.2.3" "Sourcehawk Manual"
+.TH "SOURCEHAWK" "1" "2021-02-05" "Sourcehawk v0.5.1" "Sourcehawk Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -28,13 +28,13 @@
 .  LINKSTYLE blue R < >
 .\}
 .SH "NAME"
-sourcehawk \- Watch over your source like a hawk...
+sourcehawk \- Watch over your source like a hawk
 .SH "SYNOPSIS"
 .sp
 \fBsourcehawk\fP [\fB\-hV\fP] [COMMAND]
 .SH "DESCRIPTION"
 .sp
-Watch over your source like a hawk...
+Watch over your source like a hawk
 .SH "OPTIONS"
 .sp
 \fB\-h\fP, \fB\-\-help\fP
@@ -55,15 +55,20 @@ Displays help information about the specified command
 .sp
 \fBscan\fP, \fBflyover\fP, \fBsurvey\fP
 .RS 4
-Runs a scan on the source code
+Runs a Sourcehawk scan on the source code
 .RE
 .sp
-\fBvalidate\-config\fP, \fBvc\fP
+\fBvalidate\-config\fP, \fBvc\fP, \fBvalidate\fP
 .RS 4
-Validate configuration
+Validate Sourcehawk configuration file format and syntax
 .RE
 .sp
 \fBfix\fP, \fBcorrect\fP, \fBresolve\fP
 .RS 4
-Fix source based on configuration
+Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made.
+.RE
+.sp
+\fBflatten\-config\fP, \fBfc\fP, \fBflatten\fP
+.RS 4
+Flatten the sourcehawk configuration onto system by recursively reading and merging local and remote configurations will output to console by default
 .RE
