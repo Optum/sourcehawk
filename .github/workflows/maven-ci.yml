@@ -89,7 +89,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: bash-completion-script-${{ matrix.java }}
-          path: cli/target/sourcehawk-bash-completion-script.sh
+          path: cli/target/sourcehawk-bash-completion.sh
       - name: Archive Manpages
         if: success()
         uses: actions/upload-artifact@v2
