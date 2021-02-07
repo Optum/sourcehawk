@@ -62,6 +62,18 @@ jobs:
         with:
           name: native-image
           path: cli/target/*-native-image.jar
+      - name: Archive Bash Completion Script
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: bash-completion-script
+          path: cli/target/sourcehawk-bash-completion.sh
+      - name: Archive Manpages
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: manpages
+          path: gh-pages/manpages/sourcehawk*.1
       - name: Aggregate Coverage Reports
         id: aggregate_coverage_reports
         if: success()
@@ -198,6 +210,14 @@ jobs:
         with:
           name: native-image
           path: build
+      - uses: actions/download-artifact@v2
+        with:
+          name: bash-completion-script
+          path: build
+      - uses: actions/download-artifact@v2
+        with:
+          name: manpages
+          path: build
       - name: Rename Native Image JAR
         working-directory: build
         run: mv *.jar native-image.jar
@@ -219,6 +239,10 @@ jobs:
         if: success()
         working-directory: build
         run: ./sourcehawk help
+      - name: Create Homebrew Tap Formula Archive
+        if: success()
+        working-directory: build
+        run: tar -czvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk sourcehawk-bash-completion.sh sourcehawk-*.1.gz
       - name: Upload Sourcehawk Mac Executable
         if: success()
         continue-on-error: true
@@ -230,6 +254,29 @@ jobs:
           asset_path: build/sourcehawk
           asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64
           asset_content_type: application/octet-stream
+      - name: Upload Sourcehawk Mac Homebrew Tap Formula Archive
+        id: upload_homebrew_tap_formula_archive
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          asset_path: build/sourcehawk-homebrew-tap-formula.tar.gz
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
+          asset_content_type: application/octet-stream
+      - name: Update Optum Homebrew Tap Formula
+        uses: mislav/bump-homebrew-formula-action@v1.9
+        continue-on-error: true
+        with:
+          formula-name: sourcehawk
+          homebrew-tap: optum/homebrew-tap
+          base-branch: main
+          download-url: ${{ steps.upload_homebrew_tap_formula_archive.outputs.browser_download_url }}
+          commit-message: Updating sourcehawk formula to latest release version ${{ needs.build.outputs.RELEASE_VERSION }}
+        env:
+          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_TAP_COMMITTER_TOKEN }}
   build-windows-native-image:
     runs-on: windows-latest
     needs: [build, build-java11]
