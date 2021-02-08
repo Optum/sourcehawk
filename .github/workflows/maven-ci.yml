@@ -84,6 +84,18 @@ jobs:
         with:
           name: native-image-${{ matrix.java }}
           path: cli/target/*-native-image.jar
+      - name: Archive Bash Completion Script
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: bash-completion-script-${{ matrix.java }}
+          path: cli/target/sourcehawk-bash-completion.sh
+      - name: Archive Manpages
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: manpages-${{ matrix.java }}
+          path: gh-pages/manpages/sourcehawk*.1
       - name: Aggregate Coverage Reports
         id: aggregate_coverage_reports
         if: success()
@@ -110,6 +122,14 @@ jobs:
         with:
           name: native-image-8
           path: build
+      - uses: actions/download-artifact@v2
+        with:
+          name: bash-completion-script-8
+          path: build
+      - uses: actions/download-artifact@v2
+        with:
+          name: manpages-8
+          path: build
       - name: Rename Native Image JAR
         working-directory: build
         run: mv *.jar native-image.jar
@@ -127,6 +147,24 @@ jobs:
         if: success()
         working-directory: build
         run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback
+      - name: Create Homebrew Tap Formula Archive
+        if: success()
+        working-directory: build
+        run: gzip sourcehawk*.1 && tar -czvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk sourcehawk-bash-completion.sh sourcehawk*.1.gz
+      - name: Archive Mac Native Image
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-artifact@v2
+        with:
+          name: mac-native-image
+          path: build/sourcehawk
+      - name: Archive Homebrew Tap Formula Archive
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-artifact@v2
+        with:
+          name: homebrew-tap-formula
+          path: build/sourcehawk-homebrew-tap-formula.tar.gz
       - name: Smoke Test
         if: success()
         working-directory: build
@@ -156,6 +194,13 @@ jobs:
           graalvm-ce-java11-20.3.0\bin\native-image -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
         env:
           JAVA_HOME: ./graalvm-ce-java11-20.3.0
+      - name: Archive Windows Native Image
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-artifact@v2
+        with:
+          name: windows-native-image
+          path: sourcehawk.exe
       - name: Smoke Test
         if: success()
         shell: cmd
