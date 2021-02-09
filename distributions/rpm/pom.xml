@@ -23,7 +23,6 @@
         <rpm.package.release/> <!-- Set by plugin dynamically - default for SNAPSHOT builds -->
         <rpm.package.architecture>x86_64</rpm.package.architecture>
         <rpm.build.directory>${project.build.directory}/rpmbuild</rpm.build.directory>
-        <git.commit.id/>
     </properties>
 
     <dependencies>

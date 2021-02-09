@@ -2,11 +2,12 @@ package com.optum.sourcehawk.exec;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+import com.fasterxml.jackson.module.blackbird.BlackbirdModule;
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.core.utils.StringUtils;
@@ -44,15 +45,17 @@ public class ConfigurationReader {
     /**
      * The object mapper which is used to deserialize the configuration from file
      */
-    public final ObjectMapper MAPPER = new YAMLMapper()
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            .setPropertyNamingStrategy(new PropertyNamingStrategy.KebabCaseStrategy())
-            .setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
-                @Override
-                public JsonPOJOBuilder.Value findPOJOBuilderConfig(final AnnotatedClass annotatedClass) {
-                    return new JsonPOJOBuilder.Value("build", "");
-                }
-            });
+    public final ObjectMapper MAPPER = YAMLMapper.builder()
+        .addModule(new BlackbirdModule())
+        .serializationInclusion(JsonInclude.Include.NON_NULL)
+        .propertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE)
+        .annotationIntrospector(new JacksonAnnotationIntrospector() {
+            @Override
+            public JsonPOJOBuilder.Value findPOJOBuilderConfig(final AnnotatedClass annotatedClass) {
+                return new JsonPOJOBuilder.Value("build", "");
+            }
+        })
+        .build();
 
     /**
      * Parse the configuration from the provided yaml string

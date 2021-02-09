@@ -3,10 +3,12 @@ package com.optum.sourcehawk.enforcer.file.yaml;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import com.optum.sourcehawk.enforcer.file.json.JsonValueEquals;
+import com.optum.sourcehawk.enforcer.file.xml.XPathEquals;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
@@ -28,12 +30,12 @@ import java.util.Map;
  * @author Brian Wyka
  */
 @Builder(builderClassName = "Builder")
-@JsonDeserialize(builder = YamlValueEquals.Builder.class)
+@JsonDeserialize(builder = XPathEquals.Builder.class)
 @AllArgsConstructor(staticName = "equals")
 public class YamlValueEquals extends AbstractFileEnforcer {
 
-    private static final ObjectMapper YAML_MAPPER = new YAMLMapper();
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper YAML_MAPPER = YAMLMapper.builder().build();
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();
 
     /**
      * Key: The Yaml Pointer expression to retrieve the value

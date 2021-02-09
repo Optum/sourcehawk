@@ -90,18 +90,18 @@
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-nop</artifactId>
+                <artifactId>slf4j-simple</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-simple</artifactId>
+                <artifactId>slf4j-nop</artifactId>
                 <version>${slf4j.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.11.4</version>
+                <version>2.12.5</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
