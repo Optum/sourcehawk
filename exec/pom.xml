@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.5.1-SNAPSHOT</version>
+        <version>0.5.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -83,6 +83,11 @@
             <artifactId>jackson-dataformat-yaml</artifactId>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-blackbird</artifactId>
+            <scope>compile</scope>
+        </dependency>
 
         <!-- TEST DEPENDENCIES -->
         <dependency>
@@ -113,6 +118,7 @@
                                     <include>ch.qos.logback:*:*:*:*</include>
                                     <include>com.fasterxml.jackson.core:*:*:*:*</include>
                                     <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
+                                    <include>com.fasterxml.jackson.module:jackson-module-blackbird:*:*</include>
                                     <include>com.jayway.jsonpath:json-path:*:*:*</include>
                                     <include>net.minidev:accessors-smart:*:*:*</include>
                                     <include>net.minidev:json-smart:*:*:*</include>
