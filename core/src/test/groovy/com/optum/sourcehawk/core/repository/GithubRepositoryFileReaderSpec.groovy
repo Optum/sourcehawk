@@ -113,7 +113,7 @@ class GithubRepositoryFileReaderSpec extends Specification {
     def "read (not found)"() {
         given:
         RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@master")
-        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, remoteRef)
+        GithubRepositoryFileReader githubRepositoryFileReader = new GithubRepositoryFileReader(null, enterpriseUrl, remoteRef)
         clientAndServer
                 .when(HttpRequest.request()
                         .withMethod("HEAD")
