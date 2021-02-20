@@ -27,7 +27,7 @@ class AbstractExecCommandSpec extends Specification {
         then:
         execOptions
         execOptions.repositoryRoot == Paths.get(".")
-        execOptions.outputFormat == OutputFormat.CONSOLE
+        execOptions.outputFormat == OutputFormat.TEXT
         execOptions.configurationFileLocation == "sourcehawk.yml"
         execOptions.verbosity == Verbosity.HIGH
         !execOptions.failOnWarnings

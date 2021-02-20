@@ -9,7 +9,6 @@ import com.optum.sourcehawk.core.utils.StringUtils;
  */
 public enum OutputFormat {
 
-    CONSOLE,
     TEXT,
     JSON,
     MARKDOWN;
@@ -22,12 +21,12 @@ public enum OutputFormat {
      */
     public static OutputFormat parse(final String name) {
         if (StringUtils.isBlankOrEmpty(name)) {
-            return CONSOLE;
+            return TEXT;
         }
         try {
             return OutputFormat.valueOf(name.toUpperCase());
         } catch (final IllegalArgumentException e) {
-            return CONSOLE;
+            return TEXT;
         }
     }
 

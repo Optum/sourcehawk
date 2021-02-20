@@ -64,7 +64,7 @@ class ValidateConfigIntegrationSpec extends NativeImageSpecification {
                 .redirectErrorStream(false)
                 .start()
         process.waitFor(5, TimeUnit.SECONDS)
-        String output = process.in.text
+        String output = process.err.text
 
         then:
         process.exitValue() == 1

@@ -5,7 +5,6 @@ import com.optum.sourcehawk.core.result.FixResult;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.enforcer.ResolverResult;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import java.util.Optional;
  *
  * @author Brian Wyka
  */
-@Slf4j
 @UtilityClass
 public class FixResultFactory {
 

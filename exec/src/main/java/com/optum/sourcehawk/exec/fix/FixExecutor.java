@@ -10,7 +10,6 @@ import com.optum.sourcehawk.exec.ConfigurationReader;
 import com.optum.sourcehawk.exec.ExecOptions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.io.FileWriter;
@@ -28,7 +27,6 @@ import java.util.stream.Stream;
  *
  * @author Brian Wyka
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FixExecutor {
 

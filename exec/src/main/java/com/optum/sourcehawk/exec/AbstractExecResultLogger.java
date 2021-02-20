@@ -2,13 +2,10 @@ package com.optum.sourcehawk.exec;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.optum.sourcehawk.core.constants.SourcehawkConstants;
 import com.optum.sourcehawk.core.data.Pair;
 import com.optum.sourcehawk.core.data.Severity;
 import com.optum.sourcehawk.core.data.Verbosity;
 import lombok.val;
-import org.slf4j.Logger;
-import org.slf4j.MDC;
 
 import java.util.Collection;
 
@@ -40,25 +37,16 @@ public abstract class AbstractExecResultLogger<T> {
     public void log(final T result, final ExecOptions execOptions) {
         switch (execOptions.getOutputFormat()) {
             case JSON:
-                ExecLoggers.CONSOLE_RAW.info(formatJson(result));
+                Console.Out.log(formatJson(result));
                 break;
             case MARKDOWN:
-                ExecLoggers.CONSOLE_RAW.info(formatMarkdown(result, execOptions.getVerbosity()));
-                break;
-            case CONSOLE:
-                if (execOptions.getVerbosity() == Verbosity.HIGH) {
-                    ExecLoggers.HIGHLIGHT.info(String.format(">_ %s", String.join(" ", SourcehawkConstants.NAME.toUpperCase().split(""))));
-                    ExecLoggers.CONSOLE_RAW.info(execOptions.toString());
-                }
-                val consoleSummary = formatTextSummary(result);
-                logBasedOnSeverity(ExecLoggers.CONSOLE_RAW, consoleSummary.getLeft(), consoleSummary.getRight());
-                logMessages(execOptions.getVerbosity(), result, ExecLoggers.MESSAGE_ANSI);
+                Console.Out.log(formatMarkdown(result, execOptions.getVerbosity()));
                 break;
             case TEXT:
             default:
                 val textSummary = formatTextSummary(result);
-                logBasedOnSeverity(ExecLoggers.CONSOLE_RAW, textSummary.getLeft(), textSummary.getRight());
-                logMessages(execOptions.getVerbosity(), result, ExecLoggers.MESSAGE);
+                Console.Out.log(textSummary.getRight());
+                logMessages(execOptions.getVerbosity(), result);
                 break;
         }
     }
@@ -68,45 +56,31 @@ public abstract class AbstractExecResultLogger<T> {
      *
      * @param verbosity the logging verbosity
      * @param result the result
-     * @param messageLogger the message logger
      */
-    private void logMessages(final Verbosity verbosity, final T result, final Logger messageLogger) {
+    private void logMessages(final Verbosity verbosity, final T result) {
         if (verbosity.getLevel() >= Verbosity.MEDIUM.getLevel()) {
-            formatTextMessages(result).forEach(pair -> logMessage(messageLogger, pair.getLeft(), pair.getRight().getLeft(), pair.getRight().getRight()));
+            formatTextMessages(result).forEach(pair -> logWithSeverityAndContext(pair.getLeft(), pair.getRight().getLeft(), pair.getRight().getRight()));
         }
     }
 
     /**
-     * Derive the logger level from the message descriptor
+     * Log the given message with severity and context
      *
-     * @param logger the logger to use
      * @param severity the severity of the message
-     * @param repositoryFilePath the repository file path
+     * @param context the message context
      * @param message the message to log
      */
-    private static void logMessage(final Logger logger, final Severity severity, final String repositoryFilePath, final String message) {
-        MDC.put(KEY_REPOSITORY_FILE_PATH, repositoryFilePath);
-        logBasedOnSeverity(logger, severity, message);
-    }
-
-    /**
-     * Log based on severity
-     *
-     * @param logger the logger to use
-     * @param severity the severity of the message
-     * @param message the message to log
-     */
-    private static void logBasedOnSeverity(final Logger logger, final Severity severity, final String message) {
+    private static void logWithSeverityAndContext(final Severity severity, final String context, final String message) {
         switch (severity) {
             case ERROR:
-                logger.error(message);
+                Console.Out.contextualError(context, message);
                 break;
             case WARNING:
-                logger.warn(message);
+                Console.Out.contextualWarn(context, message);
                 break;
             case INFO:
             default:
-                logger.info(message);
+                Console.Out.contextualInfo(context, message);
                 break;
         }
     }

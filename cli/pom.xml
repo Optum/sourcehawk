@@ -31,7 +31,7 @@
         <sonar.cpd.exclusions>**/picocli/**/*.*</sonar.cpd.exclusions>
 
         <!-- PICOCLI VERSION -->
-        <picocli.version>4.5.2</picocli.version>
+        <picocli.version>4.6.1</picocli.version>
 
     </properties>
 
@@ -46,14 +46,8 @@
 
         <!-- THIRD-PARTY RUNTIME DEPENDENCIES -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi</artifactId>
-            <version>1.17.1</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
             <scope>runtime</scope>
         </dependency>
 
@@ -228,9 +222,9 @@
                         <type>jar</type>
                     </dependency>
                     <dependency>
-                        <groupId>ch.qos.logback</groupId>
-                        <artifactId>logback-classic</artifactId>
-                        <version>${logback.version}</version>
+                        <groupId>org.slf4j</groupId>
+                        <artifactId>slf4j-simple</artifactId>
+                        <version>${slf4j.version}</version>
                     </dependency>
                 </dependencies>
             </plugin>
@@ -371,7 +365,6 @@
                             <rules>
                                 <bannedDependencies>
                                     <includes combine.children="append">
-                                        <include>ch.qos.logback:*:*:*:*</include>
                                         <include>com.fasterxml.jackson.core:*:*:*:*</include>
                                         <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
                                         <include>com.jayway.jsonpath:json-path:*:*:*</include>
@@ -379,8 +372,9 @@
                                         <include>net.minidev:json-smart:*:*:*</include>
                                         <include>org.apache.maven:maven-model:*:*:*</include>
                                         <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
-                                        <include>org.fusesource.jansi:jansi:*:*:*</include>
                                         <include>org.ow2.asm:asm:*:*:*</include>
+                                        <include>org.slf4j:slf4j-api:*:*:*</include>
+                                        <include>org.slf4j:slf4j-nop:*:*:*</include>
                                         <include>org.yaml:snakeyaml:*:*:*</include>
                                     </includes>
                                 </bannedDependencies>

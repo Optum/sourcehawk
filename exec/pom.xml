@@ -47,14 +47,8 @@
 
         <!-- THIRD-PARTY RUNTIME DEPENDENCIES -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi</artifactId>
-            <version>1.17.1</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
             <scope>runtime</scope>
         </dependency>
 
@@ -95,39 +89,41 @@
 
     <build>
         <plugins>
-            <plugin>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <executions>
 
-                <!-- ENFORCE RESTRICTED DEPENDENCIES -->
-                <execution>
-                    <id>enforce-restricted-dependencies</id>
-                    <phase>validate</phase>
-                    <goals>
-                        <goal>enforce</goal>
-                    </goals>
-                    <configuration>
-                        <rules>
-                            <bannedDependencies>
-                                <includes combine.children="append">
-                                    <include>ch.qos.logback:*:*:*:*</include>
-                                    <include>com.fasterxml.jackson.core:*:*:*:*</include>
-                                    <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
-                                    <include>com.jayway.jsonpath:json-path:*:*:*</include>
-                                    <include>net.minidev:accessors-smart:*:*:*</include>
-                                    <include>net.minidev:json-smart:*:*:*</include>
-                                    <include>org.apache.maven:maven-model:*:*:*</include>
-                                    <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
-                                    <include>org.fusesource.jansi:jansi:*:*:*</include>
-                                    <include>org.ow2.asm:asm:*:*:*</include>
-                                    <include>org.yaml:snakeyaml:*:*:*</include>
-                                </includes>
-                            </bannedDependencies>
-                        </rules>
-                    </configuration>
-                </execution>
-            </executions>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+
+                    <!-- ENFORCE RESTRICTED DEPENDENCIES -->
+                    <execution>
+                        <id>enforce-restricted-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <includes combine.children="append">
+                                        <include>com.fasterxml.jackson.core:*:*:*:*</include>
+                                        <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
+                                        <include>com.jayway.jsonpath:json-path:*:*:*</include>
+                                        <include>net.minidev:accessors-smart:*:*:*</include>
+                                        <include>net.minidev:json-smart:*:*:*</include>
+                                        <include>org.apache.maven:maven-model:*:*:*</include>
+                                        <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
+                                        <include>org.ow2.asm:asm:*:*:*</include>
+                                        <include>org.slf4j:slf4j-api:*:*:*</include>
+                                        <include>org.slf4j:slf4j-nop:*:*:*</include>
+                                        <include>org.yaml:snakeyaml:*:*:*</include>
+                                    </includes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
         </plugins>
     </build>
 

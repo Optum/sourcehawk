@@ -43,8 +43,9 @@
                                         <include>net.minidev:accessors-smart:*:*:*</include>
                                         <include>net.minidev:json-smart:*:*:*</include>
                                         <include>org.apache.maven:maven-model:*:*:*</include>
-                                        <include>org.ow2.asm:asm:*:*:*</include>
                                         <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
+                                        <include>org.ow2.asm:asm:*:*:*</include>
+                                        <include>org.slf4j:slf4j-api:*:*:*</include>
                                         <include>org.yaml:snakeyaml:*:*:*</include>
                                     </includes>
                                 </bannedDependencies>

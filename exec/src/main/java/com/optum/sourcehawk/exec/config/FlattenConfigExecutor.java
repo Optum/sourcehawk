@@ -10,7 +10,6 @@ import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.exec.ConfigurationReader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -20,7 +19,6 @@ import java.nio.file.Paths;
  *
  * @author Christian Oestreich
  */
-@Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class FlattenConfigExecutor {
 

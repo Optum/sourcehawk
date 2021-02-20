@@ -7,7 +7,6 @@ import com.optum.sourcehawk.exec.ExecOptions;
 import com.optum.sourcehawk.exec.scan.ScanExecutor;
 import com.optum.sourcehawk.exec.scan.ScanResultFactory;
 import com.optum.sourcehawk.exec.scan.ScanResultLogger;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import picocli.CommandLine;
 
@@ -18,7 +17,6 @@ import java.util.Optional;
  *
  * @author Brian Wyka
  */
-@Slf4j
 @CommandLine.Command(
         name = "scan",
         aliases = { "flyover", "survey" },

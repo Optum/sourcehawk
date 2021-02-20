@@ -21,8 +21,7 @@ class NativeImageConfigSpec extends Specification {
 
         then:
         args.contains("--enable-url-protocols=http,https")
-        args.contains("--initialize-at-build-time=ch.qos.logback,org.fusesource.jansi")
-        args.contains("--initialize-at-build-time=com.fasterxml.jackson,org.slf4j,org.yaml.snakeyaml")
+        args.contains("--initialize-at-build-time=com.fasterxml.jackson,org.yaml.snakeyaml")
         args.contains("--initialize-at-build-time=javax,jdk.xml.internal")
         args.contains("--initialize-at-build-time=com.sun.xml.internal.stream.util,com.sun.xml.internal.stream.XMLEntityStorage")
         args.contains("--initialize-at-build-time=com.sun.org.apache.xerces.internal.impl,com.sun.org.apache.xerces.internal.util,com.sun.org.apache.xerces.internal.xni,com.sun.org.apache.xerces.internal.utils")

@@ -5,7 +5,6 @@ import com.optum.sourcehawk.core.data.Pair;
 import com.optum.sourcehawk.core.data.RemoteRef;
 import com.optum.sourcehawk.core.repository.GithubRepositoryFileReader;
 import com.optum.sourcehawk.core.repository.RepositoryFileReader;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import picocli.CommandLine;
 
@@ -19,7 +18,6 @@ import java.util.Optional;
  *
  * @author Brian Wyka
  */
-@Slf4j
 @CommandLine.Command(
         name = "github",
         aliases = "gh",

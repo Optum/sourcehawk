@@ -19,6 +19,10 @@ import java.util.Properties;
         aliases = "shawk",
         description = "Watch over your source like a hawk",
         mixinStandardHelpOptions = true,
+        headerHeading = "@|fg(magenta) >_ S O U R C E H A W K|@",
+        synopsisHeading = "%n",
+        commandListHeading ="%nCommands:%n",
+        footer = "Copyright (c) 2020 Optum",
         versionProvider = Sourcehawk.VersionProvider.class,
         subcommands = {
                 CommandLine.HelpCommand.class,
@@ -36,7 +40,13 @@ public class Sourcehawk {
      * @param args the command line args
      */
     public static void main(final String[] args) {
-        val status = new CommandLine(new Sourcehawk()).execute(args);
+        val defaultColorScheme = CommandLine.Help.defaultColorScheme(CommandLine.Help.Ansi.AUTO);
+        val colorScheme = new CommandLine.Help.ColorScheme.Builder(defaultColorScheme)
+                .commands(CommandLine.Help.Ansi.Style.bold, CommandLine.Help.Ansi.Style.fg_cyan)
+                .build();
+        val status = new CommandLine(new Sourcehawk())
+                .setColorScheme(colorScheme)
+                .execute(args);
         Runtime.getRuntime().halt(status);
     }
 
