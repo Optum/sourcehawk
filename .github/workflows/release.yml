@@ -276,7 +276,7 @@ jobs:
           download-url: ${{ steps.upload_homebrew_tap_formula_archive.outputs.browser_download_url }}
           commit-message: Updating sourcehawk formula to latest release version ${{ needs.build.outputs.RELEASE_VERSION }}
         env:
-          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_TAP_COMMITTER_TOKEN }}
+          COMMITTER_TOKEN: ${{ secrets.GIT_COMMITTER_TOKEN }}
   build-windows-native-image:
     runs-on: windows-latest
     needs: [build, build-java11]
