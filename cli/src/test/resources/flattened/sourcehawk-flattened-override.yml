@@ -65,7 +65,7 @@ file-protocols:
     expected-line: "sourcehawk"
     expected-line-number: 1
   - enforcer: ".common.ContainsLineAt"
-    expected-line: "Copyright 2020 Optum"
+    expected-line: "Copyright (.*) Optum"
     expected-line-number: 3
   - enforcer: ".common.ContainsLine"
     expected-line: "Project Description:"
