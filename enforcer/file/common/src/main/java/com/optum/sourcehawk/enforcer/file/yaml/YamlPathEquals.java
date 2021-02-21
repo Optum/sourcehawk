@@ -3,10 +3,9 @@ package com.optum.sourcehawk.enforcer.file.yaml;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
-import com.jayway.jsonpath.JsonPath;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
-import com.optum.sourcehawk.enforcer.file.json.JsonPathEquals;
+import com.optum.sourcehawk.enforcer.file.json.JsonPointerEquals;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.val;
@@ -20,9 +19,9 @@ import java.util.Map;
 
 /**
  * An enforcer which is responsible for enforcing that a yaml file has a specific property with an expected value.  Under
- * the hood, this is delegating to {@link JsonPathEquals} after converting the yaml to json
+ * the hood, this is delegating to {@link JsonPointerEquals} after converting the yaml to json
  *
- * @see JsonPathEquals
+ * @see JsonPointerEquals
  *
  * @author Brian Wyka
  */
@@ -33,8 +32,7 @@ public class YamlPathEquals extends AbstractFileEnforcer {
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
-     * Key: The Yaml query to retrieve the value
-     * @see JsonPath
+     * Key: The Yaml Pointer expression to retrieve the value
      *
      * Value: The expected value which the query should evaluate to
      */
@@ -57,7 +55,7 @@ public class YamlPathEquals extends AbstractFileEnforcer {
         val yamlMap = YAML_MAPPER.readValue(actualFileInputStream, new TypeReference<Map<String, Object>>() {});
         val json = OBJECT_MAPPER.writeValueAsString(yamlMap);
         try (val jsonInputStream = new ByteArrayInputStream(json.getBytes(Charset.defaultCharset()))) {
-            return JsonPathEquals.equals(expectations).enforce(jsonInputStream);
+            return JsonPointerEquals.equals(expectations).enforce(jsonInputStream);
         }
     }
 
