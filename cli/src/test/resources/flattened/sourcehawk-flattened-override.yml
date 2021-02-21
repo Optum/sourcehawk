@@ -1,7 +1,6 @@
 file-protocols:
 - name: "Maven Banned Deps"
   description: "Maven pom.xml banned deps check"
-  group: "maven"
   repository-path: "pom.xml"
   required: true
   tags:
@@ -14,7 +13,6 @@ file-protocols:
       special.skip: true
 - name: "Maven Pom"
   description: "maven pom.xml has correct configuration"
-  group: "maven"
   repository-path: "pom.xml"
   required: true
   tags:
@@ -26,7 +24,6 @@ file-protocols:
       //project/ciManagement/type/text(): "ghe"
 - name: "License"
   description: null
-  group: null
   repository-path: "LICENSE"
   required: true
   tags: []
@@ -34,7 +31,6 @@ file-protocols:
   enforcers: []
 - name: "Individual Contributor License"
   description: null
-  group: null
   repository-path: "INDIVIDUAL_CONTRIBUTOR_LICENSE.md"
   required: true
   tags: []
@@ -45,7 +41,6 @@ file-protocols:
     expected-line-number: 1
 - name: "Lombok Config"
   description: "Lombok Configured appropriately"
-  group: "lombok"
   repository-path: "lombok.config"
   required: true
   tags:
@@ -61,7 +56,6 @@ file-protocols:
     expected-property-value: false
 - name: "Notice"
   description: null
-  group: null
   repository-path: "NOTICE.txt"
   required: true
   tags: []
@@ -81,7 +75,6 @@ file-protocols:
     expected-line: "@ctoestriech - Project Lead"
 - name: "Maven Wrapper"
   description: "Maven Wrapper exists"
-  group: null
   repository-path: ".mvn/wrapper/maven-wrapper.jar"
   required: true
   tags: []
@@ -89,7 +82,6 @@ file-protocols:
   enforcers: []
 - name: "Maven Wrapper"
   description: "Maven build wrapper"
-  group: "lombok"
   repository-path: ".mvn/wrapper/maven-wrapper.properties"
   required: true
   tags:
@@ -102,7 +94,6 @@ file-protocols:
     expected-property-value: "https://apache.claz.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip"
 - name: "Code of Conduct"
   description: null
-  group: null
   repository-path: "CODE_OF_CONDUCT.md"
   required: true
   tags: []
@@ -116,7 +107,6 @@ file-protocols:
     expected-line: "[email]: mailto:opensource@optum.com"
 - name: "Attribution"
   description: null
-  group: null
   repository-path: "attribution.txt"
   required: true
   tags: []
@@ -124,7 +114,6 @@ file-protocols:
   enforcers: []
 - name: "Contributing"
   description: null
-  group: null
   repository-path: "CONTRIBUTING.md"
   required: true
   tags: []

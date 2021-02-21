@@ -23,7 +23,6 @@ class FileProtocolSpec extends Specification {
                 .name("name")
                 .description("description")
                 .repositoryPath("path/to/file.txt")
-                .group("group")
                 .required(false)
                 .tags(["tag"] as String[])
                 .severity("WARNING")
@@ -35,7 +34,6 @@ class FileProtocolSpec extends Specification {
         fileProtocol.name == "name"
         fileProtocol.description == "description"
         fileProtocol.repositoryPath == "path/to/file.txt"
-        fileProtocol.group == "group"
         !fileProtocol.required
         fileProtocol.tags
         fileProtocol.severity == "WARNING"
@@ -48,7 +46,6 @@ class FileProtocolSpec extends Specification {
                 .name("name")
                 .description("description")
                 .repositoryPath("path/to/file.txt")
-                .group("group")
                 .required(false)
                 .tags(["tag"] as String[])
                 .severity("WARNING")
@@ -58,7 +55,6 @@ class FileProtocolSpec extends Specification {
                 .name("name")
                 .description("description")
                 .repositoryPath("path/to/file.txt")
-                .group("group")
                 .required(false)
                 .tags(["tag"] as String[])
                 .severity("WARNING")

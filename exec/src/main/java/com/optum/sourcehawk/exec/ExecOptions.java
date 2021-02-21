@@ -12,6 +12,8 @@ import lombok.Value;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
 
 /**
  * Execution options to be evaluated
@@ -28,6 +30,13 @@ public class ExecOptions {
     @NonNull
     @Builder.Default
     Path repositoryRoot = Paths.get(".");
+
+    /**
+     * The tags to filter the execution scope
+     */
+    @NonNull
+    @Builder.Default
+    Collection<String> tags = Collections.emptySet();
 
     /**
      * The output verbosity
@@ -82,6 +91,7 @@ public class ExecOptions {
             string += "Remote Reference.. " + remoteRef + System.lineSeparator();
         }
         string += "Config File....... " + configurationFileLocation + System.lineSeparator();
+        string += "Tags.............. " + String.join(",", tags) + System.lineSeparator();
         string += "Verbosity......... " + verbosity + System.lineSeparator();
         string += "Output Format..... " + outputFormat + System.lineSeparator();
         string += "Fail on Warnings.. " + failOnWarnings + System.lineSeparator();

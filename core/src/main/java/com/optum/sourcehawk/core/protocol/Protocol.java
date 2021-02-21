@@ -25,13 +25,6 @@ public interface Protocol {
     String getDescription();
 
     /**
-     * The protocol group, allowing for associating different protocols together
-     *
-     * @return the group
-     */
-    String getGroup();
-
-    /**
      * Any tags that the protocol should be annotated with
      *
      * @return the tags

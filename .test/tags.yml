@@ -9,7 +9,13 @@ file-protocols:
     enforcers:
       - enforcer: .maven.MavenParentEquals
         expected-coordinates: com.optum.sourcehawk:sourcehawk-jar-parent
-
-# Composable recursive source hawk configs (Must be public repo)
-config-locations:
-  - .test/bad-parent.yml
+  - name: Lombok
+    description: Lombok config is correct
+    tags:
+      - config
+      - lombok
+    repository-path: lombok.config
+    enforcers:
+      - enforcer: .common.StringPropertyEquals
+        property-name: config.stopBubbling
+        expected-property-value: false

@@ -8,9 +8,9 @@ import com.optum.sourcehawk.core.data.Verbosity;
 import com.optum.sourcehawk.core.result.ScanResult;
 import com.optum.sourcehawk.exec.AbstractExecResultLogger;
 import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.val;
 
-import java.io.IOException;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -49,16 +49,6 @@ public class ScanResultLogger extends AbstractExecResultLogger<ScanResult> {
                 .flatMap(Collection::stream)
                 .map(md -> Pair.of(Severity.valueOf(md.getSeverity()), Pair.of(md.getRepositoryPath(), md.getMessage())))
                 .collect(Collectors.toList());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected String formatJson(final ScanResult scanResult) {
-        try {
-            return JSON_WRITER.writeValueAsString(scanResult);
-        } catch (final IOException e) {
-            return String.format("{\"passed\": %s,\"formattedMessages\":[\"Error serializing scan result: %s\"]}", scanResult.isPassed(), e.getMessage());
-        }
     }
 
     /** {@inheritDoc} */

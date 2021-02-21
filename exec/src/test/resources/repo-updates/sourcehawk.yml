@@ -2,7 +2,6 @@
 file-protocols:
   - name: Lombok Config Override
     description: Lombok Configured appropriately
-    group: lombok
     tags:
       - lombok
       - config

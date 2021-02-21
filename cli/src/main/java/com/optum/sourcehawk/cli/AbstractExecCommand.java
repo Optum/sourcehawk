@@ -48,12 +48,13 @@ abstract class AbstractExecCommand implements Callable<Integer> {
                 .map(Object::toString)
                 .ifPresent(builder::configurationFileLocation);
         Optional.ofNullable(exec.verbosity).ifPresent(builder::verbosity);
+        Optional.ofNullable(exec.tags).ifPresent(builder::tags);
         Optional.ofNullable(exec.outputFormat).ifPresent(builder::outputFormat);
         if (exec.outputFormat == OutputFormat.JSON || exec.outputFormat == OutputFormat.MARKDOWN) {
             builder.verbosity(Verbosity.ZERO);
         }
-        builder.failOnWarnings(exec.failOnWarnings);
-        return builder.build();
+        return builder.failOnWarnings(exec.failOnWarnings)
+                .build();
     }
 
     /**

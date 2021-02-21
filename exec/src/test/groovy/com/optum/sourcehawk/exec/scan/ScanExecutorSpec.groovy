@@ -8,6 +8,7 @@ import com.optum.sourcehawk.exec.ConfigurationException
 import com.optum.sourcehawk.exec.ExecOptions
 import com.optum.sourcehawk.exec.FileBaseSpecification
 import com.optum.sourcehawk.exec.scan.ScanExecutor
+import spock.lang.Unroll
 
 class ScanExecutorSpec extends FileBaseSpecification {
 
@@ -58,11 +59,53 @@ class ScanExecutorSpec extends FileBaseSpecification {
         scanResult.passed
     }
 
-    def "scan - local override - glob pattern"() {
+    @Unroll
+    def "scan - local override - tag filter (passed)"() {
         given:
         ExecOptions execOptions = ExecOptions.builder()
                 .repositoryRoot(repositoryRoot)
-                .configurationFileLocation(repositoryRoot.resolve(".test/glob-example.yml").toString())
+                .tags([tag])
+                .configurationFileLocation(repositoryRoot.resolve(".test/tags.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
+                .build()
+
+        when:
+        ScanResult scanResult = ScanExecutor.scan(execOptions)
+
+        then:
+        scanResult
+        scanResult.passed
+
+        where:
+        tag << ["maven", "parent"]
+    }
+
+    @Unroll
+    def "scan - local override - tag filter (failed)"() {
+        given:
+        ExecOptions execOptions = ExecOptions.builder()
+                .repositoryRoot(repositoryRoot)
+                .tags([tag])
+                .configurationFileLocation(repositoryRoot.resolve(".test/tags.yml").toString())
+                .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
+                .build()
+
+        when:
+        ScanResult scanResult = ScanExecutor.scan(execOptions)
+
+        then:
+        scanResult
+        !scanResult.passed
+
+        where:
+        tag << ["lombok", "config"]
+    }
+
+    def "scan - local override - tags"() {
+        given:
+        ExecOptions execOptions = ExecOptions.builder()
+                .repositoryRoot(repositoryRoot)
+                .configurationFileLocation(repositoryRoot.resolve(".test/tags.yml").toString())
                 .repositoryFileReader(LocalRepositoryFileReader.create(repositoryRoot))
                 .build()
 
