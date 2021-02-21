@@ -25,6 +25,12 @@ sourcehawk scan --config-file-url https://raw.githubsercontent.com/optum/sourceh
 sourcehawk scan -f MARKDOWN --fail-on-warnings > sourcehawk-scan-results.md
 ----
 
+.Scan only the provided tags to limit the scope
+[source,sh]
+----
+sourcehawk scan --tags "config" --tags "build"
+----
+
 .Output in JSON format and pretty print with jq
 [source,sh]
 ----
