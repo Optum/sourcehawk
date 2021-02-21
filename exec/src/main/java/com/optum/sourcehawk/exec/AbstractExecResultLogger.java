@@ -6,6 +6,7 @@ import com.optum.sourcehawk.core.constants.SourcehawkConstants;
 import com.optum.sourcehawk.core.data.Pair;
 import com.optum.sourcehawk.core.data.Severity;
 import com.optum.sourcehawk.core.data.Verbosity;
+import lombok.SneakyThrows;
 import lombok.val;
 import org.slf4j.Logger;
 import org.slf4j.MDC;
@@ -133,7 +134,10 @@ public abstract class AbstractExecResultLogger<T> {
      * @param result the result
      * @return the formatted JSON output
      */
-    protected abstract String formatJson(final T result);
+    @SneakyThrows
+    protected String formatJson(final T result) {
+        return JSON_WRITER.writeValueAsString(result);
+    }
 
     /**
      * Format the result for markdown output format

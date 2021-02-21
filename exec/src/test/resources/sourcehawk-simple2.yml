@@ -1,7 +1,6 @@
 file-protocols:
   - name: Gitignore Config
     description: Gitignore Configured appropriately
-    group: markdown
     tags:
       - simple
       - config

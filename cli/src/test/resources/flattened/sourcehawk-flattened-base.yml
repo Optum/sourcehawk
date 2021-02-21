@@ -1,7 +1,6 @@
 file-protocols:
 - name: "Maven Pom"
   description: "maven pom.xml has correct configuration"
-  group: "maven"
   repository-path: "pom.xml"
   required: true
   tags:
@@ -11,28 +10,8 @@ file-protocols:
   - enforcer: ".xml.XPathEquals"
     expectations:
       //project/ciManagement/system/text(): "github"
-- name: "License"
-  description: null
-  group: null
-  repository-path: "LICENSE"
-  required: true
-  tags: []
-  severity: "ERROR"
-  enforcers: []
-- name: "Individual Contributor License"
-  description: null
-  group: null
-  repository-path: "INDIVIDUAL_CONTRIBUTOR_LICENSE.md"
-  required: true
-  tags: []
-  severity: "ERROR"
-  enforcers:
-  - enforcer: ".common.ContainsLineMatchingAt"
-    expected-line-pattern: "(.*)Individual Contributor License Agreement(.*)"
-    expected-line-number: 1
 - name: "Lombok Config"
   description: "Lombok Configured appropriately"
-  group: "lombok"
   repository-path: "lombok.config"
   required: true
   tags:
@@ -48,7 +27,6 @@ file-protocols:
     expected-property-value: true
 - name: "Notice"
   description: null
-  group: null
   repository-path: "NOTICE.txt"
   required: true
   tags: []
@@ -57,18 +35,15 @@ file-protocols:
   - enforcer: ".common.ContainsLineAt"
     expected-line: "sourcehawk"
     expected-line-number: 1
-  - enforcer: ".common.ContainsLineAt"
-    expected-line: "Copyright 2020 Optum"
+  - enforcer: ".common.ContainsLineMatchingAt"
+    expected-line-pattern: "Copyright (.*) Optum"
     expected-line-number: 3
-  - enforcer: ".common.ContainsLine"
-    expected-line: "Project Description:"
   - enforcer: ".common.ContainsLine"
     expected-line: "@brianwyka - Project Lead"
   - enforcer: ".common.ContainsLine"
     expected-line: "@ctoestriech - Project Lead"
 - name: "Maven Wrapper"
   description: "Maven build wrapper"
-  group: "lombok"
   repository-path: ".mvn/wrapper/maven-wrapper.properties"
   required: true
   tags:
@@ -79,35 +54,3 @@ file-protocols:
   - enforcer: ".common.StringPropertyEquals"
     property-name: "distributionUrl"
     expected-property-value: "https://apache.claz.org/maven/maven-3/3.6.3/binaries/apache-maven-3.6.3-bin.zip"
-- name: "Code of Conduct"
-  description: null
-  group: null
-  repository-path: "CODE_OF_CONDUCT.md"
-  required: true
-  tags: []
-  severity: "ERROR"
-  enforcers:
-  - enforcer: ".common.ContainsLine"
-    expected-line: "# Contributor Covenant Code of Conduct"
-  - enforcer: ".common.ContainsLine"
-    expected-line: "[homepage]: http://contributor-covenant.org"
-  - enforcer: ".common.ContainsLine"
-    expected-line: "[email]: mailto:opensource@optum.com"
-- name: "Attribution"
-  description: null
-  group: null
-  repository-path: "attribution.txt"
-  required: true
-  tags: []
-  severity: "ERROR"
-  enforcers: []
-- name: "Contributing"
-  description: null
-  group: null
-  repository-path: "CONTRIBUTING.md"
-  required: true
-  tags: []
-  severity: "ERROR"
-  enforcers:
-  - enforcer: ".common.ContainsLine"
-    expected-line: "[email]: mailto:opensource@optum.com"

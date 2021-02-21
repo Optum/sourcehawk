@@ -2,7 +2,6 @@
 file-protocols:
   - name: Readme Config
     description: Readme Configured appropriately
-    group: markdown
     tags:
       - simple
       - config

@@ -22,6 +22,7 @@ class ExecOptionsSpec extends Specification {
         execOptions.repositoryRoot == Paths.get(".")
         execOptions.configurationFileLocation == "sourcehawk.yml"
         execOptions.verbosity == Verbosity.HIGH
+        !execOptions.tags
         !execOptions.failOnWarnings
         execOptions.repositoryFileReader instanceof LocalRepositoryFileReader
         !execOptions.remoteRef
@@ -36,6 +37,7 @@ class ExecOptionsSpec extends Specification {
                 .repositoryRoot(Paths.get("/"))
                 .configurationFileLocation("Sourcehawk")
                 .verbosity(Verbosity.ZERO)
+                .tags(["foo", "bar"])
                 .failOnWarnings(true)
 
         when:
@@ -46,6 +48,7 @@ class ExecOptionsSpec extends Specification {
         execOptions.repositoryRoot == Paths.get("/")
         execOptions.configurationFileLocation == "Sourcehawk"
         execOptions.verbosity == Verbosity.ZERO
+        execOptions.tags == ["foo", "bar"]
         execOptions.failOnWarnings
         execOptions.repositoryFileReader instanceof LocalRepositoryFileReader
         !execOptions.remoteRef
@@ -70,6 +73,7 @@ class ExecOptionsSpec extends Specification {
         execOptions.repositoryRoot == Paths.get("/")
         execOptions.configurationFileLocation == "Sourcehawk"
         execOptions.verbosity == Verbosity.ZERO
+        !execOptions.tags
         execOptions.failOnWarnings
         execOptions.repositoryFileReader instanceof GithubRepositoryFileReader
         execOptions.remoteRef == remoteRef
@@ -86,6 +90,13 @@ class ExecOptionsSpec extends Specification {
         when:
         ExecOptions.builder()
                 .verbosity(null)
+
+        then:
+        thrown(NullPointerException)
+
+        when:
+        ExecOptions.builder()
+                .tags(null)
 
         then:
         thrown(NullPointerException)

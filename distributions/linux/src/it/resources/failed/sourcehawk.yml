@@ -2,7 +2,6 @@
 
 file-protocols:
   - name: File Properties
-    group: config
     repository-path: file.properties
     enforcers:
       - enforcer: .common.StringPropertyEquals

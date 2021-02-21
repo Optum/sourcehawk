@@ -17,6 +17,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -59,6 +60,7 @@ public final class FixExecutor {
         }
         return sourcehawkConfiguration.getFileProtocols().stream()
                 .filter(FileProtocol::isRequired)
+                .filter(fileProtocol -> execOptions.getTags().isEmpty() || Arrays.stream(fileProtocol.getTags()).anyMatch(execOptions.getTags()::contains))
                 .flatMap(fileProtocol -> fileProtocol.getEnforcers().stream()
                         .flatMap(enforcer -> fixBasedOnEnforcer(execOptions, fileProtocol, dryRun, enforcer)))
                 .reduce(FixResult.builder().build(), FixResult::reduce);
