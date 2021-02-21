@@ -4,7 +4,7 @@ Copyright 2021 Optum
 
 Project Description:
 ====================
-Sourcehawk is a source code compliance as code automation suite of tools.
+Sourcehawk is an extensible compliance as code automation tool which enables teams to run tailored compliance scans on their source code.
 
 Contributors:
 @brianwyka - Project Lead
