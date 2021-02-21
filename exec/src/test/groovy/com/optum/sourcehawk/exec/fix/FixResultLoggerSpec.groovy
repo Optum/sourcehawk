@@ -79,6 +79,34 @@ class FixResultLoggerSpec extends Specification {
     }
 
     @Unroll
+    def "log - #format (error and fixes applied)"(OutputFormat format) {
+        given:
+        FixResult fixResult = FixResult.builder()
+                .fixesApplied(true)
+                .fixCount(1)
+                .error(true)
+                .errorCount(1)
+                .messages([
+                        "file.ext": [FixResult.MessageDescriptor.builder().repositoryPath("file.ext").message("Error!").build() ],
+                        "file2.ext": [FixResult.MessageDescriptor.builder().repositoryPath("file2.ext").message("Success!").build() ]
+                ])
+                .formattedMessages([ "file.ext :: Error!", "file2.ext :: Success!" ])
+                .build()
+        ExecOptions execOptions = ExecOptions.builder()
+                .outputFormat(format)
+                .build()
+
+        when:
+        FixResultLogger.create(false).log(fixResult, execOptions)
+
+        then:
+        noExceptionThrown()
+
+        where:
+        format << OutputFormat.values()
+    }
+
+    @Unroll
     def "log - #format (error - dry run)"(OutputFormat format) {
         given:
         FixResult fixResult = FixResult.builder()

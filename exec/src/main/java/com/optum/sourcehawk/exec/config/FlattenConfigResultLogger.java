@@ -32,7 +32,7 @@ public class FlattenConfigResultLogger {
      * @param output              the output location of the results
      */
     public void log(final FlattenConfigResult flattenConfigResult, final Path output) {
-        if (output == null || StringUtils.isBlankOrEmpty(output.toString())) {
+        if (output == null) {
             handleConsoleOutput(flattenConfigResult);
         } else {
             handleFileSystemOutput(flattenConfigResult, output);
@@ -64,7 +64,7 @@ public class FlattenConfigResultLogger {
      */
     private static String getOutputPath(final Path outputFilePath) {
         return Optional.ofNullable(outputFilePath)
-                .map(filePath -> StringUtils.defaultString(outputFilePath.toString(), DEFAULT_OUTPUT_FILE_NAME))
+                .map(Path::toString)
                 .orElse(DEFAULT_OUTPUT_FILE_NAME);
     }
 

@@ -24,7 +24,7 @@
         <executable.class>com.optum.sourcehawk.cli.Sourcehawk</executable.class>
 
         <!-- JACOCO OVERRIDES -->
-        <jacoco.coverage.minimum>0.85</jacoco.coverage.minimum> <!-- jacoco-maven-plugin --> <!-- FIXME -->
+        <jacoco.coverage.minimum>0.88</jacoco.coverage.minimum> <!-- jacoco-maven-plugin --> <!-- FIXME -->
 
         <!-- SONAR PROPERTIES -->
         <sonar.exclusions>**/picocli.picocli/**/*.*</sonar.exclusions>
