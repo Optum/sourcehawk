@@ -18,22 +18,8 @@
     <packaging>jar</packaging>
 
     <properties>
-
-        <!-- EXECUTABLE SETTINGS -->
-        <executable.name>${global.project.name}</executable.name>
-        <executable.class>com.optum.sourcehawk.cli.Sourcehawk</executable.class>
-
         <!-- JACOCO OVERRIDES -->
         <jacoco.coverage.minimum>0.88</jacoco.coverage.minimum> <!-- jacoco-maven-plugin --> <!-- FIXME -->
-
-        <!-- SONAR PROPERTIES -->
-        <sonar.exclusions>**/picocli.picocli/**/*.*</sonar.exclusions>
-        <sonar.coverage.exclusions>**/picocli.picocli/**/*.*</sonar.coverage.exclusions>
-        <sonar.cpd.exclusions>**/picocli.picocli/**/*.*</sonar.cpd.exclusions>
-
-        <!-- PICOCLI VERSION -->
-        <picocli.version>4.5.2</picocli.version>
-
     </properties>
 
     <dependencies>
