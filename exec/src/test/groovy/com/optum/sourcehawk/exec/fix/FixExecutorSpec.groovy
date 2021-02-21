@@ -296,6 +296,29 @@ class FixExecutorSpec extends FileBaseSpecification {
         new FileInputStream(Paths.get(updateRepoRoot).resolve("lombok.config").toFile()).text == new FileInputStream(lombokConfigPath.toFile()).text
     }
 
+    def "fix - dry run (tag filter)"() {
+        given:
+        File directory = temporaryFolder.newFolder("dry-run-tag-filter")
+        Files.copy(Paths.get(updateRepoRoot).resolve("sourcehawk.yml"), directory.toPath().resolve("sourcehawk.yml"))
+        Path lombokConfigPath = Files.copy(Paths.get(updateRepoRoot).resolve("lombok.config"), directory.toPath().resolve("lombok.config"))
+        ExecOptions execOptions = ExecOptions.builder()
+                .repositoryRoot(directory.toPath().toAbsolutePath())
+                .tags(["unknown"])
+                .repositoryFileReader(LocalRepositoryFileReader.create(directory.toPath().toAbsolutePath()))
+                .build()
+
+        when:
+        FixResult fixResult = FixExecutor.fix(execOptions, true)
+
+        then:
+        fixResult
+        !fixResult.fixesApplied
+        fixResult.fixCount == 0
+        !fixResult.noResolver
+        !fixResult.messages
+        !fixResult.formattedMessages
+    }
+
     def "executeFix"(){
 
         given:

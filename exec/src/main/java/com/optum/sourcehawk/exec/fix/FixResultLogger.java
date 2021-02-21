@@ -8,6 +8,7 @@ import com.optum.sourcehawk.core.data.Verbosity;
 import com.optum.sourcehawk.core.result.FixResult;
 import com.optum.sourcehawk.exec.AbstractExecResultLogger;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.val;
 
 import java.io.IOException;
@@ -58,16 +59,6 @@ public class FixResultLogger extends AbstractExecResultLogger<FixResult> {
                 .flatMap(Collection::stream)
                 .map(messageDescriptor -> Pair.of(deriveSeverity(fixResult), Pair.of(messageDescriptor.getRepositoryPath(), messageDescriptor.getMessage())))
                 .collect(Collectors.toList());
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    protected String formatJson(final FixResult fixResult) {
-        try {
-            return JSON_WRITER.writeValueAsString(fixResult);
-        } catch (final IOException e) {
-            return String.format("{\"fixesApplied\": %s,\"formattedMessages\":[\"Error serializing fix result: %s\"]}", fixResult.isFixesApplied(), e.getMessage());
-        }
     }
 
     /** {@inheritDoc} */

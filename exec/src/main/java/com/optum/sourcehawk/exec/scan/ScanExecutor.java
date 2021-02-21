@@ -17,6 +17,7 @@ import lombok.val;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.stream.Collectors;
@@ -51,6 +52,7 @@ public final class ScanExecutor {
     private static ScanResult processRequiredFileProtocols(final ExecOptions execOptions, final SourcehawkConfiguration sourcehawkConfiguration) {
         return sourcehawkConfiguration.getFileProtocols().stream()
                 .filter(FileProtocol::isRequired)
+                .filter(fileProtocol -> execOptions.getTags().isEmpty() || Arrays.stream(fileProtocol.getTags()).anyMatch(execOptions.getTags()::contains))
                 .map(fileProtocol -> processFileProtocol(execOptions, fileProtocol))
                 .reduce(ScanResult.passed(), ScanResult::reduce);
     }

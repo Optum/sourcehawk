@@ -61,7 +61,7 @@ class BitbucketScanSubCommandSpec extends Specification {
     def "commandLine.execute bitbucket server - custom configuration file (failed)"() {
         given:
         CommandLine commandLine = new CommandLine(new ScanCommand())
-        String[] args = ["-c", "target/test-classes/sourcehawk-basic2.yml", "bitbucket", "-S", bitbucketServerUrl, "project/repo@develop" ]
+        String[] args = ["-c", "src/test/resources/sourcehawk-basic2.yml", "bitbucket", "-S", bitbucketServerUrl, "project/repo@develop" ]
         clientAndServer
                 .when(HttpRequest.request()
                         .withMethod("HEAD")

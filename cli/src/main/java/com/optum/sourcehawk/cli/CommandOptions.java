@@ -9,6 +9,7 @@ import picocli.CommandLine;
 
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Command option definitions
@@ -27,6 +28,12 @@ class CommandOptions {
 
         @CommandLine.ArgGroup
         ConfigFile configFile;
+
+        @CommandLine.Option(
+                names = {"-t", "--tags"},
+                description = "Tags of file protocols to limit the scope of execution"
+        )
+        List<String> tags;
 
         @CommandLine.Option(
                 names = {"-v", "--verbosity"},

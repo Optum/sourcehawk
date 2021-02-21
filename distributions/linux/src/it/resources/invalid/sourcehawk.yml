@@ -3,7 +3,6 @@
 file-protocols:
   - name: File Properties
     description: File Properties configured correctly
-    group: config
     tags:
       - config
     # Missing repository-path

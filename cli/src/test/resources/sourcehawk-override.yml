@@ -1,7 +1,6 @@
 file-protocols:
   - name: Maven Pom
     description: maven pom.xml has correct configuration
-    group: maven
     tags:
       - maven
     repository-path: pom.xml
@@ -14,7 +13,6 @@ file-protocols:
     repository-path: .mvn/wrapper/maven-wrapper.jar
   - name: Maven Banned Deps
     description: Maven pom.xml banned deps check
-    group: maven
     tags:
       - maven
       - dependencies
@@ -25,7 +23,6 @@ file-protocols:
           "special.skip": true
   - name: Lombok Config
     description: Lombok Configured appropriately
-    group: lombok
     repository-path: lombok.config
     required: true
     tags:
