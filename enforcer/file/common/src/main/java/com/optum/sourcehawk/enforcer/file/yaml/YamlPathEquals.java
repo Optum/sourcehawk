@@ -2,6 +2,7 @@ package com.optum.sourcehawk.enforcer.file.yaml;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.jayway.jsonpath.JsonPath;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
@@ -29,8 +30,8 @@ import java.util.Map;
 @AllArgsConstructor(staticName = "equals")
 public class YamlPathEquals extends AbstractFileEnforcer {
 
-    private static final ObjectMapper YAML_MAPPER = new YAMLMapper();
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+    private static final ObjectMapper YAML_MAPPER = YAMLMapper.builder().build();
+    private static final ObjectMapper OBJECT_MAPPER = JsonMapper.builder().build();
 
     /**
      * Key: The Yaml query to retrieve the value
