@@ -11,10 +11,11 @@ set -e
 #########################################################################
 
 # Retrieve Latest Version
-VERSION=$(curl -sI https://github.com/remkop/picocli/releases/latest | grep -i location | awk -F"/" '{ printf "%s", $NF }' | tr -d 'v' | tr -d '\r\n')
+VERSION=$(curl -sI https://github.com/remkop/picocli/releases/latest | grep -i location: | awk -F"/" '{ printf "%s", $NF }' | tr -d 'v' | tr -d '\r\n')
 
 # Global Variables
 DIR="$( cd "$( dirname "$( dirname "${BASH_SOURCE[0]}" )")" && pwd )"
+ROOT_DIR="$( cd "$( dirname "$( dirname "$( dirname "${BASH_SOURCE[0]}" )")")" && pwd )"
 BASE_URL="https://raw.githubusercontent.com/remkop/picocli"
 LICENSE_URL="$BASE_URL/v$VERSION/LICENSE"
 LICENSE_FILE_PATH="$DIR/src/main/resources/META-INF/licenses/picocli.txt"
@@ -31,6 +32,9 @@ sed -i 's/public\sclass\sCommandLine/@SuppressWarnings({"rawtypes", "deprecation
 
 # Replace the version in pom.xml file for plugin references
 sed -i "s/<picocli.version>[-[:alnum:]./]\{1,\}<\/picocli.version>/<picocli.version>$VERSION<\/picocli.version>/" "$DIR/pom.xml"
+
+# Replace the version in attribution.txt file
+sed -i "s/Package: info.picocli:[-[:alnum:]./]\{1,\}/Package: info.picocli:$VERSION/" "$ROOT_DIR/attribution.txt"
 
 # Remove TODOs so not highlighted in editor
 sed -i 's/TODO/TIDO/g' "$SOURCE_FILE_PATH"

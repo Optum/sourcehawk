@@ -46,7 +46,7 @@ class CommandOptions {
         @CommandLine.Option(
                 names = {"-f", "--output-format"},
                 description = "Output Format, valid values: ${COMPLETION-CANDIDATES}",
-                defaultValue = "CONSOLE",
+                defaultValue = "TEXT",
                 showDefaultValue = CommandLine.Help.Visibility.ALWAYS
         )
         OutputFormat outputFormat;

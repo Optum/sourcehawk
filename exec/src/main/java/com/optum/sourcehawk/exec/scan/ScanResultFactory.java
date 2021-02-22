@@ -1,12 +1,11 @@
 package com.optum.sourcehawk.exec.scan;
 
+import com.optum.sourcehawk.core.data.Severity;
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import com.optum.sourcehawk.core.result.ScanResult;
-import com.optum.sourcehawk.core.data.Severity;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.exec.ExecOptions;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 
 import java.util.ArrayList;
@@ -19,7 +18,6 @@ import java.util.function.IntConsumer;
  *
  * @author Brian Wyka
  */
-@Slf4j
 @UtilityClass
 public class ScanResultFactory {
 

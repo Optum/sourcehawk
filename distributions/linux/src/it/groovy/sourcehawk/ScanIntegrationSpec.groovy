@@ -68,7 +68,7 @@ class ScanIntegrationSpec extends NativeImageSpecification {
                 .redirectErrorStream(false)
                 .start()
         process.waitFor(5, TimeUnit.SECONDS)
-        String output = process.in.text
+        String output = process.in.text.replaceAll("\u001B\\[[\\d;]*[^\\d;]","")
 
         then:
         output.contains("Scan resulted in failure. Error(s): 1, Warning(s): 0")
@@ -89,7 +89,7 @@ class ScanIntegrationSpec extends NativeImageSpecification {
         process.exitValue() == 2
 
         and:
-        process.getErrorStream().text.contains("Unknown option: '-a'")
+        process.err.text.contains("Unknown option: '-a'")
     }
 
     def "sourcehawk (scan error)"() {

@@ -1,9 +1,6 @@
 {
   "resources": [
     {
-      "pattern": "logback.xml"
-    },
-    {
       "pattern": "sourcehawk.properties"
     }
   ]

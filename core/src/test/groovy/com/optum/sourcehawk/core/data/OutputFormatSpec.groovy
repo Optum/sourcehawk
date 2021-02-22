@@ -12,13 +12,13 @@ class OutputFormatSpec extends Specification {
         OutputFormat.parse(name)
 
         where:
-        name << ['console', 'CONSOLE', 'text', 'TEXT', 'json', 'JSON', 'markdown', 'MARKDOWN']
+        name << ['text', 'TEXT', 'json', 'JSON', 'markdown', 'MARKDOWN']
     }
 
     @Unroll
     def "parse - invalid - returns default"() {
         expect:
-        OutputFormat.parse(name) == OutputFormat.CONSOLE
+        OutputFormat.parse(name) == OutputFormat.TEXT
 
         where:
         name << ['', ' ', null, 'con', 'txt', 'js', 'md']

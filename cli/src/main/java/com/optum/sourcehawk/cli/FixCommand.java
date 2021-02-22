@@ -7,7 +7,6 @@ import com.optum.sourcehawk.exec.ExecOptions;
 import com.optum.sourcehawk.exec.fix.FixExecutor;
 import com.optum.sourcehawk.exec.fix.FixResultFactory;
 import com.optum.sourcehawk.exec.fix.FixResultLogger;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import picocli.CommandLine;
 
@@ -18,7 +17,6 @@ import java.util.Optional;
  *
  * @author Brian Wyka
  */
-@Slf4j
 @CommandLine.Command(
         name = "fix",
         aliases = { "correct", "resolve" },

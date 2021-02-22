@@ -57,7 +57,7 @@ public class ExecOptions {
      */
     @NonNull
     @Builder.Default
-    OutputFormat outputFormat = OutputFormat.CONSOLE;
+    OutputFormat outputFormat = OutputFormat.TEXT;
 
     /**
      * Whether or not to fail on warnings

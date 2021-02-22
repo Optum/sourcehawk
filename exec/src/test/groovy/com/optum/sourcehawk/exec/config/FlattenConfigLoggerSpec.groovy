@@ -35,6 +35,12 @@ class FlattenConfigLoggerSpec extends FileBaseSpecification {
 
         then:
         notThrown(Exception)
+
+        when:
+        FlattenConfigResultLogger.handleConsoleOutput(FlattenConfigResult.builder().content("hello".bytes).build())
+
+        then:
+        notThrown(Exception)
     }
 
     def "handleFileSystemOutput"() {

@@ -3,7 +3,7 @@ package com.optum.sourcehawk.exec.config;
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileWriter;
 import com.optum.sourcehawk.core.result.FlattenConfigResult;
 import com.optum.sourcehawk.core.utils.StringUtils;
-import com.optum.sourcehawk.exec.ExecLoggers;
+import com.optum.sourcehawk.exec.Console;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 
@@ -32,7 +32,7 @@ public class FlattenConfigResultLogger {
      * @param output              the output location of the results
      */
     public void log(final FlattenConfigResult flattenConfigResult, final Path output) {
-        if (output == null || StringUtils.isBlankOrEmpty(output.toString())) {
+        if (output == null) {
             handleConsoleOutput(flattenConfigResult);
         } else {
             handleFileSystemOutput(flattenConfigResult, output);
@@ -49,10 +49,10 @@ public class FlattenConfigResultLogger {
         try {
             val outputPath = getOutputPath(outputFilePath);
             LocalRepositoryFileWriter.writer().write(outputPath, flattenConfigResult.getContent());
-            ExecLoggers.CONSOLE_RAW.info(flattenConfigResult.getMessage());
-            ExecLoggers.CONSOLE_RAW.info("Output to {}", outputPath);
+            Console.Err.log(flattenConfigResult.getMessage());
+            Console.Err.log("Flattened configuration output to {}", outputPath);
         } catch (final Exception e) {
-            ExecLoggers.CONSOLE_RAW.error("Error writing flattened configuration to file: {}", e.getMessage());
+            Console.Err.log("Error writing flattened configuration to file: %s", e.getMessage());
         }
     }
 
@@ -64,7 +64,7 @@ public class FlattenConfigResultLogger {
      */
     private static String getOutputPath(final Path outputFilePath) {
         return Optional.ofNullable(outputFilePath)
-                .map(filePath -> StringUtils.defaultString(outputFilePath.toString(), DEFAULT_OUTPUT_FILE_NAME))
+                .map(Path::toString)
                 .orElse(DEFAULT_OUTPUT_FILE_NAME);
     }
 
@@ -77,12 +77,12 @@ public class FlattenConfigResultLogger {
     private static void handleConsoleOutput(final FlattenConfigResult flattenConfigResult) {
         if (flattenConfigResult != null && flattenConfigResult.getContent() != null) {
             if (flattenConfigResult.isError()) {
-                ExecLoggers.CONSOLE_RAW.error(flattenConfigResult.getMessage());
+                Console.Err.log(flattenConfigResult.getMessage());
             } else {
-                ExecLoggers.CONSOLE_RAW.info(new String(flattenConfigResult.getContent(), Charset.defaultCharset()));
+                Console.Out.log(new String(flattenConfigResult.getContent(), Charset.defaultCharset()));
             }
         } else {
-            ExecLoggers.CONSOLE_RAW.error("No flattened file produced!");
+            Console.Err.log("No flattened configuration file produced!");
         }
     }
 

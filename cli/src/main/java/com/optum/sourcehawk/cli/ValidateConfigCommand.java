@@ -12,7 +12,7 @@ import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
 import com.optum.sourcehawk.exec.ConfigurationReader;
-import com.optum.sourcehawk.exec.ExecLoggers;
+import com.optum.sourcehawk.exec.Console;
 import lombok.val;
 import picocli.CommandLine;
 
@@ -77,34 +77,34 @@ public class ValidateConfigCommand implements Callable<Integer> {
                 if (Files.exists(childConfigFilePath)) {
                     sourcehawkConfiguration = ConfigurationReader.parseConfiguration(childConfigFilePath);
                 } else {
-                    ExecLoggers.CONSOLE_RAW.error("Configuration file is a directory and does not contain {} file", SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME);
+                    Console.Err.log("Configuration file is a directory and does not contain %s file", SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME);
                     return CommandLine.ExitCode.USAGE;
                 }
             } else if (Files.exists(configFilePath)) {
                 sourcehawkConfiguration = ConfigurationReader.parseConfiguration(configFilePath);
             } else {
-                ExecLoggers.CONSOLE_RAW.error("Configuration not provided through stdin or via file path");
+                Console.Err.log("Configuration not provided through stdin or via file path");
                 return CommandLine.ExitCode.USAGE;
             }
         } catch (final PropertyBindingException e) {
             val context = String.format("at line %d, column %d", e.getLocation().getLineNr(), e.getLocation().getColumnNr());
-            ExecLoggers.CONSOLE_RAW.error("* {}", deriveErrorMessage(context, e));
+            Console.Err.log("* %s", deriveErrorMessage(context, e));
             return CommandLine.ExitCode.SOFTWARE;
         } catch (final Exception e) {
-            ExecLoggers.CONSOLE_RAW.error("* {}", deriveErrorMessage("unknown", e));
+            Console.Err.log("* %s", deriveErrorMessage("unknown", e));
             return CommandLine.ExitCode.SOFTWARE;
         }
         if (CollectionUtils.isEmpty(sourcehawkConfiguration.getConfigLocations()) && CollectionUtils.isEmpty(sourcehawkConfiguration.getFileProtocols())) {
-            ExecLoggers.CONSOLE_RAW.warn("There are no remote configurations or file protocols in your config file, scans may produce no results");
+            Console.Out.log("There are no remote configurations or file protocols in your config file, scans may produce no results");
         }
         val fileEnforcerErrors = compileFileEnforcerErrors(sourcehawkConfiguration.getFileProtocols());
         if (fileEnforcerErrors.isEmpty()) {
-            ExecLoggers.CONSOLE_RAW.info("Congratulations, you have created a valid configuration file");
+            Console.Out.log("Congratulations, you have created a valid configuration file");
             return CommandLine.ExitCode.OK;
         }
         fileEnforcerErrors.stream()
                 .map(fileEnforcerError -> String.format("* %s", fileEnforcerError))
-                .forEach(ExecLoggers.CONSOLE_RAW::error);
+                .forEach(Console.Err::log);
         return CommandLine.ExitCode.SOFTWARE;
     }
 

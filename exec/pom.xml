@@ -18,22 +18,8 @@
     <packaging>jar</packaging>
 
     <properties>
-
-        <!-- EXECUTABLE SETTINGS -->
-        <executable.name>${global.project.name}</executable.name>
-        <executable.class>com.optum.sourcehawk.cli.Sourcehawk</executable.class>
-
         <!-- JACOCO OVERRIDES -->
-        <jacoco.coverage.minimum>0.85</jacoco.coverage.minimum> <!-- jacoco-maven-plugin --> <!-- FIXME -->
-
-        <!-- SONAR PROPERTIES -->
-        <sonar.exclusions>**/picocli.picocli/**/*.*</sonar.exclusions>
-        <sonar.coverage.exclusions>**/picocli.picocli/**/*.*</sonar.coverage.exclusions>
-        <sonar.cpd.exclusions>**/picocli.picocli/**/*.*</sonar.cpd.exclusions>
-
-        <!-- PICOCLI VERSION -->
-        <picocli.version>4.5.2</picocli.version>
-
+        <jacoco.coverage.minimum>0.88</jacoco.coverage.minimum> <!-- jacoco-maven-plugin --> <!-- FIXME -->
     </properties>
 
     <dependencies>
@@ -47,14 +33,8 @@
 
         <!-- THIRD-PARTY RUNTIME DEPENDENCIES -->
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.fusesource.jansi</groupId>
-            <artifactId>jansi</artifactId>
-            <version>1.17.1</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-nop</artifactId>
             <scope>runtime</scope>
         </dependency>
 
@@ -95,39 +75,41 @@
 
     <build>
         <plugins>
-            <plugin>
-            <artifactId>maven-enforcer-plugin</artifactId>
-            <executions>
 
-                <!-- ENFORCE RESTRICTED DEPENDENCIES -->
-                <execution>
-                    <id>enforce-restricted-dependencies</id>
-                    <phase>validate</phase>
-                    <goals>
-                        <goal>enforce</goal>
-                    </goals>
-                    <configuration>
-                        <rules>
-                            <bannedDependencies>
-                                <includes combine.children="append">
-                                    <include>ch.qos.logback:*:*:*:*</include>
-                                    <include>com.fasterxml.jackson.core:*:*:*:*</include>
-                                    <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
-                                    <include>com.jayway.jsonpath:json-path:*:*:*</include>
-                                    <include>net.minidev:accessors-smart:*:*:*</include>
-                                    <include>net.minidev:json-smart:*:*:*</include>
-                                    <include>org.apache.maven:maven-model:*:*:*</include>
-                                    <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
-                                    <include>org.fusesource.jansi:jansi:*:*:*</include>
-                                    <include>org.ow2.asm:asm:*:*:*</include>
-                                    <include>org.yaml:snakeyaml:*:*:*</include>
-                                </includes>
-                            </bannedDependencies>
-                        </rules>
-                    </configuration>
-                </execution>
-            </executions>
+            <plugin>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <executions>
+
+                    <!-- ENFORCE RESTRICTED DEPENDENCIES -->
+                    <execution>
+                        <id>enforce-restricted-dependencies</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules>
+                                <bannedDependencies>
+                                    <includes combine.children="append">
+                                        <include>com.fasterxml.jackson.core:*:*:*:*</include>
+                                        <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
+                                        <include>com.jayway.jsonpath:json-path:*:*:*</include>
+                                        <include>net.minidev:accessors-smart:*:*:*</include>
+                                        <include>net.minidev:json-smart:*:*:*</include>
+                                        <include>org.apache.maven:maven-model:*:*:*</include>
+                                        <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
+                                        <include>org.ow2.asm:asm:*:*:*</include>
+                                        <include>org.slf4j:slf4j-api:*:*:*</include>
+                                        <include>org.slf4j:slf4j-nop:*:*:*</include>
+                                        <include>org.yaml:snakeyaml:*:*:*</include>
+                                    </includes>
+                                </bannedDependencies>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
+
         </plugins>
     </build>
 

@@ -10,7 +10,7 @@ import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
 import com.optum.sourcehawk.enforcer.file.FileResolver;
 import lombok.experimental.UtilityClass;
-import lombok.extern.slf4j.Slf4j;
+import lombok.extern.java.Log;
 import lombok.val;
 
 import java.io.IOException;
@@ -31,7 +31,7 @@ import java.util.Set;
  *
  * @author Brian Wyka
  */
-@Slf4j
+@Log
 @UtilityClass
 public class ConfigurationReader {
 
@@ -148,7 +148,7 @@ public class ConfigurationReader {
         try {
             return Optional.of(MAPPER.readValue(inputStream, SourcehawkConfiguration.class));
         } catch (final IOException e) {
-            log.error("Error reading configuration file", e);
+            log.severe("Error reading configuration file: " + e.getMessage());
             return Optional.empty();
         }
     }
