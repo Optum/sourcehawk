@@ -6,17 +6,17 @@ import org.spockframework.util.IoUtil
 import spock.lang.Specification
 import spock.lang.Unroll
 
-class YamlPathEqualsSpec extends Specification {
+class YamlValueEqualsSpec extends Specification {
 
     def "equals"() {
         expect:
-        YamlPathEquals.equals('$.key', 'value')
-        YamlPathEquals.equals(['$.key': 'value'])
+        YamlValueEquals.equals('$.key', 'value')
+        YamlValueEquals.equals(['$.key': 'value'])
     }
 
     def "enforce - null input stream"() {
         when:
-        YamlPathEquals.equals('$.foo', "bar").enforceInternal(null)
+        YamlValueEquals.equals('$.foo', "bar").enforceInternal(null)
 
         then:
         thrown(NullPointerException)
@@ -25,7 +25,7 @@ class YamlPathEqualsSpec extends Specification {
     @Unroll
     def "enforce - #query = #expectedValue (passed)"() {
         given:
-        YamlPathEquals yamlPathEquals = YamlPathEquals.equals(query, expectedValue)
+        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
 
         when:
@@ -52,7 +52,7 @@ class YamlPathEqualsSpec extends Specification {
                 '$.components[0]'      : 'handlebars',
                 '$.components.length()': 6
         ]
-        YamlPathEquals yamlPathEquals = YamlPathEquals.equals(map)
+        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(map)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
 
         when:
@@ -67,7 +67,7 @@ class YamlPathEqualsSpec extends Specification {
     @Unroll
     def "enforce - #query = #expectedValue (failed - incorrect value)"() {
         given:
-        YamlPathEquals yamlPathEquals = YamlPathEquals.equals(query, expectedValue)
+        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
 
         when:
@@ -90,7 +90,7 @@ class YamlPathEqualsSpec extends Specification {
     @Unroll
     def "enforce - #query = #expectedValue (failed - missing)"() {
         given:
-        YamlPathEquals yamlPathEquals = YamlPathEquals.equals(query, expectedValue)
+        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
 
         when:
@@ -111,7 +111,7 @@ class YamlPathEqualsSpec extends Specification {
     @Unroll
     def "enforce - #query = #expectedValue (failed - query error)"() {
         given:
-        YamlPathEquals yamlPathEquals = YamlPathEquals.equals(query, expectedValue)
+        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
 
         when:

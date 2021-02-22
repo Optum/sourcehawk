@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
-import com.optum.sourcehawk.enforcer.file.json.JsonPointerEquals;
+import com.optum.sourcehawk.enforcer.file.json.JsonValueEquals;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.val;
@@ -19,14 +19,14 @@ import java.util.Map;
 
 /**
  * An enforcer which is responsible for enforcing that a yaml file has a specific property with an expected value.  Under
- * the hood, this is delegating to {@link JsonPointerEquals} after converting the yaml to json
+ * the hood, this is delegating to {@link JsonValueEquals} after converting the yaml to json
  *
- * @see JsonPointerEquals
+ * @see JsonValueEquals
  *
  * @author Brian Wyka
  */
 @AllArgsConstructor(staticName = "equals")
-public class YamlPathEquals extends AbstractFileEnforcer {
+public class YamlValueEquals extends AbstractFileEnforcer {
 
     private static final ObjectMapper YAML_MAPPER = new YAMLMapper();
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
@@ -45,8 +45,8 @@ public class YamlPathEquals extends AbstractFileEnforcer {
      * @param expectedValue the expected value
      * @return the enforcer
      */
-    public static YamlPathEquals equals(final String yamlPathQuery, final Object expectedValue) {
-        return YamlPathEquals.equals(Collections.singletonMap(yamlPathQuery, expectedValue));
+    public static YamlValueEquals equals(final String yamlPathQuery, final Object expectedValue) {
+        return YamlValueEquals.equals(Collections.singletonMap(yamlPathQuery, expectedValue));
     }
 
     /** {@inheritDoc} */
@@ -55,7 +55,7 @@ public class YamlPathEquals extends AbstractFileEnforcer {
         val yamlMap = YAML_MAPPER.readValue(actualFileInputStream, new TypeReference<Map<String, Object>>() {});
         val json = OBJECT_MAPPER.writeValueAsString(yamlMap);
         try (val jsonInputStream = new ByteArrayInputStream(json.getBytes(Charset.defaultCharset()))) {
-            return JsonPointerEquals.equals(expectations).enforce(jsonInputStream);
+            return JsonValueEquals.equals(expectations).enforce(jsonInputStream);
         }
     }
 

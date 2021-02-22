@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @author Brian Wyka
  */
 @AllArgsConstructor(staticName = "equals")
-public class JsonPointerEquals extends AbstractFileEnforcer implements FileResolver {
+public class JsonValueEquals extends AbstractFileEnforcer implements FileResolver {
 
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
     private static final String READ_ERROR_TEMPLATE = "Reading or parsing file resulted in error [%s]";
@@ -52,8 +52,8 @@ public class JsonPointerEquals extends AbstractFileEnforcer implements FileResol
      * @param expectedValue the expected value
      * @return the enforcer
      */
-    public static JsonPointerEquals equals(final String jsonPointerExpression, final Object expectedValue) {
-        return JsonPointerEquals.equals(Collections.singletonMap(jsonPointerExpression, expectedValue));
+    public static JsonValueEquals equals(final String jsonPointerExpression, final Object expectedValue) {
+        return JsonValueEquals.equals(Collections.singletonMap(jsonPointerExpression, expectedValue));
     }
 
     /** {@inheritDoc} */

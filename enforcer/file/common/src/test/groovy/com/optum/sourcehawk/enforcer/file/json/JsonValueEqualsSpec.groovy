@@ -10,16 +10,16 @@ import spock.lang.Unroll
 
 import java.util.function.Function
 
-class JsonPointerEqualsSpec extends Specification {
+class JsonValueEqualsSpec extends Specification {
 
     def "equals"() {
         expect:
-        JsonPointerEquals.equals('/key', 'value')
+        JsonValueEquals.equals('/key', 'value')
     }
 
     def "enforce - null input stream"() {
         when:
-        JsonPointerEquals.equals('/foo', "bar").enforceInternal(null)
+        JsonValueEquals.equals('/foo', "bar").enforceInternal(null)
 
         then:
         thrown(NullPointerException)
@@ -28,7 +28,7 @@ class JsonPointerEqualsSpec extends Specification {
     @Unroll
     def "enforce - #query = #expectedValue (passed)"() {
         given:
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(query, expectedValue)
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.json')
 
         when:
@@ -53,7 +53,7 @@ class JsonPointerEqualsSpec extends Specification {
                 '/size/value'         : 60,
                 '/components/0'      : 'handlebars'
         ]
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(map)
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(map)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.json')
 
         when:
@@ -68,7 +68,7 @@ class JsonPointerEqualsSpec extends Specification {
     @Unroll
     def "enforce - #query = #expectedValue (failed - incorrect value)"() {
         given:
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(query, expectedValue)
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.json')
 
         when:
@@ -90,7 +90,7 @@ class JsonPointerEqualsSpec extends Specification {
     @Unroll
     def "enforce - #query = #expectedValue (failed - missing)"() {
         given:
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(query, expectedValue)
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.json')
 
         when:
@@ -111,7 +111,7 @@ class JsonPointerEqualsSpec extends Specification {
     @Unroll
     def "enforce - #query = #expectedValue (failed - query error)"() {
         given:
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(query, expectedValue)
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.json')
 
         when:
@@ -131,7 +131,7 @@ class JsonPointerEqualsSpec extends Specification {
     @Unroll
     def "enforce - #query = #expectedValue (failed - null parse)"() {
         given:
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(query, expectedValue)
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle-bad.json')
 
         when:
@@ -151,7 +151,7 @@ class JsonPointerEqualsSpec extends Specification {
     @Unroll
     def "resolve - no updates required"() {
         given:
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(query, expectedValue)
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.json')
         StringWriter stringWriter = new StringWriter()
 
@@ -179,7 +179,7 @@ class JsonPointerEqualsSpec extends Specification {
     @Unroll
     def "resolve - updates applied (query found)"() {
         given:
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(query, expectedValue)
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.json')
         StringWriter stringWriter = new StringWriter()
 
@@ -209,7 +209,7 @@ class JsonPointerEqualsSpec extends Specification {
     @Unroll
     def "resolve - updates applied (query not found)"() {
         given:
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(query, expectedValue)
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(query, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.json')
         StringWriter stringWriter = new StringWriter()
 
@@ -242,7 +242,7 @@ class JsonPointerEqualsSpec extends Specification {
     def "resolve - error"() {
         given:
         String query = '$$'
-        JsonPointerEquals jsonPathEquals = JsonPointerEquals.equals(query, "doesn't matter")
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(query, "doesn't matter")
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.json')
         StringWriter stringWriter = new StringWriter()
 
@@ -269,7 +269,7 @@ class JsonPointerEqualsSpec extends Specification {
         inputStream.close()
 
         when:
-        ResolverResult resolverResult = JsonPointerEquals.equals('/key', "doesn't matter").resolve(inputStream, new StringWriter())
+        ResolverResult resolverResult = JsonValueEquals.equals('/key', "doesn't matter").resolve(inputStream, new StringWriter())
 
         then:
         resolverResult
@@ -284,13 +284,13 @@ class JsonPointerEqualsSpec extends Specification {
 
     def "resolve - null input stream or writer"() {
         when:
-        JsonPointerEquals.equals('/key', "doesn't matter").resolve(null, new StringWriter())
+        JsonValueEquals.equals('/key', "doesn't matter").resolve(null, new StringWriter())
 
         then:
         thrown(NullPointerException)
 
         when:
-        JsonPointerEquals.equals('/key', "doesn't matter").resolve( IoUtil.getResourceAsStream('/bicycle.json'), null)
+        JsonValueEquals.equals('/key', "doesn't matter").resolve( IoUtil.getResourceAsStream('/bicycle.json'), null)
 
         then:
         thrown(NullPointerException)
