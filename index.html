@@ -650,7 +650,7 @@ ol > li p, ul > li p, ul dd, ol dd, .olist .olist, .ulist .olist, .olist .ulist 
 <h1>&gt;_ S O U R C E H A W K</h1>
 <div class="details">
 <span id="author" class="author">Brian Wyka | Christian Oestreich</span><br>
-<span id="revnumber">version 0.5.1</span>
+<span id="revnumber">version 0.6.0</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -926,23 +926,11 @@ dnf config-manager --set-enabled bintray-optum-fedora</pre>
 <p>This installation only includes the binary executable.  Executable will be saved to <code>/usr/bin</code></p>
 </div>
 <div class="sect3">
-<h4 id="_terminal_one_liner"><a class="anchor" href="#_terminal_one_liner"></a>Terminal One-Liner</h4>
+<h4 id="_homebrew"><a class="anchor" href="#_homebrew"></a>Homebrew</h4>
 <div class="listingblock secondary">
 <div class="content">
-<pre class="CodeRay highlight"><code data-lang="sh">curl -sL https://raw.githubusercontent.com/optum/sourcehawk/main/install-mac.sh | bash</code></pre>
+<pre class="CodeRay highlight"><code data-lang="sh">brew install optum/tap/sourcehawk</code></pre>
 </div>
-</div>
-<div class="admonitionblock note">
-<table>
-<tr>
-<td class="icon">
-<div class="title">Note</div>
-</td>
-<td class="content">
-Support for installation through <code>homebrew</code> will be added in a future release.
-</td>
-</tr>
-</table>
 </div>
 </div>
 <div class="sect3">
@@ -1157,8 +1145,8 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <div class="sect3">
 <h4 id="_synopsis_3"><a class="anchor" href="#_synopsis_3"></a>Synopsis</h4>
 <div class="paragraph">
-<p><strong>scan</strong> [<strong>-hV</strong>] [[<strong>-v</strong>=<em>&lt;verbosity&gt;</em>] [<strong>-f</strong>=<em>&lt;outputFormat&gt;</em>] [<strong>-w</strong>] [[<strong>-c</strong>=<em>config-file-path</em>] |
-     <strong>-U</strong>=<em>config-file-url</em>]] [[<em>REPOSITORY-ROOT</em>]] [COMMAND]</p>
+<p><strong>scan</strong> [<strong>-hV</strong>] [[<strong>-t</strong>=<em>&lt;tags&gt;</em>]&#8230;&#8203; [<strong>-v</strong>=<em>&lt;verbosity&gt;</em>] [<strong>-f</strong>=<em>&lt;outputFormat&gt;</em>] [<strong>-w</strong>]
+     [[<strong>-c</strong>=<em>config-file-path</em>] | <strong>-U</strong>=<em>config-file-url</em>]] [[<em>REPOSITORY-ROOT</em>]] [COMMAND]</p>
 </div>
 </div>
 <div class="sect3">
@@ -1182,16 +1170,20 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 </dd>
 <dt class="hdlist1"><strong>-f</strong>, <strong>--output-format</strong>=<em>&lt;outputFormat&gt;</em></dt>
 <dd>
-<p>Output Format, valid values: CONSOLE, TEXT, JSON, MARKDOWN</p>
+<p>Output Format, valid values: TEXT, JSON, MARKDOWN</p>
 <div class="literalblock">
 <div class="content">
-<pre>Default: CONSOLE</pre>
+<pre>Default: TEXT</pre>
 </div>
 </div>
 </dd>
 <dt class="hdlist1"><strong>-h</strong>, <strong>--help</strong></dt>
 <dd>
 <p>Show this help message and exit.</p>
+</dd>
+<dt class="hdlist1"><strong>-t</strong>, <strong>--tags</strong>=<em>&lt;tags&gt;</em></dt>
+<dd>
+<p>Tags of file protocols to limit the scope of execution</p>
 </dd>
 <dt class="hdlist1"><strong>-U</strong>, <strong>--config-file-url</strong>=<em>config-file-url</em></dt>
 <dd>
@@ -1276,6 +1268,12 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <div class="title">Fail on warnings, and output in markdown format to file</div>
 <div class="content">
 <pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan -f MARKDOWN --fail-on-warnings &gt; sourcehawk-scan-results.md</code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="title">Scan only the provided tags to limit the scope</div>
+<div class="content">
+<pre class="CodeRay highlight"><code data-lang="sh">sourcehawk scan --tags &quot;config&quot; --tags &quot;build&quot;</code></pre>
 </div>
 </div>
 <div class="listingblock">
@@ -1524,8 +1522,8 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 <div class="sect3">
 <h4 id="_synopsis_6"><a class="anchor" href="#_synopsis_6"></a>Synopsis</h4>
 <div class="paragraph">
-<p><strong>fix</strong> [<strong>-dhV</strong>] [[<strong>-v</strong>=<em>&lt;verbosity&gt;</em>] [<strong>-f</strong>=<em>&lt;outputFormat&gt;</em>] [<strong>-w</strong>] [[<strong>-c</strong>=<em>config-file-path</em>] |
-    <strong>-U</strong>=<em>config-file-url</em>]] [[<em>REPOSITORY-ROOT</em>]] [COMMAND]</p>
+<p><strong>fix</strong> [<strong>-dhV</strong>] [[<strong>-t</strong>=<em>&lt;tags&gt;</em>]&#8230;&#8203; [<strong>-v</strong>=<em>&lt;verbosity&gt;</em>] [<strong>-f</strong>=<em>&lt;outputFormat&gt;</em>] [<strong>-w</strong>]
+    [[<strong>-c</strong>=<em>config-file-path</em>] | <strong>-U</strong>=<em>config-file-url</em>]] [[<em>REPOSITORY-ROOT</em>]] [COMMAND]</p>
 </div>
 </div>
 <div class="sect3">
@@ -1553,16 +1551,20 @@ Windows support is currently limited.  Let us know if you run into any <a href="
 </dd>
 <dt class="hdlist1"><strong>-f</strong>, <strong>--output-format</strong>=<em>&lt;outputFormat&gt;</em></dt>
 <dd>
-<p>Output Format, valid values: CONSOLE, TEXT, JSON, MARKDOWN</p>
+<p>Output Format, valid values: TEXT, JSON, MARKDOWN</p>
 <div class="literalblock">
 <div class="content">
-<pre>Default: CONSOLE</pre>
+<pre>Default: TEXT</pre>
 </div>
 </div>
 </dd>
 <dt class="hdlist1"><strong>-h</strong>, <strong>--help</strong></dt>
 <dd>
 <p>Show this help message and exit.</p>
+</dd>
+<dt class="hdlist1"><strong>-t</strong>, <strong>--tags</strong>=<em>&lt;tags&gt;</em></dt>
+<dd>
+<p>Tags of file protocols to limit the scope of execution</p>
 </dd>
 <dt class="hdlist1"><strong>-U</strong>, <strong>--config-file-url</strong>=<em>config-file-url</em></dt>
 <dd>
@@ -1746,8 +1748,8 @@ sourcehawk converge</code></pre>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 0.5.1<br>
-Last updated 2021-02-05 02:36:31 UTC
+Version 0.6.0<br>
+Last updated 2021-02-25 13:54:53 UTC
 </div>
 </div>
 <style>

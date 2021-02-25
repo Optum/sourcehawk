@@ -2,12 +2,12 @@
 .\"     Title: fix
 .\"    Author: [see the "AUTHOR(S)" section]
 .\" Generator: Asciidoctor 2.0.10
-.\"      Date: 2021-02-05
+.\"      Date: 2021-02-25
 .\"    Manual: Fix Manual
 .\"    Source: 
 .\"  Language: English
 .\"
-.TH "FIX" "1" "2021-02-05" "" "Fix Manual"
+.TH "FIX" "1" "2021-02-25" "" "Fix Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -31,8 +31,8 @@
 fix \- Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made.
 .SH "SYNOPSIS"
 .sp
-\fBfix\fP [\fB\-dhV\fP] [[\fB\-v\fP=\fI<verbosity>\fP] [\fB\-f\fP=\fI<outputFormat>\fP] [\fB\-w\fP] [[\fB\-c\fP=\fIconfig\-file\-path\fP] |
-\fB\-U\fP=\fIconfig\-file\-url\fP]] [[\fIREPOSITORY\-ROOT\fP]] [COMMAND]
+\fBfix\fP [\fB\-dhV\fP] [[\fB\-t\fP=\fI<tags>\fP]... [\fB\-v\fP=\fI<verbosity>\fP] [\fB\-f\fP=\fI<outputFormat>\fP] [\fB\-w\fP]
+[[\fB\-c\fP=\fIconfig\-file\-path\fP] | \fB\-U\fP=\fIconfig\-file\-url\fP]] [[\fIREPOSITORY\-ROOT\fP]] [COMMAND]
 .SH "DESCRIPTION"
 .sp
 Fix the source based on Sourcehawk configuration file. This will update the files in place if any updates are required to be made.
@@ -56,11 +56,11 @@ Display fixes which would be performed, but do not perform them
 .sp
 \fB\-f\fP, \fB\-\-output\-format\fP=\fI<outputFormat>\fP
 .RS 4
-Output Format, valid values: CONSOLE, TEXT, JSON, MARKDOWN
+Output Format, valid values: TEXT, JSON, MARKDOWN
 .sp
 .if n .RS 4
 .nf
-Default: CONSOLE
+Default: TEXT
 .fi
 .if n .RE
 .RE
@@ -68,6 +68,11 @@ Default: CONSOLE
 \fB\-h\fP, \fB\-\-help\fP
 .RS 4
 Show this help message and exit.
+.RE
+.sp
+\fB\-t\fP, \fB\-\-tags\fP=\fI<tags>\fP
+.RS 4
+Tags of file protocols to limit the scope of execution
 .RE
 .sp
 \fB\-U\fP, \fB\-\-config\-file\-url\fP=\fIconfig\-file\-url\fP
