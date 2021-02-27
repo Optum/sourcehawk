@@ -267,10 +267,11 @@ jobs:
           asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
           asset_content_type: application/octet-stream
       - name: Update Optum Homebrew Tap Formula
-        uses: mislav/bump-homebrew-formula-action@v1.9
+        uses: mislav/bump-homebrew-formula-action@v1.10
         continue-on-error: true
         with:
           formula-name: sourcehawk
+          tag-name: ${{ needs.build.outputs.RELEASE_VERSION }}
           homebrew-tap: optum/homebrew-tap
           base-branch: main
           download-url: ${{ steps.upload_homebrew_tap_formula_archive.outputs.browser_download_url }}
