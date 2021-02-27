@@ -1,8 +1,10 @@
 package com.optum.sourcehawk.enforcer.file.docker;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.docker.utils.Dockerfile;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.val;
 
 /**
@@ -10,6 +12,8 @@ import lombok.val;
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = DockerfileFromImageEquals.Builder.class)
 @AllArgsConstructor(staticName = "equals")
 public class DockerfileFromImageEquals extends AbstractDockerfileFromTokenEnforcer {
 

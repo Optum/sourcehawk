@@ -3,6 +3,7 @@ package com.optum.sourcehawk.enforcer.file.json;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -12,6 +13,7 @@ import com.optum.sourcehawk.enforcer.ResolverResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import com.optum.sourcehawk.enforcer.file.FileResolver;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
 
@@ -31,6 +33,8 @@ import java.util.stream.Collectors;
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = JsonValueEquals.Builder.class)
 @AllArgsConstructor(staticName = "equals")
 public class JsonValueEquals extends AbstractFileEnforcer implements FileResolver {
 

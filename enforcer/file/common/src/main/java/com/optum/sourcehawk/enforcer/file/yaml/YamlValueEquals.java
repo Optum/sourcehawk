@@ -2,11 +2,13 @@ package com.optum.sourcehawk.enforcer.file.yaml;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import com.optum.sourcehawk.enforcer.file.json.JsonValueEquals;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
 
@@ -25,6 +27,8 @@ import java.util.Map;
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = YamlValueEquals.Builder.class)
 @AllArgsConstructor(staticName = "equals")
 public class YamlValueEquals extends AbstractFileEnforcer {
 

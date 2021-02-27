@@ -181,7 +181,7 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         then:
         errors
         errors.size() == 1
-        errors[0] == "Unrecognized property 'expected-property-value-INCORRECT' in StringPropertyEquals in file protocol 'lombok'"
+        errors[0] == "Unrecognized property 'expected-property-value-INCORRECT' in file protocol 'lombok'"
     }
 
     def "compileFileEnforcerErrors - fileProtocols null/empty"() {
@@ -233,7 +233,7 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         String errorMessage = ValidateConfigCommand.deriveErrorMessage(context, e)
 
         then:
-        errorMessage == "Unrecognized property 'property' in ${FileEnforcer.simpleName} ${context}"
+        errorMessage == "Unrecognized property 'property' ${context}"
     }
 
     def "deriveErrorMessage - InvalidTypeIdException"() {

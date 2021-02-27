@@ -1,9 +1,11 @@
 package com.optum.sourcehawk.enforcer.file.maven;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import com.optum.sourcehawk.enforcer.file.maven.utils.MavenPomParser;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
 import org.apache.maven.model.Model;
@@ -18,6 +20,8 @@ import java.util.stream.Collectors;
 /**
  * An enforcer which enforces that the provided properties are not set
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = MavenBannedProperties.Builder.class)
 @AllArgsConstructor(staticName = "banned")
 public class MavenBannedProperties extends AbstractFileEnforcer {
 

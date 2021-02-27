@@ -151,8 +151,11 @@ public class ValidateConfigCommand implements Callable<Integer> {
     private static String deriveErrorMessage(final String context, final Throwable throwable) {
         if (throwable instanceof UnrecognizedPropertyException) {
             val unrecognizedPropertyException = (UnrecognizedPropertyException) throwable;
-            val referringClass = unrecognizedPropertyException.getReferringClass().getSimpleName();
-            return String.format("Unrecognized property '%s' in %s %s", unrecognizedPropertyException.getPropertyName(), referringClass, context);
+            val locationContext = Optional.ofNullable(unrecognizedPropertyException.getLocation())
+                    .filter(location -> location.getLineNr() >= 0)
+                    .map(location -> String.format(" at line %d, column %d", location.getLineNr(), location.getColumnNr()))
+                    .orElse("");
+            return String.format("Unrecognized property '%s' %s%s", unrecognizedPropertyException.getPropertyName(), context, locationContext);
         } else if (throwable instanceof InvalidTypeIdException) {
             val invalidTypeIdException = (InvalidTypeIdException) throwable;
             return String.format("Unknown enforcer '%s' %s", invalidTypeIdException.getTypeId(), context);

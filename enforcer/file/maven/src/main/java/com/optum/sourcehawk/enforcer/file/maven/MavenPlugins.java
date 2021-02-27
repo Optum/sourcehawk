@@ -1,9 +1,11 @@
 package com.optum.sourcehawk.enforcer.file.maven;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.maven.utils.MavenPomParser;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
 import org.apache.maven.model.Build;
@@ -18,6 +20,8 @@ import java.util.Optional;
 /**
  * An enforcer which enforces that the coordinates of the maven plugins are as expected
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = MavenPlugins.Builder.class)
 @AllArgsConstructor(staticName = "coordinates")
 public class MavenPlugins extends AbstractMavenModelEnforcer {
 
