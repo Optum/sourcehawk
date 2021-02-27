@@ -49,6 +49,28 @@ class JsonValueEqualsSpec extends Specification {
         '/components/0'   | 'handlebars'
     }
 
+    @Unroll
+    def "enforce - #pointerExpression = #expectedValue (passed) - number based keys"() {
+        given:
+        JsonValueEquals jsonPathEquals = JsonValueEquals.equals(pointerExpression, expectedValue)
+        InputStream fileInputStream = IoUtil.getResourceAsStream('/index-map.json')
+
+        when:
+        EnforcerResult result = jsonPathEquals.enforce(fileInputStream)
+
+        then:
+        result
+        result.passed
+        !result.messages
+
+        where:
+        pointerExpression | expectedValue
+        '/index/0'   | 'hello'
+        '/index/1'   | 'world'
+        '/index/2'   | 'foo'
+        '/index/3'   | 'bar'
+    }
+
     def "enforce - map (passed)"() {
         given:
         def map = [
