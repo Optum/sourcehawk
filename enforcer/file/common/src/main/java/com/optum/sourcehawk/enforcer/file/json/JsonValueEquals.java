@@ -3,6 +3,8 @@ package com.optum.sourcehawk.enforcer.file.json;
 import com.fasterxml.jackson.core.JsonPointer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
@@ -16,6 +18,8 @@ import lombok.val;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
@@ -127,45 +131,107 @@ public class JsonValueEquals extends AbstractFileEnforcer implements FileResolve
         try {
             val jsonPointer = JsonPointer.compile(jsonPointerExpression);
             val actualJsonNode = rootJsonNode.at(jsonPointer);
-            if (actualJsonNode == null || actualJsonNode.isMissingNode()) {
-                return resolveNodeNotFound(actualJsonNode, jsonPointerExpression, expectedValue);
+            final String resolverResultMessage;
+            if (actualJsonNode.isMissingNode()) {
+                resolverResultMessage = String.format(UPDATE_MISSING_MESSAGE_TEMPLATE, jsonPointerExpression, expectedValue);
+            } else {
+                resolverResultMessage = String.format(UPDATE_MESSAGE_TEMPLATE, jsonPointerExpression, expectedValue);
             }
             if (jsonNodeValueEquals(actualJsonNode, expectedValue)) {
                 return ResolverResult.NO_UPDATES;
             }
-            val parentObjectNode = (ObjectNode) rootJsonNode.at(jsonPointer.head());
-            val actualNodeName = actualJsonNode.asToken().name();
-            if (expectedValue instanceof CharSequence) {
-                parentObjectNode.put(actualNodeName, expectedValue.toString());
-            } else if (expectedValue instanceof Number) {
-                parentObjectNode.put(actualNodeName, (Number) expectedValue);
+            val parentNode = rootJsonNode.at(jsonPointer.head());
+            if (parentNode instanceof ObjectNode) {
+                updateObjectNodeValue((ObjectNode) parentNode, jsonPointer.last().toString().substring(1), expectedValue);
+            } else if (parentNode instanceof ArrayNode) {
+                updateArrayNodeValue((ArrayNode) parentNode, Integer.parseInt(jsonPointer.last().toString().substring(1)), expectedValue, actualJsonNode.isMissingNode());
+            } else {
+                return ResolverResult.error("Update not supported for given pointer expression");
             }
-            return ResolverResult.updatesApplied(String.format(UPDATE_MESSAGE_TEMPLATE, jsonPointerExpression, expectedValue));
+            return ResolverResult.updatesApplied(resolverResultMessage);
         } catch (final Exception e) {
             return ResolverResult.error(String.format(QUERY_ERROR_TEMPLATE, jsonPointerExpression, e.getMessage()));
         }
     }
 
     /**
-     * Resolve for situations where the node is not found
+     * Update the actual node with the expected value
      *
-     * @param actualJsonNode the actual JSON node
-     * @param jsonPointerExpression the JSON pointer expression
+     * @param parentObjectNode the parent object node
+     * @param childNodeName the child node name
      * @param expectedValue the expected value
-     * @return the resolver result
      */
-    private static ResolverResult resolveNodeNotFound(final JsonNode actualJsonNode, final String jsonPointerExpression, final Object expectedValue) {
-        final String key;
-        final Object value;
-        if (jsonPointerExpression.contains("[")) {
-            key = jsonPointerExpression.substring(2, jsonPointerExpression.indexOf('['));
-            value = new Object[] { expectedValue };
+    private static void updateObjectNodeValue(final ObjectNode parentObjectNode, final String childNodeName, final Object expectedValue) {
+        if (expectedValue instanceof Boolean) {
+            parentObjectNode.put(childNodeName, (boolean) expectedValue);
+        } else if (expectedValue instanceof Integer) {
+            parentObjectNode.put(childNodeName, (int) expectedValue);
+        } else if (expectedValue instanceof Long) {
+            parentObjectNode.put(childNodeName, (long) expectedValue);
+        } else if (expectedValue instanceof Short) {
+            parentObjectNode.put(childNodeName, (short) expectedValue);
+        } else if (expectedValue instanceof BigDecimal) {
+            parentObjectNode.put(childNodeName, (BigDecimal) expectedValue);
+        } else if (expectedValue instanceof BigInteger) {
+            parentObjectNode.put(childNodeName, (BigInteger) expectedValue);
         } else {
-            key = jsonPointerExpression.substring(2);
-            value = expectedValue;
+            parentObjectNode.put(childNodeName, expectedValue.toString());
         }
-        documentContext.put("$", key, value);
-        return ResolverResult.updatesApplied(String.format(UPDATE_MISSING_MESSAGE_TEMPLATE, jsonPointerExpression, expectedValue));
+    }
+
+    /**
+     * Update the actual node with the expected value
+     *
+     * @param parentArrayNode the parent object node
+     * @param actualNodeIndex the actual node index in the array
+     * @param expectedValue the expected value
+     * @param missing true if node does not currently exist, false otherwise
+     */
+    @SuppressWarnings("squid:S3776")
+    private static void updateArrayNodeValue(final ArrayNode parentArrayNode, final int actualNodeIndex, final Object expectedValue, final boolean missing) {
+        if (expectedValue instanceof Boolean) {
+            if (missing) {
+                parentArrayNode.insert(actualNodeIndex, (boolean) expectedValue);
+            } else {
+                parentArrayNode.set(actualNodeIndex, JsonNodeFactory.instance.booleanNode((boolean) expectedValue));
+            }
+        } else if (expectedValue instanceof Integer) {
+            if (missing) {
+                parentArrayNode.insert(actualNodeIndex, (int) expectedValue);
+            } else {
+                parentArrayNode.set(actualNodeIndex, JsonNodeFactory.instance.numberNode((int) expectedValue));
+            }
+        } else if (expectedValue instanceof Long) {
+            if (missing) {
+                parentArrayNode.insert(actualNodeIndex, (long) expectedValue);
+            } else {
+                parentArrayNode.set(actualNodeIndex, JsonNodeFactory.instance.numberNode((long) expectedValue));
+            }
+        } else if (expectedValue instanceof Short) {
+            if (missing) {
+                parentArrayNode.insert(actualNodeIndex, (short) expectedValue);
+            } else {
+                parentArrayNode.set(actualNodeIndex, JsonNodeFactory.instance.numberNode((short) expectedValue));
+            }
+        } else if (expectedValue instanceof BigDecimal) {
+            if (missing) {
+                parentArrayNode.insert(actualNodeIndex, (BigDecimal) expectedValue);
+            } else {
+                parentArrayNode.set(actualNodeIndex, JsonNodeFactory.instance.numberNode((BigDecimal) expectedValue));
+            }
+        } else if (expectedValue instanceof BigInteger) {
+            if (missing) {
+                parentArrayNode.insert(actualNodeIndex, (BigInteger) expectedValue);
+            } else {
+                parentArrayNode.set(actualNodeIndex, JsonNodeFactory.instance.numberNode((BigInteger) expectedValue));
+            }
+        } else {
+            if (missing) {
+                parentArrayNode.insert(actualNodeIndex, expectedValue.toString());
+            } else {
+                parentArrayNode.set(actualNodeIndex, JsonNodeFactory.instance.textNode(expectedValue.toString()));
+            }
+        }
     }
 
     /**

@@ -10,22 +10,22 @@ class YamlValueEqualsSpec extends Specification {
 
     def "equals"() {
         expect:
-        YamlValueEquals.equals('$.key', 'value')
-        YamlValueEquals.equals(['$.key': 'value'])
+        YamlValueEquals.equals('/key', 'value')
+        YamlValueEquals.equals(['/key': 'value'])
     }
 
     def "enforce - null input stream"() {
         when:
-        YamlValueEquals.equals('$.foo', "bar").enforceInternal(null)
+        YamlValueEquals.equals('/foo', "bar").enforceInternal(null)
 
         then:
         thrown(NullPointerException)
     }
 
     @Unroll
-    def "enforce - #query = #expectedValue (passed)"() {
+    def "enforce - #pointerExpression = #expectedValue (passed)"() {
         given:
-        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(query, expectedValue)
+        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(pointerExpression, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
 
         when:
@@ -37,20 +37,18 @@ class YamlValueEqualsSpec extends Specification {
         !result.messages
 
         where:
-        query                   | expectedValue
-        '$.make'                | 'Raleigh'
-        '$.size.value'          | 60
-        '$.components[0]'       | 'handlebars'
-        '$.components.length()' | 6
+        pointerExpression | expectedValue
+        '/make'           | 'Raleigh'
+        '/size/value'     | 60
+        '/components/0'   | 'handlebars'
     }
 
     def "enforce - map (passed)"() {
         given:
         def map = [
-                '$.make'               : 'Raleigh',
-                '$.size.value'         : 60,
-                '$.components[0]'      : 'handlebars',
-                '$.components.length()': 6
+                '/make'        : 'Raleigh',
+                '/size/value'  : 60,
+                '/components/0': 'handlebars'
         ]
         YamlValueEquals yamlPathEquals = YamlValueEquals.equals(map)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
@@ -65,9 +63,9 @@ class YamlValueEqualsSpec extends Specification {
     }
 
     @Unroll
-    def "enforce - #query = #expectedValue (failed - incorrect value)"() {
+    def "enforce - #pointerExpression = #expectedValue (failed - incorrect value)"() {
         given:
-        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(query, expectedValue)
+        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(pointerExpression, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
 
         when:
@@ -77,20 +75,19 @@ class YamlValueEqualsSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0] == "Execution of query [$query] yielded result [$actualValue] which is not equal to [$expectedValue]"
+        result.messages[0] == "Execution of pointer expression [$pointerExpression] yielded result [$actualValue] which is not equal to [$expectedValue]"
 
         where:
-        query                   | actualValue  | expectedValue
-        '$.make'                | 'Raleigh'    | 'Schwinn'
-        '$.size.value'          | 60           | 58
-        '$.components[0]'       | 'handlebars' | 'brakes'
-        '$.components.length()' | 6            | 2
+        pointerExpression | actualValue  | expectedValue
+        '/make'           | 'Raleigh'    | 'Schwinn'
+        '/size/value'     | 60           | 58
+        '/components/0'   | 'handlebars' | 'brakes'
     }
 
     @Unroll
-    def "enforce - #query = #expectedValue (failed - missing)"() {
+    def "enforce - #pointerExpression = #expectedValue (failed - missing)"() {
         given:
-        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(query, expectedValue)
+        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(pointerExpression, expectedValue)
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
 
         when:
@@ -100,18 +97,18 @@ class YamlValueEqualsSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0] == "Execution of query [$query] yielded no result"
+        result.messages[0] == "Execution of pointer expression [$pointerExpression] yielded no result"
 
         where:
-        query             | expectedValue
-        '$.class'         | 'road'
-        '$.components[8]' | 'calipers'
+        pointerExpression | expectedValue
+        '/class'          | 'road'
+        '/components/8'   | 'calipers'
     }
 
     @Unroll
-    def "enforce - #query = #expectedValue (failed - query error)"() {
+    def "enforce - #pointerExpression (failed - pointer expression error)"() {
         given:
-        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(query, expectedValue)
+        YamlValueEquals yamlPathEquals = YamlValueEquals.equals(pointerExpression, 'road')
         InputStream fileInputStream = IoUtil.getResourceAsStream('/bicycle.yml')
 
         when:
@@ -121,11 +118,10 @@ class YamlValueEqualsSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0].startsWith("Execution of query [$query] yielded error")
+        result.messages[0].startsWith("Execution of pointer expression [$pointerExpression] yielded error")
 
         where:
-        query | expectedValue
-        '$$'  | 'road'
+        pointerExpression << ['.', '$']
     }
     
 }
