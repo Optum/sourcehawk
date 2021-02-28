@@ -193,7 +193,10 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
             writer.println("[");
             final Iterator<Class<?>> fileEnforcersIterator = fileEnforcers.values().iterator();
             while (fileEnforcersIterator.hasNext()) {
-                writer.print(classReflectConfigJsonTemplate.toString().replace("_CLASS_", fileEnforcersIterator.next().getCanonicalName()));
+                final Class<?> fileEnforcer = fileEnforcersIterator.next();
+                writer.print(classReflectConfigJsonTemplate.toString().replace("_CLASS_", fileEnforcer.getCanonicalName()));
+                writer.println(",");
+                writer.print(classReflectConfigJsonTemplate.toString().replace("_CLASS_", fileEnforcer.getCanonicalName() + "$Builder"));
                 if (fileEnforcersIterator.hasNext()) {
                     writer.println(",");
                 }

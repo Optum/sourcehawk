@@ -3,6 +3,9 @@ package com.optum.sourcehawk.exec;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
+import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
+import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
@@ -10,28 +13,31 @@ import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
 import com.optum.sourcehawk.enforcer.file.FileResolver;
 import lombok.experimental.UtilityClass;
-import lombok.extern.java.Log;
 import lombok.val;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for reading and deserialization of configuration
  *
  * @author Brian Wyka
  */
-@Log
 @UtilityClass
 public class ConfigurationReader {
 
@@ -40,7 +46,13 @@ public class ConfigurationReader {
      */
     public final ObjectMapper MAPPER = new YAMLMapper()
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            .setPropertyNamingStrategy(new PropertyNamingStrategy.KebabCaseStrategy());
+            .setPropertyNamingStrategy(new PropertyNamingStrategy.KebabCaseStrategy())
+            .setAnnotationIntrospector(new JacksonAnnotationIntrospector() {
+                @Override
+                public JsonPOJOBuilder.Value findPOJOBuilderConfig(final AnnotatedClass annotatedClass) {
+                    return new JsonPOJOBuilder.Value("build", "");
+                }
+            });
 
     /**
      * Parse the configuration from the provided yaml string
@@ -71,11 +83,12 @@ public class ConfigurationReader {
      */
     public Optional<SourcehawkConfiguration> readConfiguration(final Path repositoryRoot, final String configurationFileLocation) {
         try {
-            return Optional.ofNullable(obtainInputStream(repositoryRoot, configurationFileLocation))
+            return obtainInputStream(repositoryRoot, configurationFileLocation)
                     .flatMap(ConfigurationReader::deserialize)
                     .map(sourcehawkConfiguration -> readConfigurationLocations(new HashSet<>(), sourcehawkConfiguration, repositoryRoot))
                     .map(ConfigurationReader::merge);
         } catch (final IOException e) {
+            Console.Err.error("Error reading configuration file: %s", e.getMessage());
             return Optional.empty();
         }
     }
@@ -127,15 +140,20 @@ public class ConfigurationReader {
      * @return the configuration
      * @throws IOException if any error occurs obtaining input stream
      */
-    private InputStream obtainInputStream(final Path repositoryRoot, final String configFileLocation) throws IOException {
-        if (StringUtils.isUrl(configFileLocation)) {
-            return new URL(configFileLocation).openStream();
+    private Optional<InputStream> obtainInputStream(final Path repositoryRoot, final String configFileLocation) throws IOException {
+        try {
+            if (StringUtils.isUrl(configFileLocation)) {
+                return Optional.of(new URL(configFileLocation).openStream());
+            }
+            val configFilePath = Paths.get(configFileLocation);
+            if (configFilePath.isAbsolute()) {
+                return Optional.of(Files.newInputStream(Paths.get(configFileLocation), StandardOpenOption.READ));
+            }
+            return Optional.of(Files.newInputStream(repositoryRoot.resolve(configFilePath), StandardOpenOption.READ));
+        } catch (final NoSuchFileException | FileNotFoundException e) {
+            Console.Err.error("Configuration file not found: %s", configFileLocation);
+            return Optional.empty();
         }
-        val configFilePath = Paths.get(configFileLocation);
-        if (configFilePath.isAbsolute()) {
-            return Files.newInputStream(Paths.get(configFileLocation), StandardOpenOption.READ);
-        }
-        return Files.newInputStream(repositoryRoot.resolve(configFilePath), StandardOpenOption.READ);
     }
 
     /**
@@ -148,7 +166,7 @@ public class ConfigurationReader {
         try {
             return Optional.of(MAPPER.readValue(inputStream, SourcehawkConfiguration.class));
         } catch (final IOException e) {
-            log.severe("Error reading configuration file: " + e.getMessage());
+            Console.Err.error("Error parsing configuration file: %s", e.getMessage());
             return Optional.empty();
         }
     }
@@ -166,16 +184,21 @@ public class ConfigurationReader {
         if (sourcehawkConfigurations.size() == 1) {
             return sourcehawkConfigurations.iterator().next();
         }
-        SourcehawkConfiguration sourcehawkConfiguration = SourcehawkConfiguration.empty();
-        for (val configuration : sourcehawkConfigurations) {
-            try {
-                sourcehawkConfiguration = MAPPER.readerForUpdating(sourcehawkConfiguration)
-                        .readValue(MAPPER.writeValueAsString(configuration), SourcehawkConfiguration.class);
-            } catch (final IOException e) {
-                throw new ConfigurationException("Could not merge config files: " + e.getMessage());
-            }
-        }
-        return sourcehawkConfiguration;
+        val configLocations = sourcehawkConfigurations.stream()
+                .filter(Objects::nonNull)
+                .map(SourcehawkConfiguration::getConfigLocations)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        val fileProtocols = sourcehawkConfigurations.stream()
+                .filter(Objects::nonNull)
+                .map(SourcehawkConfiguration::getFileProtocols)
+                .filter(Objects::nonNull)
+                .flatMap(Collection::stream)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+        return SourcehawkConfiguration.of(configLocations, fileProtocols);
     }
 
     /**
@@ -197,7 +220,8 @@ public class ConfigurationReader {
     public Optional<FileResolver> convertFileEnforcerToFileResolver(final Object fileEnforcerObject) {
         val fileEnforcer = parseFileEnforcer(fileEnforcerObject);
         if (fileEnforcer instanceof FileResolver) {
-            return Optional.of(fileEnforcer).map(FileResolver.class::cast);
+            return Optional.of(fileEnforcer)
+                    .map(FileResolver.class::cast);
         }
         return Optional.empty();
     }

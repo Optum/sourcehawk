@@ -1,8 +1,10 @@
 package com.optum.sourcehawk.enforcer.file.common;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 
 import java.io.IOException;
@@ -14,6 +16,8 @@ import java.util.regex.Pattern;
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = ContainsLineMatchingAt.Builder.class)
 @AllArgsConstructor(staticName = "containsMatchAt")
 public class ContainsLineMatchingAt extends AbstractFileEnforcer {
 

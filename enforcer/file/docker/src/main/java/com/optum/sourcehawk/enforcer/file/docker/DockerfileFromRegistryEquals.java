@@ -1,15 +1,19 @@
 package com.optum.sourcehawk.enforcer.file.docker;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.docker.utils.Dockerfile;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * Enforce that the Dockerfile has a specific host in the FROM line
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = DockerfileFromRegistryEquals.Builder.class)
 @AllArgsConstructor(staticName = "equals")
 public class DockerfileFromRegistryEquals extends AbstractDockerfileFromTokenEnforcer {
 

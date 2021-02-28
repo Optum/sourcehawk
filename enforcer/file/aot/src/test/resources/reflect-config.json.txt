@@ -9,7 +9,25 @@
     "allPublicFields" : true
   },
   {
+    "name" : "com.optum.sourcehawk.enforcer.file.ConcreteTestFileEnforcer$Builder",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true,
+    "allDeclaredFields" : true,
+    "allPublicFields" : true
+  },
+  {
     "name" : "com.optum.sourcehawk.enforcer.file.Concrete2TestFileEnforcer",
+    "allDeclaredConstructors" : true,
+    "allPublicConstructors" : true,
+    "allDeclaredMethods" : true,
+    "allPublicMethods" : true,
+    "allDeclaredFields" : true,
+    "allPublicFields" : true
+  },
+  {
+    "name" : "com.optum.sourcehawk.enforcer.file.Concrete2TestFileEnforcer$Builder",
     "allDeclaredConstructors" : true,
     "allPublicConstructors" : true,
     "allDeclaredMethods" : true,

@@ -23,7 +23,7 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
         String configurationFileLocation = "https://raw.githubusercontent.com/optum/sourcehawk-parent/main/.sourcehawk/config.yml"
 
         when:
-        InputStream inputStream = ConfigurationReader.obtainInputStream(repositoryRoot, configurationFileLocation)
+        InputStream inputStream = ConfigurationReader.obtainInputStream(repositoryRoot, configurationFileLocation).get()
 
         then:
         inputStream
@@ -35,7 +35,7 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
         String configurationFileLocation = repositoryRoot.resolve("sourcehawk.yml").toAbsolutePath().toString()
 
         when:
-        InputStream inputStream = ConfigurationReader.obtainInputStream(repositoryRoot, configurationFileLocation)
+        InputStream inputStream = ConfigurationReader.obtainInputStream(repositoryRoot, configurationFileLocation).get()
 
         then:
         inputStream instanceof ChannelInputStream
@@ -46,7 +46,7 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
         String configurationFileLocation = "sourcehawk.yml"
 
         when:
-        InputStream inputStream = ConfigurationReader.obtainInputStream(repositoryRoot, configurationFileLocation)
+        InputStream inputStream = ConfigurationReader.obtainInputStream(repositoryRoot, configurationFileLocation).get()
 
         then:
         inputStream

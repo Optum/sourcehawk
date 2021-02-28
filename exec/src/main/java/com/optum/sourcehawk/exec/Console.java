@@ -89,20 +89,6 @@ public class Console {
         }
         // CHECKSTYLE:ON
 
-        /**
-         * GEt the ansi encoded string, if not on Windows
-         *
-         * @param ansi the ansi code
-         * @param subject the subject string
-         * @return the ansi-encoded string
-         */
-        private String ansi(final String ansi, final String subject) {
-            if (WINDOWS) {
-                return subject;
-            }
-            return ansi + subject + RESET;
-        }
-
     }
 
     /**
@@ -125,6 +111,32 @@ public class Console {
         }
         // CHECKSTYLE:ON
 
+        /**
+         * Log an error message to standard err
+         *
+         * @param message the message to log to console
+         * @param args the message args
+         */
+        // CHECKSTYLE:OFF
+        public void error(final String message, final Object... args) {
+            System.err.println(ansi(RED, String.format(message, args)));
+        }
+        // CHECKSTYLE:ON
+
+    }
+
+    /**
+     * GEt the ansi encoded string, if not on Windows
+     *
+     * @param ansi the ansi code
+     * @param subject the subject string
+     * @return the ansi-encoded string
+     */
+    private String ansi(final String ansi, final String subject) {
+        if (WINDOWS) {
+            return subject;
+        }
+        return ansi + subject + RESET;
     }
 
 }

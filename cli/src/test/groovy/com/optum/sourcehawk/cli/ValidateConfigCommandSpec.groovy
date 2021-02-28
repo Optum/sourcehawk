@@ -80,8 +80,13 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         SystemExit systemExit = thrown(SystemExit)
         systemExit.status == 2
 
-        and:
-        stdErr.toString().trim() == "Configuration not provided through stdin or via file path"
+        when:
+        String stdErrContents = new String(stdErr.toByteArray()).trim()
+                .replaceAll("\\u001b", "")
+                .replaceAll("\\[\\d+m", "")
+
+        then:
+        stdErrContents == "Configuration not provided through stdin or via file path"
     }
 
     def "main: configuration file not found - directory (failed)"() {
@@ -97,8 +102,13 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         SystemExit systemExit = thrown(SystemExit)
         systemExit.status == 2
 
-        and:
-        stdErr.toString().trim() == "Configuration file is a directory and does not contain sourcehawk.yml file"
+        when:
+        String stdErrContents = new String(stdErr.toByteArray()).trim()
+                .replaceAll("\\u001b", "")
+                .replaceAll("\\[\\d+m", "")
+
+        then:
+        stdErrContents == "Configuration file is a directory and does not contain sourcehawk.yml file"
     }
 
     def "main: invalid config - file protocol invalid (required field missing)"() {
@@ -181,7 +191,7 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         then:
         errors
         errors.size() == 1
-        errors[0] == "Unrecognized property 'expected-property-value-INCORRECT' in StringPropertyEquals in file protocol 'lombok'"
+        errors[0] == "Unrecognized property 'expected-property-value-INCORRECT' in file protocol 'lombok'"
     }
 
     def "compileFileEnforcerErrors - fileProtocols null/empty"() {
@@ -233,7 +243,7 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         String errorMessage = ValidateConfigCommand.deriveErrorMessage(context, e)
 
         then:
-        errorMessage == "Unrecognized property 'property' in ${FileEnforcer.simpleName} ${context}"
+        errorMessage == "Unrecognized property 'property' ${context}"
     }
 
     def "deriveErrorMessage - InvalidTypeIdException"() {

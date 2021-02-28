@@ -1,15 +1,19 @@
 package com.optum.sourcehawk.enforcer.file.docker;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.docker.utils.Dockerfile;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 
 /**
  * Enforce that the Dockerfile has a tag in the FROM line
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = DockerfileFromHasTag.Builder.class)
 @AllArgsConstructor(staticName = "allowLatest")
 public class DockerfileFromHasTag extends AbstractDockerfileFromTokenEnforcer {
 
