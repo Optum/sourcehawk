@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.enforcer.file.common;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.core.utils.ModifiableProperties;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
@@ -7,6 +8,7 @@ import com.optum.sourcehawk.enforcer.ResolverResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import com.optum.sourcehawk.enforcer.file.FileResolver;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
 
@@ -23,6 +25,8 @@ import java.util.Properties;
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = StringPropertyEquals.Builder.class)
 @AllArgsConstructor(staticName = "equals")
 public class StringPropertyEquals extends AbstractFileEnforcer implements FileResolver {
 

@@ -46,7 +46,9 @@ public class FlattenConfigCommand implements Callable<Integer> {
      * @param args the command line args
      */
     public static void main(final String... args) {
-        val status = new CommandLine(new FlattenConfigCommand()).setTrimQuotes(true).execute(args);
+        val status = new CommandLine(new FlattenConfigCommand())
+                .setTrimQuotes(true)
+                .execute(args);
         Runtime.getRuntime().halt(status);
     }
 
@@ -59,7 +61,7 @@ public class FlattenConfigCommand implements Callable<Integer> {
         val configurationFileLocation = getConfigurationFileLocation();
         val flattenConfigResult = execute(configurationFileLocation);
         if (flattenConfigResult.isError()) {
-            Console.Err.log(flattenConfigResult.getMessage());
+            Console.Err.error(flattenConfigResult.getMessage());
             return CommandLine.ExitCode.SOFTWARE;
         }
         FlattenConfigResultLogger.log(flattenConfigResult, outputPath);

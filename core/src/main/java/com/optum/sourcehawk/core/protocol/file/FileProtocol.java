@@ -3,7 +3,6 @@ package com.optum.sourcehawk.core.protocol.file;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.optum.sourcehawk.core.protocol.Protocol;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -81,14 +80,5 @@ public class FileProtocol implements Protocol {
     @Builder.Default
     @JsonMerge
     Collection<Map<String, Object>> enforcers = Collections.emptyList();
-
-    /**
-     * Jackson will use this builder (further initialized by Lombok) to
-     * construct this object during deserialization phase
-     *
-     * @author Brian Wyka
-     */
-    @JsonPOJOBuilder(withPrefix = "")
-    public static class FileProtocolBuilder { }
 
 }

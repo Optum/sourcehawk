@@ -1,9 +1,11 @@
 package com.optum.sourcehawk.enforcer.file.common;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
 
@@ -20,6 +22,8 @@ import java.net.URL;
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = ContentEquals.Builder.class)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class ContentEquals extends AbstractFileEnforcer {
 

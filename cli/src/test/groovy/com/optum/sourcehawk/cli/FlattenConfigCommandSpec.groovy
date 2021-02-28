@@ -72,8 +72,13 @@ class FlattenConfigCommandSpec extends CliBaseSpecification {
         SystemExit systemExit = thrown(SystemExit)
         systemExit.status == 1
 
-        and:
-        stdErr.toString().trim() == "Configuration file ${repositoryRoot.toString()}/sourcehawkasdfasdf.yml not found or invalid"
+        when:
+        String stdErrContents = new String(stdErr.toByteArray()).trim()
+                .replaceAll("\\u001b", "")
+                .replaceAll("\\[\\d+m", "")
+
+        then:
+        stdErrContents == "Configuration file not found: ${repositoryRoot.toString()}/sourcehawkasdfasdf.yml\nConfiguration file ${repositoryRoot.toString()}/sourcehawkasdfasdf.yml not found or invalid"
     }
 
     def "main: console remote"() {
@@ -124,8 +129,13 @@ class FlattenConfigCommandSpec extends CliBaseSpecification {
         SystemExit systemExit = thrown(SystemExit)
         systemExit.status == 1
 
-        and:
-        stdErr.toString().trim() == "Configuration file sourcehawk.yml not found or invalid"
+        when:
+        String stdErrContents = new String(stdErr.toByteArray()).trim()
+                .replaceAll("\\u001b", "")
+                .replaceAll("\\[\\d+m", "")
+
+        then:
+        stdErrContents == "Configuration file not found: sourcehawk.yml\nConfiguration file sourcehawk.yml not found or invalid"
     }
 
     def "main: configuration file blank not found (failed)"() {

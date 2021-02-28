@@ -52,7 +52,7 @@ public class FlattenConfigResultLogger {
             Console.Err.log(flattenConfigResult.getMessage());
             Console.Err.log("Flattened configuration output to {}", outputPath);
         } catch (final Exception e) {
-            Console.Err.log("Error writing flattened configuration to file: %s", e.getMessage());
+            Console.Err.error("Error writing flattened configuration to file: %s", e.getMessage());
         }
     }
 
@@ -77,12 +77,12 @@ public class FlattenConfigResultLogger {
     private static void handleConsoleOutput(final FlattenConfigResult flattenConfigResult) {
         if (flattenConfigResult != null && flattenConfigResult.getContent() != null) {
             if (flattenConfigResult.isError()) {
-                Console.Err.log(flattenConfigResult.getMessage());
+                Console.Err.error(flattenConfigResult.getMessage());
             } else {
                 Console.Out.log(new String(flattenConfigResult.getContent(), Charset.defaultCharset()));
             }
         } else {
-            Console.Err.log("No flattened configuration file produced!");
+            Console.Err.error("No flattened configuration file produced!");
         }
     }
 

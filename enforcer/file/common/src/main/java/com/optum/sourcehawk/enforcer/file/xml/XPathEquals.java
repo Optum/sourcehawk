@@ -1,8 +1,10 @@
 package com.optum.sourcehawk.enforcer.file.xml;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
 import org.w3c.dom.Document;
@@ -27,6 +29,8 @@ import java.util.stream.Collectors;
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = XPathEquals.Builder.class)
 @AllArgsConstructor(staticName = "equals")
 public class XPathEquals extends AbstractFileEnforcer {
 

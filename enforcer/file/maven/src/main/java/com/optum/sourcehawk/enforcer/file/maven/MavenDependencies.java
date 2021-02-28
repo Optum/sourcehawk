@@ -1,9 +1,11 @@
 package com.optum.sourcehawk.enforcer.file.maven;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.maven.utils.MavenPomParser;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
 import org.apache.maven.model.Dependency;
@@ -16,6 +18,8 @@ import java.util.List;
 /**
  * An enforcer which enforces that the coordinates of the maven dependencies are as expected
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = MavenDependencies.Builder.class)
 @AllArgsConstructor(staticName = "coordinates")
 public class MavenDependencies extends AbstractMavenModelEnforcer {
 

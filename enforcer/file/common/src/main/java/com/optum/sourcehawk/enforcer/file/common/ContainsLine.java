@@ -1,9 +1,11 @@
 package com.optum.sourcehawk.enforcer.file.common;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
 
@@ -17,6 +19,8 @@ import java.io.InputStreamReader;
  *
  * @author Brian Wyka
  */
+@Builder(builderClassName = "Builder")
+@JsonDeserialize(builder = ContainsLine.Builder.class)
 @AllArgsConstructor(staticName = "contains")
 public class ContainsLine extends AbstractFileEnforcer {
 
