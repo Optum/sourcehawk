@@ -25,18 +25,6 @@ class FlattenConfigExecutorSpec extends FileBaseSpecification {
         new String(flattenConfigResult.content).trim() == IoUtil.getResourceAsStream("/sourcehawk-flattened-base.yml").text.trim()
     }
 
-    def "flatten - null/empty config file - [#configFileLocation]"() {
-        when:
-        FlattenConfigResult flattenConfigResult = FlattenConfigExecutor.flatten(configFileLocation)
-
-        then:
-        flattenConfigResult.error
-        flattenConfigResult.message
-
-        where:
-        configFileLocation << ["", " ", null]
-    }
-
     def "flatten - config file not found"() {
         when:
         FlattenConfigResult flattenConfigResult = FlattenConfigExecutor.flatten("sourcehawk-does-not-exist.yml")

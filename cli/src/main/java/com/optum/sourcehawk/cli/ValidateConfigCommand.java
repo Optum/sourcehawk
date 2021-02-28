@@ -77,21 +77,21 @@ public class ValidateConfigCommand implements Callable<Integer> {
                 if (Files.exists(childConfigFilePath)) {
                     sourcehawkConfiguration = ConfigurationReader.parseConfiguration(childConfigFilePath);
                 } else {
-                    Console.Err.log("Configuration file is a directory and does not contain %s file", SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME);
+                    Console.Err.error("Configuration file is a directory and does not contain %s file", SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME);
                     return CommandLine.ExitCode.USAGE;
                 }
             } else if (Files.exists(configFilePath)) {
                 sourcehawkConfiguration = ConfigurationReader.parseConfiguration(configFilePath);
             } else {
-                Console.Err.log("Configuration not provided through stdin or via file path");
+                Console.Err.error("Configuration not provided through stdin or via file path");
                 return CommandLine.ExitCode.USAGE;
             }
         } catch (final PropertyBindingException e) {
             val context = String.format("at line %d, column %d", e.getLocation().getLineNr(), e.getLocation().getColumnNr());
-            Console.Err.log("* %s", deriveErrorMessage(context, e));
+            Console.Err.error("* %s", deriveErrorMessage(context, e));
             return CommandLine.ExitCode.SOFTWARE;
         } catch (final Exception e) {
-            Console.Err.log("* %s", deriveErrorMessage("unknown", e));
+            Console.Err.error("* %s", deriveErrorMessage("unknown", e));
             return CommandLine.ExitCode.SOFTWARE;
         }
         if (CollectionUtils.isEmpty(sourcehawkConfiguration.getConfigLocations()) && CollectionUtils.isEmpty(sourcehawkConfiguration.getFileProtocols())) {
@@ -104,7 +104,7 @@ public class ValidateConfigCommand implements Callable<Integer> {
         }
         fileEnforcerErrors.stream()
                 .map(fileEnforcerError -> String.format("* %s", fileEnforcerError))
-                .forEach(Console.Err::log);
+                .forEach(Console.Err::error);
         return CommandLine.ExitCode.SOFTWARE;
     }
 

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.result.FlattenConfigResult;
-import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.exec.ConfigurationReader;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -37,9 +36,6 @@ public final class FlattenConfigExecutor {
      * @return the flatten config result
      */
     public static FlattenConfigResult flatten(final String configurationFileLocation) {
-        if (StringUtils.isBlankOrEmpty(configurationFileLocation)) {
-            return FlattenConfigResult.error(String.format("Configuration file %s not found or invalid", configurationFileLocation));
-        }
         return ConfigurationReader.readConfiguration(Paths.get("."), configurationFileLocation)
                 .map(sourcehawkConfiguration -> executeFlatten(configurationFileLocation, sourcehawkConfiguration))
                 .orElseGet(() -> FlattenConfigResult.error(String.format("Configuration file %s not found or invalid", configurationFileLocation)));

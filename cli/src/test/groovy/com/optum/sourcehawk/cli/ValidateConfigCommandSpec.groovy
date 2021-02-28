@@ -80,8 +80,13 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         SystemExit systemExit = thrown(SystemExit)
         systemExit.status == 2
 
-        and:
-        stdErr.toString().trim() == "Configuration not provided through stdin or via file path"
+        when:
+        String stdErrContents = new String(stdErr.toByteArray()).trim()
+                .replaceAll("\\u001b", "")
+                .replaceAll("\\[\\d+m", "")
+
+        then:
+        stdErrContents == "Configuration not provided through stdin or via file path"
     }
 
     def "main: configuration file not found - directory (failed)"() {
@@ -97,8 +102,13 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         SystemExit systemExit = thrown(SystemExit)
         systemExit.status == 2
 
-        and:
-        stdErr.toString().trim() == "Configuration file is a directory and does not contain sourcehawk.yml file"
+        when:
+        String stdErrContents = new String(stdErr.toByteArray()).trim()
+                .replaceAll("\\u001b", "")
+                .replaceAll("\\[\\d+m", "")
+
+        then:
+        stdErrContents == "Configuration file is a directory and does not contain sourcehawk.yml file"
     }
 
     def "main: invalid config - file protocol invalid (required field missing)"() {
