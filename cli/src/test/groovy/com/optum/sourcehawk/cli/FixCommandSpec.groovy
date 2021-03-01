@@ -93,7 +93,6 @@ class FixCommandSpec extends CliBaseSpecification {
         then:
         properties.getProperty("config.stopBubbling") == "true"
         properties.getProperty("lombok.addLombokGeneratedAnnotation") == "true"
-        properties.getProperty("lombok.anyConstructor.addConstructorProperties") == "true"
     }
 
     def "main: no files updated"() {

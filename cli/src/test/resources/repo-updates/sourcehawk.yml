@@ -15,6 +15,3 @@ file-protocols:
       - enforcer: .common.StringPropertyEquals
         property-name: lombok.addLombokGeneratedAnnotation
         expected-property-value: true
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.anyConstructor.addConstructorProperties
-        expected-property-value: true
