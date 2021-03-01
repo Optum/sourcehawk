@@ -35,8 +35,8 @@ file-protocols:
     property-name: "config.stopBubbling"
     expected-property-value: false
   - enforcer: ".common.StringPropertyEquals"
-    property-name: "lombok.anyConstructor.addConstructorProperties"
-    expected-property-value: false
+    property-name: "lombok.addLombokGeneratedAnnotation"
+    expected-property-value: true
 - name: "Notice"
   description: null
   repository-path: "NOTICE.txt"

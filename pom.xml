@@ -180,7 +180,6 @@
                                         <includes>
                                             <include>com.fasterxml.jackson.core:*:*:*:*</include>
                                             <include>com.optum.sourcehawk:*:*:*:*</include>
-                                            <include>javax.activation:activation</include>
                                             <include>*:*:*:*:provided</include>
                                             <include>*:*:*:*:test</include>
                                         </includes>
