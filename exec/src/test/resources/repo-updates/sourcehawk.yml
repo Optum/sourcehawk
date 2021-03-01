@@ -9,12 +9,5 @@ file-protocols:
     required: true
     severity: WARNING
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: true
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation
-        expected-property-value: true
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.anyConstructor.addConstructorProperties
-        expected-property-value: true
+      - STRING-PROPERTY-EQUALS(config.stopBubbling, true)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation, true)

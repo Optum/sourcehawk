@@ -1,9 +1,11 @@
 package com.optum.sourcehawk.enforcer.file.yaml;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+<<<<<<< HEAD
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+=======
+>>>>>>> Simpler enforcer configuration
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import com.optum.sourcehawk.enforcer.file.json.JsonValueEquals;
@@ -11,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.val;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -32,7 +35,6 @@ import java.util.Map;
 @AllArgsConstructor(staticName = "equals")
 public class YamlValueEquals extends AbstractFileEnforcer {
 
-    private static final ObjectMapper YAML_MAPPER = new YAMLMapper();
     private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
     /**
@@ -56,7 +58,7 @@ public class YamlValueEquals extends AbstractFileEnforcer {
     /** {@inheritDoc} */
     @Override
     public EnforcerResult enforceInternal(@NonNull final InputStream actualFileInputStream) throws IOException {
-        val yamlMap = YAML_MAPPER.readValue(actualFileInputStream, new TypeReference<Map<String, Object>>() {});
+        val yamlMap  = new Yaml().load(actualFileInputStream);
         val json = OBJECT_MAPPER.writeValueAsString(yamlMap);
         try (val jsonInputStream = new ByteArrayInputStream(json.getBytes(Charset.defaultCharset()))) {
             return JsonValueEquals.equals(expectations).enforce(jsonInputStream);

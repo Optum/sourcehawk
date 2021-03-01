@@ -10,7 +10,6 @@ import com.optum.sourcehawk.core.constants.SourcehawkConstants;
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.core.utils.StringUtils;
-import com.optum.sourcehawk.enforcer.file.FileEnforcer;
 import com.optum.sourcehawk.exec.ConfigurationReader;
 import com.optum.sourcehawk.exec.Console;
 import lombok.val;
@@ -133,9 +132,9 @@ public class ValidateConfigCommand implements Callable<Integer> {
      * @param enforcer     the enforcer to convert to file enforcer
      * @return the error if any
      */
-    private static Optional<String> captureEnforcerConversionError(final FileProtocol fileProtocol, final Map<String, Object> enforcer) {
+    private static Optional<String> captureEnforcerConversionError(final FileProtocol fileProtocol, final String enforcer) {
         try {
-            ConfigurationReader.MAPPER.convertValue(enforcer, FileEnforcer.class);
+            ConfigurationReader.parseFileEnforcer(enforcer);
             return Optional.empty();
         } catch (final Exception e) {
             return Optional.of(deriveErrorMessage(String.format("in file protocol '%s'", fileProtocol.getName()), e));

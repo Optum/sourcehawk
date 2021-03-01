@@ -7,5 +7,4 @@ file-protocols:
       - parent
     repository-path: pom.xml
     enforcers:
-      - enforcer: .maven.MavenParentEquals
-        expected-coordinates: com.optum.sourcehawk2:sourcehawk-jar-parent2
+      - MAVEN-PARENT-EQUALS(com.optum.sourcehawk2:sourcehawk-jar-parent2)

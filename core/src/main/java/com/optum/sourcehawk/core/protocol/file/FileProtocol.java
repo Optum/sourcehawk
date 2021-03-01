@@ -1,17 +1,21 @@
 package com.optum.sourcehawk.core.protocol.file;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+=======
+>>>>>>> Simpler enforcer configuration
 import com.optum.sourcehawk.core.protocol.Protocol;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
-import lombok.Value;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 /**
  * A protocol which allow for defining a set of rules to enforce on a file
@@ -20,10 +24,11 @@ import java.util.Map;
  * @author Christian Oestreich
  * @see Protocol
  */
-@Value
+@Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
-@JsonDeserialize(builder = FileProtocol.FileProtocolBuilder.class) // Persuade Mr. Jackson to use builder (which allows defaults during deserialization)
 public class FileProtocol implements Protocol {
 
     /**
@@ -42,7 +47,6 @@ public class FileProtocol implements Protocol {
      * The protocol group, allowing for associating different protocols together
      * @deprecated use {@link #tags} instead
      */
-    @JsonIgnore
     @Deprecated
     String group;
 
@@ -78,7 +82,11 @@ public class FileProtocol implements Protocol {
      */
     @NonNull
     @Builder.Default
+<<<<<<< HEAD
     @JsonMerge
     Collection<Map<String, Object>> enforcers = Collections.emptyList();
+=======
+    Collection<String> enforcers = Collections.emptySet();
+>>>>>>> Simpler enforcer configuration
 
 }

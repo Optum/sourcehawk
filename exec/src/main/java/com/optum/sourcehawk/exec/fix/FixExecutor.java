@@ -4,7 +4,6 @@ import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import com.optum.sourcehawk.core.result.FixResult;
 import com.optum.sourcehawk.core.utils.FileUtils;
-import com.optum.sourcehawk.enforcer.EnforcerConstants;
 import com.optum.sourcehawk.enforcer.file.FileResolver;
 import com.optum.sourcehawk.exec.ConfigurationReader;
 import com.optum.sourcehawk.exec.ExecOptions;
@@ -17,7 +16,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Path;
 import java.util.Arrays;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -73,7 +71,7 @@ public final class FixExecutor {
      * @param enforcer the raw enforcer object map
      * @return the scan result
      */
-    private static Stream<FixResult> fixBasedOnEnforcer(final ExecOptions execOptions, final FileProtocol fileProtocol, final boolean dryRun, final Map<String, Object> enforcer) {
+    private static Stream<FixResult> fixBasedOnEnforcer(final ExecOptions execOptions, final FileProtocol fileProtocol, final boolean dryRun, final String enforcer) {
         final Optional<FileResolver> fileResolverOptional;
         try {
             fileResolverOptional = ConfigurationReader.convertFileEnforcerToFileResolver(enforcer);
@@ -81,7 +79,7 @@ public final class FixExecutor {
             return Stream.of(FixResultFactory.error(fileProtocol.getRepositoryPath(), String.format("File enforcer invalid: %s", e.getMessage())));
         }
         if (!fileResolverOptional.isPresent()) {
-            return Stream.of(FixResultFactory.noResolver(fileProtocol.getRepositoryPath(), String.valueOf(enforcer.get(EnforcerConstants.DESERIALIZATION_TYPE_KEY))));
+            return Stream.of(FixResultFactory.noResolver(fileProtocol.getRepositoryPath(), enforcer));
         }
         final Set<Path> repositoryPaths;
         try {

@@ -2191,26 +2191,6 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.11.4
-
-License: Apache-2.0
-
-Copyrights: 
-
-
-License Text: 
-This copy of Jackson JSON processor YAML module is licensed under the
-Apache (Software) License, version 2.0 ("the License").
-See the License for details about distribution rights, and the
-specific rights regarding derivate works.
-
-You may obtain a copy of the License at:
-
-http://www.apache.org/licenses/LICENSE-2.0
-
-
--------------------------------------------------------------------------------------------------------------------------------
-
 Package: com.fasterxml.jackson.core:jackson-core:2.11.4
 
 License: Apache-2.0

@@ -58,11 +58,6 @@
             <artifactId>jackson-databind</artifactId>
             <scope>compile</scope>
         </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
-            <scope>compile</scope>
-        </dependency>
 
         <!-- TEST DEPENDENCIES -->
         <dependency>
@@ -91,8 +86,6 @@
                             <rules>
                                 <bannedDependencies>
                                     <includes combine.children="append">
-                                        <include>com.fasterxml.jackson.core:*:*:*:*</include>
-                                        <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
                                         <include>org.apache.maven:maven-model:*:*:*</include>
                                         <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
                                         <include>org.slf4j:slf4j-api:*:*:*</include>

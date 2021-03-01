@@ -1,5 +1,6 @@
 package com.optum.sourcehawk.exec;
 
+<<<<<<< HEAD
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
@@ -7,13 +8,21 @@ import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import com.fasterxml.jackson.databind.introspect.AnnotatedClass;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
+=======
+>>>>>>> Simpler enforcer configuration
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration;
 import com.optum.sourcehawk.core.utils.CollectionUtils;
 import com.optum.sourcehawk.core.utils.StringUtils;
 import com.optum.sourcehawk.enforcer.file.FileEnforcer;
+import com.optum.sourcehawk.enforcer.file.FileEnforcerRegistry;
 import com.optum.sourcehawk.enforcer.file.FileResolver;
 import lombok.experimental.UtilityClass;
 import lombok.val;
+import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.extensions.compactnotation.CompactConstructor;
+import org.yaml.snakeyaml.introspector.Property;
+import org.yaml.snakeyaml.introspector.PropertyUtils;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,6 +33,10 @@ import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+<<<<<<< HEAD
+=======
+import java.util.Arrays;
+>>>>>>> Simpler enforcer configuration
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -41,6 +54,7 @@ import java.util.stream.Collectors;
 @UtilityClass
 public class ConfigurationReader {
 
+<<<<<<< HEAD
     /**
      * The object mapper which is used to deserialize the configuration from file
      */
@@ -53,6 +67,27 @@ public class ConfigurationReader {
                     return new JsonPOJOBuilder.Value("build", "");
                 }
             });
+=======
+    private static final Yaml YAML;
+
+    static {
+        final Constructor constructor = new Constructor(SourcehawkConfiguration.class);
+        constructor.setPropertyUtils(new PropertyUtils() {
+            @Override
+            public Property getProperty(final Class<?> type, final String name) {
+                if (name.indexOf('-') > -1) {
+                    val camelCase =  Character.toLowerCase(name.charAt(0)) + Arrays.stream(name.split("-"))
+                            .map(s -> Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase())
+                            .collect(Collectors.joining())
+                            .substring(1);
+                    return super.getProperty(type, camelCase);
+                }
+                return super.getProperty(type, name);
+            }
+        });
+        YAML = new Yaml(constructor);
+    }
+>>>>>>> Simpler enforcer configuration
 
     /**
      * Parse the configuration from the provided yaml string
@@ -60,8 +95,8 @@ public class ConfigurationReader {
      * @param inputStream the input stream
      * @return the configuration
      */
-    public SourcehawkConfiguration parseConfiguration(final InputStream inputStream) throws IOException {
-        return MAPPER.readValue(inputStream, SourcehawkConfiguration.class);
+    public SourcehawkConfiguration parseConfiguration(final InputStream inputStream) {
+        return YAML.loadAs(inputStream, SourcehawkConfiguration.class);
     }
 
     /**
@@ -164,9 +199,15 @@ public class ConfigurationReader {
      */
     private Optional<SourcehawkConfiguration> deserialize(final InputStream inputStream) {
         try {
+<<<<<<< HEAD
             return Optional.of(MAPPER.readValue(inputStream, SourcehawkConfiguration.class));
         } catch (final IOException e) {
             Console.Err.error("Error parsing configuration file: %s", e.getMessage());
+=======
+            return Optional.of(YAML.loadAs(inputStream, SourcehawkConfiguration.class));
+        } catch (final Exception e) {
+            log.severe("Error reading configuration file: " + e.getMessage());
+>>>>>>> Simpler enforcer configuration
             return Optional.empty();
         }
     }
@@ -189,14 +230,20 @@ public class ConfigurationReader {
                 .map(SourcehawkConfiguration::getConfigLocations)
                 .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
+<<<<<<< HEAD
                 .filter(Objects::nonNull)
+=======
+>>>>>>> Simpler enforcer configuration
                 .collect(Collectors.toSet());
         val fileProtocols = sourcehawkConfigurations.stream()
                 .filter(Objects::nonNull)
                 .map(SourcehawkConfiguration::getFileProtocols)
                 .filter(Objects::nonNull)
                 .flatMap(Collection::stream)
+<<<<<<< HEAD
                 .filter(Objects::nonNull)
+=======
+>>>>>>> Simpler enforcer configuration
                 .collect(Collectors.toSet());
         return SourcehawkConfiguration.of(configLocations, fileProtocols);
     }
@@ -204,21 +251,46 @@ public class ConfigurationReader {
     /**
      * Parse the file enforcer
      *
-     * @param fileEnforcerObject the file enforcer object
+     * @param fileEnforcerNotation the file enforcer notation
      * @return the file enforcer
      */
-    public FileEnforcer parseFileEnforcer(final Object fileEnforcerObject) {
-        return MAPPER.convertValue(fileEnforcerObject, FileEnforcer.class);
+    public FileEnforcer parseFileEnforcer(final String fileEnforcerNotation) {
+        val constructor = new CompactConstructor() {
+            @Override
+            protected Class<?> getClassForName(String name) throws ClassNotFoundException {
+                try {
+                    return FileEnforcerRegistry.getEnforcerByAlias(name)
+                            .orElseThrow(ClassNotFoundException::new);
+                } catch (ClassNotFoundException var3) {
+                    return super.getClassForName(name);
+                }
+            }
+        };
+        constructor.setPropertyUtils(new PropertyUtils() {
+            @Override
+            public Property getProperty(final Class<?> type, final String name) {
+                if (name.indexOf('-') > -1) {
+                    val camelCase =  Character.toLowerCase(name.charAt(0)) + Arrays.stream(name.split("-"))
+                            .map(s -> Character.toUpperCase(s.charAt(0)) + s.substring(1).toLowerCase())
+                            .collect(Collectors.joining())
+                            .substring(1);
+                    return super.getProperty(type, camelCase);
+                }
+                return super.getProperty(type, name);
+            }
+        });
+        val yaml = new Yaml(constructor);
+        return yaml.loadAs(fileEnforcerNotation, FileEnforcer.class);
     }
 
     /**
      * Convert the file enforcer to a file resolver
      *
-     * @param fileEnforcerObject the file enforcer object
+     * @param fileEnforcerNotation the file enforcer notation
      * @return the file resolver if able to be converted, otherwise {@link Optional#empty()}
      */
-    public Optional<FileResolver> convertFileEnforcerToFileResolver(final Object fileEnforcerObject) {
-        val fileEnforcer = parseFileEnforcer(fileEnforcerObject);
+    public Optional<FileResolver> convertFileEnforcerToFileResolver(final String fileEnforcerNotation) {
+        val fileEnforcer = parseFileEnforcer(fileEnforcerNotation);
         if (fileEnforcer instanceof FileResolver) {
             return Optional.of(fileEnforcer)
                     .map(FileResolver.class::cast);

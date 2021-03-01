@@ -7,8 +7,7 @@ file-protocols:
       - parent
     repository-path: pom.xml
     enforcers:
-      - enforcer: .maven.MavenParentEquals
-        expected-coordinates: com.optum.sourcehawk:sourcehawk-jar-parent
+      - "MAVEN-PARENT-EQUALS(com.optum.sourcehawk:sourcehawk-jar-parent)"
   - name: Lombok
     description: Lombok config is correct
     tags:
@@ -16,6 +15,4 @@ file-protocols:
       - lombok
     repository-path: lombok.config
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: false
+      - STRING-PROPERTY-EQUALS(config.stopBubbling, false)

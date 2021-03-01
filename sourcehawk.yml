@@ -1,4 +1,4 @@
 
 # Composable recursive source hawk configs (Must be public repo)
 config-locations:
-  - https://raw.githubusercontent.com/optum/sourcehawk-parent/main/.sourcehawk/config.yml
+  - https://raw.githubusercontent.com/optum/sourcehawk-parent/main/.sourcehawk/config-new.yml

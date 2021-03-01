@@ -1,6 +1,7 @@
 package com.optum.sourcehawk.exec
 
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration
+import com.optum.sourcehawk.enforcer.file.FileEnforcer
 import org.spockframework.util.IoUtil
 import sun.nio.ch.ChannelInputStream
 
@@ -126,6 +127,17 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
         then:
         !configuration
         !configuration.isPresent()
+    }
+
+    def "parseFileEnforcer"() {
+        given:
+        Object fileEnforcer = "STRING-PROPERTY-EQUALS(key, value)"
+
+        when:
+        FileEnforcer fileEnforcer1 = ConfigurationReader.parseFileEnforcer(fileEnforcer)
+
+        then:
+        noExceptionThrown()
     }
 
 }

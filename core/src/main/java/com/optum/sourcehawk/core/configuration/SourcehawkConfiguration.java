@@ -4,8 +4,13 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import lombok.AllArgsConstructor;
+<<<<<<< HEAD
 import lombok.Builder;
 import lombok.Value;
+=======
+import lombok.Data;
+import lombok.NoArgsConstructor;
+>>>>>>> Simpler enforcer configuration
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -17,9 +22,14 @@ import java.util.LinkedHashSet;
  * @author Brian Wyka
  * @author Christian Oestreich
  */
+<<<<<<< HEAD
 @Builder(builderClassName = "Builder")
 @JsonDeserialize(builder = SourcehawkConfiguration.Builder.class)
 @Value
+=======
+@Data
+@NoArgsConstructor
+>>>>>>> Simpler enforcer configuration
 @AllArgsConstructor(staticName = "of")
 public class SourcehawkConfiguration {
 

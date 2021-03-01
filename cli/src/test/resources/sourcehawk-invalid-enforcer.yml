@@ -9,6 +9,4 @@ file-protocols:
     required: true
     severity: WARNING
     enforcers:
-      - enforcer: .common.StringPropertyEqual # missing "s" at end
-        property-name: config.stopBubbling
-        expected-property-value: false
+      - STRING-PROPERTY-EQUAL(config.stopBubbling, false)

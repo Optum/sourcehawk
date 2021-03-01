@@ -12,31 +12,19 @@ file-protocols:
     required: true
     severity: ERROR
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation
-        expected-property-value: true
+      - STRING-PROPERTY-EQUALS(config.stopBubbling, false)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation, true)
   - name: Lombok Different
     repository-path: lombok.config
     required: true
     severity: ERROR
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation
-        expected-property-value: true
+      - STRING-PROPERTY-EQUALS(config.stopBubbling, false)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation, true)
   - name: Lombok Different
     repository-path: lombok.config
     required: true
     severity: ERROR
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation
-        expected-property-value: true
+      - STRING-PROPERTY-EQUALS(config.stopBubbling, false)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation, true)

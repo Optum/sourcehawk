@@ -10,40 +10,22 @@ file-protocols:
     required: true
     severity: WARNING
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation2
-        expected-property-value: true
+      - STRING-PROPERTY-EQUALS(config.stopBubbling, false)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation, false)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation2, true)
   - name: Lombok
     repository-path: lombok.config
     required: true
     severity: WARNING
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation2
-        expected-property-value: true
+      - STRING-PROPERTY-EQUALS(config.stopBubbling, false)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation, false)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation2, true)
   - name: Lombok
     repository-path: lombok.config
     required: true
     severity: WARNING
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation2
-        expected-property-value: true
+      - STRING-PROPERTY-EQUALS(config.stopBubbling, false)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation, false)
+      - STRING-PROPERTY-EQUALS(lombok.addLombokGeneratedAnnotation2, true)

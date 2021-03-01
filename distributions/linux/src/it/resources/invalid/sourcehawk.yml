@@ -9,9 +9,5 @@ file-protocols:
     required: true
     severity: WARNING
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: key
-        expected-property-value: value
-      - enforcer: .common.StringPropertyEquals
-        property-name: foo
-        expected-property-value: bar
+      - STRING-PROPERTY-EQUALS(key, value)
+      - STRING-PROPERTY-EQUALS(foo, bar)

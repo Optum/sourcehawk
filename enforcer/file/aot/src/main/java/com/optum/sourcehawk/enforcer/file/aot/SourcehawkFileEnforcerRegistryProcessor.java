@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -46,7 +47,7 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
     private static final String FILE_ENFORCER_CLASS_NAME = FILE_ENFORCER_PACKAGE + ".FileEnforcer";
     private static final String REFLECT_CONFIG_OUTPUT_PATH = "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/reflect-config.json";
     private final Class<?> fileEnforcerClass;
-    private final Map<String, Class<?>> fileEnforcerClasses = new HashMap<>();
+    private final Map<String, Class<?>> fileEnforcerClasses = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
 
     /**
      * Constructs an instance of this processor

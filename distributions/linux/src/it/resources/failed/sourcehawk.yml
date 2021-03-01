@@ -4,6 +4,4 @@ file-protocols:
   - name: File Properties
     repository-path: file.properties
     enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: abc
-        expected-property-value: 123
+      - STRING-PROPERTY-EQUALS(abc, 123)

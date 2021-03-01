@@ -320,13 +320,6 @@
                             <shadedArtifactAttached>true</shadedArtifactAttached>
                             <filters>
                                 <filter>
-                                    <artifact>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml</artifact>
-                                    <excludes>
-                                        <exclude>META-INF/services/com.fasterxml.jackson.core.ObjectCodec</exclude>
-                                        <exclude>META-INF/services/com.fasterxml.jackson.core.JsonFactory</exclude>
-                                    </excludes>
-                                </filter>
-                                <filter>
                                     <artifact>*:*</artifact>
                                     <excludes>
                                         <exclude>licenses/*.*</exclude>
@@ -365,8 +358,6 @@
                             <rules>
                                 <bannedDependencies>
                                     <includes combine.children="append">
-                                        <include>com.fasterxml.jackson.core:*:*:*:*</include>
-                                        <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
                                         <include>org.apache.maven:maven-model:*:*:*</include>
                                         <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
                                         <include>org.slf4j:slf4j-api:*:*:*</include>
