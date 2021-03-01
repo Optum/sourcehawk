@@ -95,7 +95,6 @@
                                         <include>com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:*:*</include>
                                         <include>org.apache.maven:maven-model:*:*:*</include>
                                         <include>org.codehaus.plexus:plexus-utils:*:*:*</include>
-                                        <include>org.ow2.asm:asm:*:*:*</include>
                                         <include>org.slf4j:slf4j-api:*:*:*</include>
                                         <include>org.slf4j:slf4j-nop:*:*:*</include>
                                         <include>org.yaml:snakeyaml:*:*:*</include>
