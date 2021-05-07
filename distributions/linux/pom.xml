@@ -236,7 +236,7 @@
                 <jdk>8</jdk>
             </activation>
             <properties>
-                <graalvm.version>21.0.0-java8</graalvm.version>
+                <graalvm.version>21.1.0-java8</graalvm.version>
             </properties>
         </profile>
 
@@ -247,7 +247,7 @@
                 <jdk>11</jdk>
             </activation>
             <properties>
-                <graalvm.version>21.0.0-java11</graalvm.version>
+                <graalvm.version>21.1.0-java11</graalvm.version>
             </properties>
         </profile>
 
