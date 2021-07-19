@@ -15,7 +15,7 @@ DOCKER_BUILDERS_DIR="$ROOT_DIR/distributions/docker-builders"
 BINTRAY_API_URL="https://api.bintray.com"
 BINTRAY_ORG="optum"
 BINTRAY_REPO="builders"
-REGISTRY="optum-docker-builders.bintray.io"
+REGISTRY="ghcr.io"
 
 # Native Image
 docker build -t $REGISTRY/nativeimage:graalvm-ce-21.1.0-java8 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:java8-21.1.0 .

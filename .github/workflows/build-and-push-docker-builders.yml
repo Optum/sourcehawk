@@ -15,7 +15,7 @@ jobs:
           ref: ${{ github.event.inputs.ref }}
       - name: Build and Push Docker Images to Bintray
         shell: bash
-        run: ./distributions/scripts/build-and-push-docker-builders-to-bintray.sh
+        run: ./distributions/scripts/build-and-push-docker-builders.sh
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
