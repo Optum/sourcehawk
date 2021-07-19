@@ -28,7 +28,8 @@ import java.util.stream.Collectors;
 public class ContentHttpValidated extends AbstractFileEnforcer {
 
     private static final int DEFAULT_BUFFER_SIZE = 8192;
-    private static final String HTTP_RESPONSE_ERROR_MESSAGE_TEMPLATE = "Validation failed with HTTP response code [%d] and message [%s]";
+    private static final String HTTP_RESPONSE_VALIDATION_MESSAGE_TEMPLATE = "Validation failed with reason: %s";
+    private static final String HTTP_RESPONSE_ERROR_MESSAGE_TEMPLATE = "HTTP [%s] error performing validation: %s";
 
     /**
      * The URL in which to make a POST request, to validate the file contents
@@ -62,15 +63,19 @@ public class ContentHttpValidated extends AbstractFileEnforcer {
                 outputStream.write(buffer, 0, read);
             }
         }
-        val responseCode = httpUrlConnection.getResponseCode();
-        if (responseCode >= 200 && responseCode < 300) {
+        val responseCode = String.valueOf(httpUrlConnection.getResponseCode());
+        if (responseCode.startsWith("2")) {
             return EnforcerResult.passed();
         }
         try (val errorStream = httpUrlConnection.getErrorStream();
              val bufferedReader = new BufferedReader(new InputStreamReader(errorStream))) {
             val responseMessage = bufferedReader.lines()
                 .collect(Collectors.joining());
-            return EnforcerResult.failed(String.format(HTTP_RESPONSE_ERROR_MESSAGE_TEMPLATE, responseCode, responseMessage));
+            if (responseCode.startsWith("4")) {
+                return EnforcerResult.failed(String.format(HTTP_RESPONSE_VALIDATION_MESSAGE_TEMPLATE, responseMessage));
+            } else {
+                return EnforcerResult.failed(String.format(HTTP_RESPONSE_ERROR_MESSAGE_TEMPLATE, responseCode, responseMessage));
+            }
         }
     }
 
