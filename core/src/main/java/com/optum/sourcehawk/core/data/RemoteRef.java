@@ -25,13 +25,7 @@ public class RemoteRef {
     private static final String PARSE_ERROR_PREFIX = "Invalid remote reference";
 
     /**
-     * The type of the remote reference
-     */
-    @NonNull
-    Type type;
-
-    /**
-     * The remote namespace, such as Github owner / organization, or Bitbucket project
+     * The remote namespace, such as Github owner / organization, or Bitbucket user / project
      */
     @NonNull
     String namespace;
@@ -51,20 +45,20 @@ public class RemoteRef {
     /**
      * Create the remote ref from the type and raw reference
      * 
-     * @param type the type of the remote ref
      * @param rawRemoteRef the raw remote reference
+     * @param defaultRef the default ref to use if none provided
      * @return the remote reference
      */
-    public static RemoteRef parse(final Type type, final String rawRemoteRef) {
+    public static RemoteRef parse(final String rawRemoteRef, final String defaultRef) {
         if (rawRemoteRef.indexOf(COORDINATES_DELIMITER) == -1) {
-            val message = String.format("%s, must contain '%s' separator between %s and repository", PARSE_ERROR_PREFIX, COORDINATES_DELIMITER, type.getNamespaceType());
+            val message = String.format("%s, must contain '%s' separator between repository coordinates", PARSE_ERROR_PREFIX, COORDINATES_DELIMITER);
             throw new IllegalArgumentException(message);
         }
         val remoteRefBuilder = builder();
         final String rawCoordinates;
         if (rawRemoteRef.indexOf(REF_DELIMITER) == -1) {
             rawCoordinates = rawRemoteRef;
-            remoteRefBuilder.ref(type.getDefaultBranch());
+            remoteRefBuilder.ref(defaultRef);
         } else {
             val refDelimiterIndex= rawRemoteRef.indexOf(REF_DELIMITER);
             rawCoordinates = rawRemoteRef.substring(0, refDelimiterIndex);
@@ -77,7 +71,7 @@ public class RemoteRef {
         if (coordinates.length < 2) {
             throw new IllegalArgumentException(PARSE_ERROR_PREFIX + ", repository must not be empty");
         }
-        return remoteRefBuilder.type(type)
+        return remoteRefBuilder
                 .namespace(coordinates[0])
                 .repository(coordinates[1])
                 .build();
@@ -86,36 +80,7 @@ public class RemoteRef {
     /** {@inheritDoc} */
     @Override
     public String toString() {
-        return String.format("[%s] %s%s%s%s%s", type.name(), namespace, COORDINATES_DELIMITER, repository, REF_DELIMITER, ref);
-    }
-
-    /**
-     * The type of the remote reference
-     * 
-     * @author Brian Wyka
-     */
-    @Getter
-    @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public enum Type {
-        
-        BITBUCKET("https://bitbucket.org", "master", "project"),
-        GITHUB("https://raw.githubusercontent.com", "main", "owner");
-
-        /**
-         * The base URL
-         */
-        private final String baseUrl;
-
-        /**
-         * The name of the default branch
-         */
-        private final String defaultBranch;
-
-        /**
-         * The namespace type
-         */
-        private final String namespaceType;
-        
+        return String.format("%s%s%s%s%s", namespace, COORDINATES_DELIMITER, repository, REF_DELIMITER, ref);
     }
 
 }
