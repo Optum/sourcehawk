@@ -7,14 +7,12 @@ class RemoteRefSpec extends Specification {
 
     def "builder and toString"() {
         given:
-        RemoteRef.Type type = RemoteRef.Type.GITHUB
         String namespace = "namespace"
         String repository = "repository"
         String ref = "ref"
 
         when:
         RemoteRef remoteRef = RemoteRef.builder()
-                .type(type)
                 .namespace(namespace)
                 .repository(repository)
                 .ref(ref)
@@ -22,32 +20,29 @@ class RemoteRefSpec extends Specification {
 
         then:
         remoteRef
-        remoteRef.type == type
         remoteRef.namespace == namespace
         remoteRef.repository == repository
         remoteRef.ref == ref
 
         and:
-        remoteRef.toString() == "[GITHUB] namespace/repository@ref"
+        remoteRef.toString() == "namespace/repository@ref"
     }
 
     def "parse"() {
         given:
-        RemoteRef.Type type = RemoteRef.Type.GITHUB
         String rawReference = "namespace/repository@ref"
 
         when:
-        RemoteRef remoteRef = RemoteRef.parse(type, rawReference)
+        RemoteRef remoteRef = RemoteRef.parse(rawReference, "main")
 
         then:
         remoteRef
-        remoteRef.type == type
         remoteRef.namespace == "namespace"
         remoteRef.repository == "repository"
         remoteRef.ref == "ref"
 
         and:
-        remoteRef.toString() == "[GITHUB] ${rawReference}"
+        remoteRef.toString() == rawReference
     }
 
     @Unroll
@@ -56,31 +51,22 @@ class RemoteRefSpec extends Specification {
         String rawReference = "namespace/repository"
 
         when:
-        RemoteRef remoteRef = RemoteRef.parse(type, rawReference)
+        RemoteRef remoteRef = RemoteRef.parse(rawReference, "main")
 
         then:
         remoteRef
-        remoteRef.type == type
         remoteRef.namespace == "namespace"
         remoteRef.repository == "repository"
-        remoteRef.ref == expected
+        remoteRef.ref == "main"
 
         and:
-        remoteRef.toString() == "[${type.name()}] ${rawReference}@${expected}"
-
-        where:
-        type                     | expected
-        RemoteRef.Type.GITHUB    | "main"
-        RemoteRef.Type.BITBUCKET | "master"
+        remoteRef.toString() == "${rawReference}@main"
     }
 
     @Unroll
     def "parse - invalid (throws IllegalArgumentException)"() {
-        given:
-        RemoteRef.Type type = RemoteRef.Type.GITHUB
-
         when:
-        RemoteRef.parse(type, rawReference)
+        RemoteRef.parse(rawReference, "main")
 
         then:
         thrown(IllegalArgumentException)

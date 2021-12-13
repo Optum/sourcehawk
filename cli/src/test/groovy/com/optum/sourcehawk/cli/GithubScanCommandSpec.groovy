@@ -10,11 +10,11 @@ class GithubScanCommandSpec extends CliBaseSpecification {
 
     def "getRawRemoteReference"() {
         when:
-        Pair<RemoteRef.Type, String> rawRemoteReference = new GithubScanCommand(github: new CommandOptions.Github(remoteReference: "owner/repo@main")).getRawRemoteReference()
+        Pair<String, String> rawRemoteReference = new GithubScanCommand(github: new CommandOptions.Github(remoteReference: "owner/repo@main")).getRawRemoteReference()
 
         then:
-        rawRemoteReference.left == RemoteRef.Type.GITHUB
-        rawRemoteReference.right == "owner/repo@main"
+        rawRemoteReference.left == "owner/repo@main"
+        rawRemoteReference.right == "main"
     }
 
     @Unroll
@@ -66,7 +66,7 @@ class GithubScanCommandSpec extends CliBaseSpecification {
         GithubScanCommand githubScanCommand = new GithubScanCommand(github: new CommandOptions.Github(remoteReference: "owner/repo@main"))
 
         when:
-        RepositoryFileReader repositoryFileReader = githubScanCommand.createRepositoryFileReader(RemoteRef.parse(RemoteRef.Type.GITHUB, rawReference))
+        RepositoryFileReader repositoryFileReader = githubScanCommand.createRepositoryFileReader(RemoteRef.parse(rawReference, "main"))
 
         then:
         repositoryFileReader
@@ -80,7 +80,7 @@ class GithubScanCommandSpec extends CliBaseSpecification {
         )
 
         when:
-        RepositoryFileReader repositoryFileReader = githubScanCommand.createRepositoryFileReader(RemoteRef.parse(RemoteRef.Type.GITHUB, rawReference))
+        RepositoryFileReader repositoryFileReader = githubScanCommand.createRepositoryFileReader(RemoteRef.parse(rawReference, "main"))
 
         then:
         repositoryFileReader

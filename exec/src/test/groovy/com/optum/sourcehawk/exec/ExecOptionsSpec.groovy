@@ -4,6 +4,7 @@ import com.optum.sourcehawk.core.data.RemoteRef
 
 import com.optum.sourcehawk.core.repository.LocalRepositoryFileReader
 import com.optum.sourcehawk.core.data.Verbosity
+import com.optum.sourcehawk.core.repository.RemoteRepositoryFileReader
 import spock.lang.Specification
 
 import java.nio.file.Paths
@@ -54,15 +55,15 @@ class ExecOptionsSpec extends Specification {
         !execOptions.remoteRef
     }
 
-    def "builder - github"() {
+    def "builder - remote"() {
         given:
-        RemoteRef remoteRef = RemoteRef.parse(RemoteRef.Type.GITHUB, "owner/repo@main")
+        RemoteRef remoteRef = RemoteRef.parse("owner/repo", "main")
         ExecOptions.ExecOptionsBuilder builder = ExecOptions.builder()
                 .repositoryRoot(Paths.get("/"))
                 .configurationFileLocation("Sourcehawk")
                 .verbosity(Verbosity.ZERO)
                 .failOnWarnings(true)
-                .repositoryFileReader(new GithubRepositoryFileReader("token", remoteRef))
+                .repositoryFileReader(new RemoteRepositoryFileReader("https://raw.githubusercontent.com/owner/repo/main/%s", Collections.emptyMap()))
                 .remoteRef(remoteRef)
 
         when:
@@ -75,7 +76,7 @@ class ExecOptionsSpec extends Specification {
         execOptions.verbosity == Verbosity.ZERO
         !execOptions.tags
         execOptions.failOnWarnings
-        execOptions.repositoryFileReader instanceof GithubRepositoryFileReader
+        execOptions.repositoryFileReader instanceof RemoteRepositoryFileReader
         execOptions.remoteRef == remoteRef
     }
 

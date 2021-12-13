@@ -1,18 +1,15 @@
 package com.optum.sourcehawk.core.repository;
 
-import com.optum.sourcehawk.core.utils.StringUtils;
-import lombok.NonNull;
-import lombok.val;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import lombok.NonNull;
+import lombok.val;
 
 /**
  * A remote repository file reader which treats the repository file paths relative
@@ -48,18 +45,9 @@ public final class RemoteRepositoryFileReader implements RepositoryFileReader {
      * @param rawFileUrlTemplate the raw file URL template
      * @param requestProperties the request properties required for connection
      */
-    public RemoteRepositoryFileReader(@NonNull final String rawFileUrlTemplate, final Map<String, String> requestProperties) {
+    public RemoteRepositoryFileReader(@NonNull final String rawFileUrlTemplate, @NonNull final Map<String, String> requestProperties) {
         this.rawFileUrlTemplate = rawFileUrlTemplate;
         this.requestProperties = requestProperties;
-    }
-
-    /**
-     * Constructs an instance of this reader with the provided base URL
-     *
-     * @param rawFileUrlTemplate the base URL
-     */
-    protected RemoteRepositoryFileReader(@NonNull final String rawFileUrlTemplate) {
-        this(rawFileUrlTemplate, Collections.emptyMap());
     }
 
     /** {@inheritDoc} */
@@ -119,7 +107,11 @@ public final class RemoteRepositoryFileReader implements RepositoryFileReader {
         val httpUrlConnection = (HttpURLConnection) url.openConnection();
         httpUrlConnection.setRequestMethod("HEAD");
         requestProperties.forEach(httpUrlConnection::setRequestProperty);
-        return httpUrlConnection.getResponseCode() == HttpURLConnection.HTTP_OK;
+        val httpResponseCode = httpUrlConnection.getResponseCode();
+        if (httpResponseCode != HttpURLConnection.HTTP_OK) {
+            System.err.println("HTTP Request to " + url + " returned response code " + httpResponseCode); // FIXME
+        }
+        return httpResponseCode == HttpURLConnection.HTTP_OK;
     }
 
     /**
@@ -134,22 +126,6 @@ public final class RemoteRepositoryFileReader implements RepositoryFileReader {
             return String.format(rawFileUrlTemplate, repositoryFilePath.substring(1));
         }
         return String.format(rawFileUrlTemplate, repositoryFilePath);
-    }
-
-    /**
-     * Construct the request properties for the provided authorization token
-     *
-     * @param authorizationPrefix the authorization request property prefix
-     * @param authorizationToken the authorization token
-     * @return the request properties
-     */
-    protected static Map<String, String> constructRequestProperties(final String authorizationPrefix, final String authorizationToken) {
-        val requestProperties = new HashMap<String, String>();
-        requestProperties.put("Accept", "text/plain");
-        if (StringUtils.isNotBlankOrEmpty(authorizationToken)) {
-            requestProperties.put("Authorization", authorizationPrefix + authorizationToken);
-        }
-        return requestProperties;
     }
 
 }
