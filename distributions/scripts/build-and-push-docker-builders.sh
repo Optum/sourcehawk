@@ -2,7 +2,7 @@
 
 ##############################################################################################################
 #
-# Push Docker Builders to Bintray
+# Push Docker Builders to Remote Registry
 #
 ##############################################################################################################
 
@@ -29,7 +29,7 @@ docker build -t $REGISTRY/$DOCKER_ORG/rpmbuild:fedora34 -f "$DOCKER_BUILDERS_DIR
 docker build -t $REGISTRY/$DOCKER_ORG/rpmbuild:fedora35 -f "$DOCKER_BUILDERS_DIR/Dockerfile-rpmbuild" --build-arg FROM=fedora:35 .
 
 # Login to Registry
-echo "${GIT_COMMITTER_TOKEN}" | docker login --username "${GIT_USERNAME}" --password-stdin $REGISTRY
+echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin $REGISTRY
 
 # Push All Builders to Remote Registry
 docker push $REGISTRY/nativeimage:graalvm-ce-21.3.0-java8
