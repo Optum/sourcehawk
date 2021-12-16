@@ -17,5 +17,5 @@ jobs:
         shell: bash
         run: ./distributions/scripts/build-and-push-docker-builders.sh
         env:
-          DOCKER_USERNAME: ${{ secrets.GIT_COMMITTER_TOKEN }}
-          DOCKER_PASSWORD: ${{ secrets.GIT_USERNAME }}
+          DOCKER_USERNAME: ${{ secrets.GIT_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.GIT_COMMITTER_TOKEN }}
