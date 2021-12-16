@@ -1,5 +1,5 @@
-ARG GRAALVM_VERSION=20.3.0-java8
-FROM optum-docker-builders.bintray.io/nativeimage:graalvm-ce-${GRAALVM_VERSION}
+ARG GRAALVM_VERSION=21.3.0-java8
+FROM ghcr.io/optum/sourcehawk-ci/nativeimage:graalvm-ce-${GRAALVM_VERSION}
 
 # Build Arguments
 ARG NAME

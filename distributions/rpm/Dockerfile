@@ -1,5 +1,5 @@
 ARG FROM_TAG=centos7
-FROM optum-docker-builders.bintray.io/rpmbuild:${FROM_TAG}
+FROM ghcr.io/optum/sourcehawk-ci/rpmbuild:${FROM_TAG}
 
 # Build Arguments
 ARG RPM_BUILD_DIRECTORY
