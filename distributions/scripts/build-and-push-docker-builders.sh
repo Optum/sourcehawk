@@ -32,12 +32,12 @@ docker build -t $REGISTRY/$DOCKER_ORG/rpmbuild:fedora35 -f "$DOCKER_BUILDERS_DIR
 echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin $REGISTRY
 
 # Push All Builders to Remote Registry
-docker push $REGISTRY/nativeimage:graalvm-ce-21.2.0-java8
-docker push $REGISTRY/nativeimage:graalvm-ce-21.3.0-java11
-docker push $REGISTRY/nativeimage:graalvm-ce-21.3.0-java17
-docker push $REGISTRY/rpmbuild:centos7
-docker push $REGISTRY/rpmbuild:centos8
-docker push $REGISTRY/rpmbuild:fedora32
-docker push $REGISTRY/rpmbuild:fedora33
-docker push $REGISTRY/rpmbuild:fedora34
-docker push $REGISTRY/rpmbuild:fedora35
+docker push $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.2.0-java8
+docker push $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.3.0-java11
+docker push $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.3.0-java17
+docker push $REGISTRY/$DOCKER_ORG/rpmbuild:centos7
+docker push $REGISTRY/$DOCKER_ORG/rpmbuild:centos8
+docker push $REGISTRY/$DOCKER_ORG/rpmbuild:fedora32
+docker push $REGISTRY/$DOCKER_ORG/rpmbuild:fedora33
+docker push $REGISTRY/$DOCKER_ORG/rpmbuild:fedora34
+docker push $REGISTRY/$DOCKER_ORG/rpmbuild:fedora35
