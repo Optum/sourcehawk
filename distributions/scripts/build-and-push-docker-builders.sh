@@ -16,9 +16,9 @@ DOCKER_ORG="optum/ci"
 REGISTRY="ghcr.io"
 
 # Native Image
-docker build -t $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.3.0-java8 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:21.3.0-java8 .
-docker build -t $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.3.0-java11 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:21.3.0-java11 .
-docker build -t $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.3.0-java17 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:21.3.0-java17 .
+docker build -t $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.2.0-java8 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:java8-21.2.0 .
+docker build -t $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.3.0-java11 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:java11-21.3.0 .
+docker build -t $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.3.0-java17 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:java17-21.3.0 .
 
 # RPM Build
 docker build -t $REGISTRY/$DOCKER_ORG/rpmbuild:centos7 -f "$DOCKER_BUILDERS_DIR/Dockerfile-rpmbuild" --build-arg FROM=centos:7 .
@@ -32,7 +32,7 @@ docker build -t $REGISTRY/$DOCKER_ORG/rpmbuild:fedora35 -f "$DOCKER_BUILDERS_DIR
 echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin $REGISTRY
 
 # Push All Builders to Remote Registry
-docker push $REGISTRY/nativeimage:graalvm-ce-21.3.0-java8
+docker push $REGISTRY/nativeimage:graalvm-ce-21.2.0-java8
 docker push $REGISTRY/nativeimage:graalvm-ce-21.3.0-java11
 docker push $REGISTRY/nativeimage:graalvm-ce-21.3.0-java17
 docker push $REGISTRY/rpmbuild:centos7

@@ -228,7 +228,7 @@ jobs:
       - name: Setup GraalVM
         uses: DeLaGuardo/setup-graalvm@master
         with:
-          graalvm-version: 21.3.0.java8
+          graalvm-version: 21.2.0.java8
       - name: Setup GraalVM Native Image Tool
         run: gu install native-image
       - name: Build Mac Native Image
