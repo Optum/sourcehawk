@@ -41,3 +41,6 @@ docker push $REGISTRY/$DOCKER_ORG/rpmbuild:fedora32
 docker push $REGISTRY/$DOCKER_ORG/rpmbuild:fedora33
 docker push $REGISTRY/$DOCKER_ORG/rpmbuild:fedora34
 docker push $REGISTRY/$DOCKER_ORG/rpmbuild:fedora35
+
+# Log out of registry
+docker logout $REGISTRY
