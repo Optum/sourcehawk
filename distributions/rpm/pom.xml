@@ -244,6 +244,23 @@
                             <skipDockerInfo>true</skipDockerInfo>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>build-and-tag-fedora-35</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>build</goal>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <repository>${project.artifactId}-builder-fedora-35</repository>
+                            <tag>${project.version}</tag>
+                            <buildArgs>
+                                <FROM_TAG>fedora35</FROM_TAG>
+                                <RPM_FILE>/tmp/${rpm.package}-fedora-35.rpm</RPM_FILE>
+                            </buildArgs>
+                            <skipDockerInfo>true</skipDockerInfo>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -342,6 +359,21 @@
                             </arguments>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>extract-fedora-35-package</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${project.parent.basedir}/scripts/extract-file-from-docker-container.sh</executable>
+                            <arguments>
+                                <argument>${project.artifactId}-builder-fedora-35:${project.version}</argument>
+                                <argument>/tmp/${rpm.package}-fedora-35.rpm</argument>
+                                <argument>${project.build.directory}</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
 
@@ -394,6 +426,11 @@
                                 <artifact>
                                     <file>${project.build.directory}/${rpm.package}-fedora-34.rpm</file>
                                     <classifier>fc34.${rpm.package.architecture}</classifier>
+                                    <type>rpm</type>
+                                </artifact>
+                                <artifact>
+                                    <file>${project.build.directory}/${rpm.package}-fedora-35.rpm</file>
+                                    <classifier>fc35.${rpm.package.architecture}</classifier>
                                     <type>rpm</type>
                                 </artifact>
                             </artifacts>
@@ -532,6 +569,21 @@
                                         <PACKAGE_FILE_PATH>${project.build.directory}/${rpm.package}-fedora-34.rpm</PACKAGE_FILE_PATH>
                                         <BINTRAY_REPOSITORY>fedora</BINTRAY_REPOSITORY>
                                         <BINTRAY_DISTRIBUTION>fc34</BINTRAY_DISTRIBUTION>
+                                    </environmentVariables>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>publish-fedora-35-package</id>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <phase>deploy</phase>
+                                <configuration>
+                                    <executable>${project.basedir}/scripts/publish-package-version-to-bintray.sh</executable>
+                                    <environmentVariables combine.children="append">
+                                        <PACKAGE_FILE_PATH>${project.build.directory}/${rpm.package}-fedora-35.rpm</PACKAGE_FILE_PATH>
+                                        <BINTRAY_REPOSITORY>fedora</BINTRAY_REPOSITORY>
+                                        <BINTRAY_DISTRIBUTION>fc35</BINTRAY_DISTRIBUTION>
                                     </environmentVariables>
                                 </configuration>
                             </execution>

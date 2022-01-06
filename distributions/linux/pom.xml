@@ -236,7 +236,7 @@
                 <jdk>8</jdk>
             </activation>
             <properties>
-                <graalvm.version>20.3.0-java8</graalvm.version>
+                <graalvm.version>21.3.0-java8</graalvm.version>
             </properties>
         </profile>
 
@@ -247,7 +247,18 @@
                 <jdk>11</jdk>
             </activation>
             <properties>
-                <graalvm.version>20.3.0-java11</graalvm.version>
+                <graalvm.version>21.3.0-java11</graalvm.version>
+            </properties>
+        </profile>
+
+        <!-- JAVA 17 NATIVE IMAGE BUILD -->
+        <profile>
+            <id>native-image-build-java17</id>
+            <activation>
+                <jdk>11</jdk>
+            </activation>
+            <properties>
+                <graalvm.version>21.3.0-java17</graalvm.version>
             </properties>
         </profile>
 
