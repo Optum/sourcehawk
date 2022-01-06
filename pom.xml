@@ -28,7 +28,7 @@
         <jacoco.coverage.minimum>0.97</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->
 
         <!-- Versions -->
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.32</slf4j.version>
 
         <!-- Sonar Configurations -->
         <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
@@ -120,7 +120,7 @@
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>4.13.1</version>
+                <version>4.13.2</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
