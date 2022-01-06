@@ -390,7 +390,7 @@ https://opensource.org/licenses/BSD-2-Clause
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: org.spockframework:spock-core:2.0-M3-groovy-3.0
+Package: org.spockframework:spock-core:2.0-groovy-3.0
 
 License: Apache-2.0
 
@@ -1847,7 +1847,7 @@ limitations under the License.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: org.codehaus.groovy:groovy:3.0.4
+Package: org.codehaus.groovy:groovy:3.0.9
 
 License: Apache-2.0
 
