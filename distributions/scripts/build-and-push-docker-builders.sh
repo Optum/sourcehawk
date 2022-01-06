@@ -15,6 +15,9 @@ DOCKER_BUILDERS_DIR="$ROOT_DIR/distributions/docker-builders"
 DOCKER_ORG="optum/ci"
 REGISTRY="ghcr.io"
 
+# Login to Registry
+echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin $REGISTRY
+
 # Native Image
 docker build -t $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.2.0-java8 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:java8-21.2.0 .
 docker build -t $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.3.0-java11 -f "$DOCKER_BUILDERS_DIR/Dockerfile-nativeimage" --build-arg FROM=ghcr.io/graalvm/graalvm-ce:java11-21.3.0 .
@@ -27,9 +30,6 @@ docker build -t $REGISTRY/$DOCKER_ORG/rpmbuild:fedora32 -f "$DOCKER_BUILDERS_DIR
 docker build -t $REGISTRY/$DOCKER_ORG/rpmbuild:fedora33 -f "$DOCKER_BUILDERS_DIR/Dockerfile-rpmbuild" --build-arg FROM=fedora:33 .
 docker build -t $REGISTRY/$DOCKER_ORG/rpmbuild:fedora34 -f "$DOCKER_BUILDERS_DIR/Dockerfile-rpmbuild" --build-arg FROM=fedora:34 .
 docker build -t $REGISTRY/$DOCKER_ORG/rpmbuild:fedora35 -f "$DOCKER_BUILDERS_DIR/Dockerfile-rpmbuild" --build-arg FROM=fedora:35 .
-
-# Login to Registry
-echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin $REGISTRY
 
 # Push All Builders to Remote Registry
 docker push $REGISTRY/$DOCKER_ORG/nativeimage:graalvm-ce-21.2.0-java8
