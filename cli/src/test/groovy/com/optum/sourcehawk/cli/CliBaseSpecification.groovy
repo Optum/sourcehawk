@@ -31,7 +31,7 @@ class CliBaseSpecification extends Specification {
     }
 
     def cleanupSpec() {
-        System.setSecurityManager(defaultSecurityManager)
+        System.setSecurityManager(defaultSecurityManager) // TODO: Deprecated starting in JDK 17
     }
 
     protected void createParentDirectories(final File child) {

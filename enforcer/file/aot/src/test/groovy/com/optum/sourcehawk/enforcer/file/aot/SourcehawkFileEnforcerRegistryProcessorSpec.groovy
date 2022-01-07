@@ -154,7 +154,9 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         1 * mockProcessingEnvironment.getFiler() >> mockFiler
         1 * mockFiler.createSourceFile("com.optum.sourcehawk.enforcer.file.FileEnforcerRegistry", []) >> null
         1 * mockProcessingEnvironment.getMessager() >> mockMessager
-        1 * mockMessager.printMessage(Diagnostic.Kind.ERROR, 'Unable to generate file enforcer registry: java.lang.NullPointerException')
+        1 * mockMessager.printMessage(Diagnostic.Kind.ERROR, _ as String) >> { kind, msg ->
+            msg == 'Unable to generate file enforcer registry: java.lang.NullPointerException'
+        }
         0 * _
 
         and:

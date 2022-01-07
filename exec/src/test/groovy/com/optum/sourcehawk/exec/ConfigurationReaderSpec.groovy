@@ -2,7 +2,6 @@ package com.optum.sourcehawk.exec
 
 import com.optum.sourcehawk.core.configuration.SourcehawkConfiguration
 import org.spockframework.util.IoUtil
-import sun.nio.ch.ChannelInputStream
 
 class ConfigurationReaderSpec extends FileBaseSpecification {
 
@@ -38,7 +37,7 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
         InputStream inputStream = ConfigurationReader.obtainInputStream(repositoryRoot, configurationFileLocation).get()
 
         then:
-        inputStream instanceof ChannelInputStream
+        inputStream.class.name == 'sun.nio.ch.ChannelInputStream'
     }
 
     def "obtainInputStream - relative file"() {
@@ -50,7 +49,7 @@ class ConfigurationReaderSpec extends FileBaseSpecification {
 
         then:
         inputStream
-        inputStream instanceof ChannelInputStream
+        inputStream.class.name == 'sun.nio.ch.ChannelInputStream'
     }
 
     def "merge"() {
