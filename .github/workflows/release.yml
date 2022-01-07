@@ -41,8 +41,8 @@ jobs:
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          username: ${{ secrets.GIT_USERNAME }}
+          password: ${{ secrets.GIT_PACKAGE_TOKEN }}
       - name: Set Maven Project Version
         id: set_maven_project_version
         shell: bash
