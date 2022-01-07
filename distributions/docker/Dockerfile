@@ -1,5 +1,5 @@
 # glibc is required for proper DNS resolution within app
-FROM busybox:1.32.0-glibc
+FROM busybox:1.35.0-glibc
 
 # Dynamically pass in name
 ARG NAME="sourcehawk"

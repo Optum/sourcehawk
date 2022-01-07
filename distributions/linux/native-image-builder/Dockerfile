@@ -15,6 +15,6 @@ WORKDIR ${WORKDIR}
 # Build the native image
 RUN native-image -cp native-image.jar \
     -H:+ReportExceptionStackTraces \
-    -H:+StaticExecutableWithDynamicLibC \
     --report-unsupported-elements-at-runtime \
-    --no-fallback
+    --no-fallback \
+    --static
