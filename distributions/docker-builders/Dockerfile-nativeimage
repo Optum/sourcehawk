@@ -6,11 +6,11 @@ FROM ghcr.io/graalvm/graalvm-ce:${FROM_VERSION}
 RUN gu install --no-progress native-image
 
 # Install musl libc
-RUN curl -L -o x86_64-linux-musl-native.tgz http://musl.cc/x86_64-linux-musl-native.tgz \
-  && tar -xvf x86_64-linux-musl-native.tgz -C /opt \
+RUN curl -ksL -o x86_64-linux-musl-native.tgz http://musl.cc/x86_64-linux-musl-native.tgz \
+  && tar -xf x86_64-linux-musl-native.tgz -C /opt \
   && export CC=/opt/x86_64-linux-musl-native/bin/gcc \
-  && curl -kL -o zlib.tar.gz https://zlib.net/zlib-1.2.11.tar.gz \
-  && tar -xvf zlib.tar.gz \
+  && curl -ksL -o zlib.tar.gz https://zlib.net/zlib-1.2.11.tar.gz \
+  && tar -xf zlib.tar.gz \
   && cd zlib-1.2.11 \
   && ./configure --prefix=/opt/x86_64-linux-musl-native --static \
   && make \

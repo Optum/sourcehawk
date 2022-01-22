@@ -10,7 +10,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - name: Git Checkout
+        uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.ref }}
       - name: Set up Docker Buildx
@@ -37,6 +38,7 @@ jobs:
           file: distributions/docker-builders/Dockerfile-nativeimage
           build-args: FROM_VERSION=java11-21.3.0
           tags: ghcr.io/optum/ci/nativeimage:graalvm-ce-21.3.0-java11
+          push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       - name: Build and Push graalvm-ce-21.3.0-java17
@@ -47,6 +49,7 @@ jobs:
           file: distributions/docker-builders/Dockerfile-nativeimage
           build-args: FROM_VERSION=java17-21.3.0
           tags: ghcr.io/optum/ci/nativeimage:graalvm-ce-21.3.0-java17
+          push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       - name: Build and Push rpmbuild centos7
@@ -57,6 +60,7 @@ jobs:
           file: distributions/docker-builders/Dockerfile-rpmbuild
           build-args: FROM=centos:7
           tags: ghcr.io/optum/ci/rpmbuild:centos7
+          push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       - name: Build and Push rpmbuild centos8
@@ -67,6 +71,7 @@ jobs:
           file: distributions/docker-builders/Dockerfile-rpmbuild
           build-args: FROM=centos:8
           tags: ghcr.io/optum/ci/rpmbuild:centos8
+          push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       - name: Build and Push rpmbuild fedora33
@@ -77,6 +82,7 @@ jobs:
           file: distributions/docker-builders/Dockerfile-rpmbuild
           build-args: FROM=fedora:33
           tags: ghcr.io/optum/ci/rpmbuild:fedora33
+          push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       - name: Build and Push rpmbuild fedora34
@@ -87,6 +93,7 @@ jobs:
           file: distributions/docker-builders/Dockerfile-rpmbuild
           build-args: FROM=fedora:34
           tags: ghcr.io/optum/ci/rpmbuild:fedora34
+          push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       - name: Build and Push rpmbuild fedora35
@@ -97,6 +104,7 @@ jobs:
           file: distributions/docker-builders/Dockerfile-rpmbuild
           build-args: FROM=fedora:35
           tags: ghcr.io/optum/ci/rpmbuild:fedora35
+          push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
       - name: Relocate Docker Layer Cache
