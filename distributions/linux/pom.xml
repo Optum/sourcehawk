@@ -193,12 +193,55 @@
 
     <profiles>
 
+        <!-- Windows profile -->
+        <profile>
+            <id>windows</id>
+            <activation>
+                <os>
+                    <family>windows</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
+        <!-- MacOS profile -->
+        <profile>
+            <id>mac</id>
+            <activation>
+                <os>
+                    <family>mac</family>
+                </os>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-failsafe-plugin</artifactId>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+
         <!-- LINUX INTEGRATION TESTS -->
         <profile>
             <id>linux-integration-tests</id>
             <activation>
                 <os>
                     <family>unix</family>
+                    <name>Linux</name>
                 </os>
             </activation>
             <build>
@@ -229,17 +272,6 @@
             </build>
         </profile>
 
-        <!-- JAVA 8 NATIVE IMAGE BUILD -->
-        <profile>
-            <id>native-image-build-java8</id>
-            <activation>
-                <jdk>8</jdk>
-            </activation>
-            <properties>
-                <graalvm.version>21.2.0-java8</graalvm.version>
-            </properties>
-        </profile>
-
         <!-- JAVA 11 NATIVE IMAGE BUILD -->
         <profile>
             <id>native-image-build-java11</id>
@@ -255,7 +287,7 @@
         <profile>
             <id>native-image-build-java17</id>
             <activation>
-                <jdk>11</jdk>
+                <jdk>17</jdk>
             </activation>
             <properties>
                 <graalvm.version>21.3.0-java17</graalvm.version>

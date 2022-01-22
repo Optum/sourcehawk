@@ -43,7 +43,7 @@ abstract class AbstractRemoteScanCommand implements Callable<Integer> {
      */
     @Override
     public Integer call() {
-        val parentExecOptions = parentCommand.buildExecOptions();
+        val parentExecOptions = parentCommand.buildExecOptions(); // TODO: NPE ??
         val execOptionsBuilder = parentExecOptions.toBuilder();
         val configFileProvided = Optional.ofNullable(parentCommand.spec)
                 .map(CommandLine.Model.CommandSpec::commandLine)

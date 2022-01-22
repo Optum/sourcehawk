@@ -1,23 +1,17 @@
-# glibc is required for proper DNS resolution within app
-FROM busybox:1.35.0-glibc
+FROM scratch
 
-# Dynamically pass in name
 ARG NAME="sourcehawk"
 
-# Setup user and group
-ENV GROUP=${NAME} USER=${NAME}
-RUN addgroup ${GROUP} && adduser -h /home/${USER} -G ${NAME} -D ${USER}
+# Copy Group and User Files
+COPY "/etc" "/etc"
 
 # Copy the native image executable into the image
-ARG NATIVE_IMAGE_PATH
-COPY --chown=${GROUP}:${USER} ${NATIVE_IMAGE_PATH} /usr/bin/sourcehawk
-
-# Give the native image executable permissions
-RUN chmod +x /usr/bin/${NAME}
+COPY --chown="${NAME}":"${NAME}" "target/native-image" "/entrypoint"
 
 # Set the user and working directory
-USER ${USER}
-WORKDIR /home/${USER}
+USER "${NAME}"
+WORKDIR "/work"
 
 # Set the native image as the entrypoint
-ENTRYPOINT ["/usr/bin/sourcehawk"]
+CMD ["--help"]
+ENTRYPOINT ["/entrypoint"]

@@ -31,7 +31,7 @@
         <sonar.cpd.exclusions>**/picocli/**/*.*</sonar.cpd.exclusions>
 
         <!-- PICOCLI VERSION -->
-        <picocli.version>4.6.1</picocli.version>
+        <picocli.version>4.6.2</picocli.version>
 
     </properties>
 

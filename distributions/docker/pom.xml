@@ -61,6 +61,30 @@
                 </executions>
             </plugin>
 
+            <!-- EXEC PROCESSORS AND SCRIPTS -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+
+                    <!-- MAKE NATIVE IMAGE EXECUTABLE -->
+                    <execution>
+                        <id>update-native-image-permissions</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>chmod</executable>
+                            <arguments>
+                                <argument>+x</argument>
+                                <argument>target/native-image</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- BUILD DOCKER IMAGE -->
             <plugin>
                 <groupId>com.spotify</groupId>
@@ -76,10 +100,6 @@
                         <configuration>
                             <repository>${docker.repository}</repository>
                             <tag>${docker.tag}</tag>
-                            <buildArgs>
-                                <NAME>${global.project.name}</NAME>
-                                <NATIVE_IMAGE_PATH>target/native-image</NATIVE_IMAGE_PATH>
-                            </buildArgs>
                             <skipDockerInfo>true</skipDockerInfo>
                         </configuration>
                     </execution>
@@ -103,6 +123,7 @@
                             <executable>docker</executable>
                             <arguments>
                                 <argument>run</argument>
+                                <argument>--rm</argument>
                                 <argument>${docker.repository}:${docker.tag}</argument>
                                 <argument>--version</argument>
                             </arguments>
@@ -119,6 +140,7 @@
                             <workingDirectory>${maven.multiModuleProjectDirectory}</workingDirectory>
                             <arguments>
                                 <argument>run</argument>
+                                <argument>--rm</argument>
                                 <argument>-v</argument>
                                 <argument>${maven.multiModuleProjectDirectory}:/home/sourcehawk</argument>
                                 <argument>${docker.repository}:${docker.tag}</argument>

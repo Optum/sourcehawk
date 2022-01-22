@@ -22,7 +22,7 @@ import java.util.Properties;
         headerHeading = "@|fg(magenta) >_ S O U R C E H A W K|@",
         synopsisHeading = "%n",
         commandListHeading ="%nCommands:%n",
-        footer = "Copyright (c) 2020 Optum",
+        footer = "Copyright (c) 2022 Optum",
         versionProvider = Sourcehawk.VersionProvider.class,
         subcommands = {
                 CommandLine.HelpCommand.class,

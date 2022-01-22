@@ -2230,7 +2230,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: info.picocli:4.6.1
+Package: info.picocli:4.6.2
 
 License: Apache-2.0
 

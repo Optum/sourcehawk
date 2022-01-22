@@ -4,3 +4,16 @@ FROM ${FROM}
 
 # Install native-image tool
 RUN gu install --no-progress native-image
+
+# Install musl
+RUN curl -L -o x86_64-linux-musl-native.tgz http://musl.cc/x86_64-linux-musl-native.tgz \
+  && tar -xvf x86_64-linux-musl-native.tgz -C /usr/local/bin \
+  && export CC=/usr/local/bin/x86_64-linux-musl-native/bin/gcc \
+  && curl -kL -o zlib-1.2.11.tar.gz https://zlib.net/zlib-1.2.11.tar.gz \
+  && tar -xvf zlib-1.2.11.tar.gz \
+  && cd zlib-1.2.11 \
+  && ./configure --prefix=${WORKDIR}/x86_64-linux-musl-native --static \
+  && make \
+  && make install
+
+ENV PATH="${PATH}:${WORKDIR}/x86_64-linux-musl-native/bin"

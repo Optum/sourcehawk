@@ -149,6 +149,17 @@ jobs:
           asset_path: ./distributions/debian/target/sourcehawk-ubuntu-focal.deb
           asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-ubuntu-focal-amd64.deb
           asset_content_type: application/octet-stream
+      - name: Upload Sourcehawk Centos 7 RPM Package
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./distributions/rpm/target/sourcehawk-centos-7.rpm
+          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.el7.x86_64.rpm
+          asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Centos 8 RPM Package
         if: success()
         continue-on-error: true
@@ -159,6 +170,28 @@ jobs:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-centos-8.rpm
           asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.el8.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - name: Upload Sourcehawk Fedora 33 RPM Package
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./distributions/rpm/target/sourcehawk-fedora-33.rpm
+          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc33.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - name: Upload Sourcehawk Fedora 34 RPM Package
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./distributions/rpm/target/sourcehawk-fedora-34.rpm
+          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc34.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Fedora 35 RPM Package
         if: success()
