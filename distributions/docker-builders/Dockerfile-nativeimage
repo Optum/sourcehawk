@@ -1,17 +1,20 @@
-# Oracle GraalVM Java 8 Base Container
-ARG FROM=ghcr.io/graalvm/graalvm-ce:java11-21.3.0
-FROM ${FROM}
+# GraalVM Community Edition Base Container
+ARG FROM_VERSION=java11-21.3.0
+FROM ghcr.io/graalvm/graalvm-ce:${FROM_VERSION}
 
 # Install native-image tool
 RUN gu install --no-progress native-image
 
 # Install musl libc
 RUN curl -L -o x86_64-linux-musl-native.tgz http://musl.cc/x86_64-linux-musl-native.tgz \
-  && tar -xvf x86_64-linux-musl-native.tgz -C /usr/local/bin \
-  && export CC=/usr/local/bin/x86_64-linux-musl-native/bin/gcc \
-  && curl -kL -o zlib-1.2.11.tar.gz https://zlib.net/zlib-1.2.11.tar.gz \
-  && tar -xvf zlib-1.2.11.tar.gz \
+  && tar -xvf x86_64-linux-musl-native.tgz -C /opt \
+  && export CC=/opt/x86_64-linux-musl-native/bin/gcc \
+  && curl -kL -o zlib.tar.gz https://zlib.net/zlib-1.2.11.tar.gz \
+  && tar -xvf zlib.tar.gz \
   && cd zlib-1.2.11 \
-  && ./configure --prefix=/usr/local/bin/x86_64-linux-musl-native --static \
+  && ./configure --prefix=/opt/x86_64-linux-musl-native --static \
   && make \
   && make install
+
+# Update PATH Environment Variable
+ENV PATH="$PATH:/opt/x86_64-linux-musl-native/bin"

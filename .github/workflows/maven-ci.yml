@@ -61,12 +61,6 @@ jobs:
           server-password: SONATYPE_PASSWORD
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
           gpg-passphrase: SONATYPE_GPG_PASSPHRASE
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ secrets.GIT_USERNAME }}
-          password: ${{ secrets.GIT_PACKAGE_TOKEN }}
       - name: Set Maven Project Version
         shell: bash
         run: |
