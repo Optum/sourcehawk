@@ -282,7 +282,7 @@
 
         <!-- JAVA 8 NATIVE IMAGE BUILD (DISABLED) -->
         <profile>
-            <id>native-image-build-java11</id>
+            <id>java8</id>
             <activation>
                 <jdk>8</jdk>
             </activation>
@@ -293,7 +293,7 @@
 
         <!-- JAVA 11 NATIVE IMAGE BUILD -->
         <profile>
-            <id>native-image-build-java11</id>
+            <id>java11</id>
             <activation>
                 <jdk>11</jdk>
             </activation>
@@ -304,7 +304,7 @@
 
         <!-- JAVA 17 NATIVE IMAGE BUILD -->
         <profile>
-            <id>native-image-build-java17</id>
+            <id>java17</id>
             <activation>
                 <jdk>17</jdk>
             </activation>
