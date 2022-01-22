@@ -130,24 +130,20 @@ jobs:
           path: build
       - uses: actions/download-artifact@v2
         with:
-          name: bash-completion-script-8
+          name: bash-completion-script-11
           path: build
       - uses: actions/download-artifact@v2
         with:
-          name: manpages-8
+          name: manpages-11
           path: build
       - name: Rename Native Image JAR
         working-directory: build
         run: mv *.jar native-image.jar
-      - name: Setup Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 8
       - name: Setup GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '21.2.0'
-          java-version: '8'
+          version: '21.3.0'
+          java-version: '11'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Mac Native Image

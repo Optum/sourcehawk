@@ -247,7 +247,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: native-image
+          name: native-image-java11
           path: build
       - uses: actions/download-artifact@v2
         with:
@@ -263,12 +263,12 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: 8
+          java-version: 11
       - name: Setup GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
-          version: '21.2.0'
-          java-version: '8'
+          version: '21.3.0'
+          java-version: '11'
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Mac Native Image
