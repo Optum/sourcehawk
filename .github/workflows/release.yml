@@ -237,7 +237,7 @@ jobs:
           path: cli/target/*-native-image.jar
   build-mac-native-image:
     runs-on: macos-latest
-    needs: build
+    needs: build-11
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -284,9 +284,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          upload_url: ${{ needs.build-11.outputs.RELEASE_ASSET_UPLOAD_URL }}
           asset_path: build/sourcehawk
-          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64
+          asset_name: sourcehawk-${{ needs.build-11.outputs.RELEASE_VERSION }}-darwin-x86_64
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Mac Homebrew Tap Formula Archive
         id: upload_homebrew_tap_formula_archive
@@ -296,25 +296,25 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          upload_url: ${{ needs.build-11.outputs.RELEASE_ASSET_UPLOAD_URL }}
           asset_path: build/sourcehawk-homebrew-tap-formula.tar.gz
-          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
+          asset_name: sourcehawk-${{ needs.build-11.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
           asset_content_type: application/octet-stream
       - name: Update Optum Homebrew Tap Formula
         uses: mislav/bump-homebrew-formula-action@v1.10
         continue-on-error: true
         with:
           formula-name: sourcehawk
-          tag-name: ${{ needs.build.outputs.RELEASE_VERSION }}
+          tag-name: ${{ needs.build-11.outputs.RELEASE_VERSION }}
           homebrew-tap: optum/homebrew-tap
           base-branch: main
           download-url: ${{ steps.upload_homebrew_tap_formula_archive.outputs.browser_download_url }}
-          commit-message: Updating sourcehawk formula to latest release version ${{ needs.build.outputs.RELEASE_VERSION }}
+          commit-message: Updating sourcehawk formula to latest release version ${{ needs.build-11.outputs.RELEASE_VERSION }}
         env:
           COMMITTER_TOKEN: ${{ secrets.GIT_COMMITTER_TOKEN }}
   build-windows-native-image:
     runs-on: windows-latest
-    needs: [build, build-java11]
+    needs: build-java11
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -344,7 +344,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          upload_url: ${{ needs.build-11.outputs.RELEASE_ASSET_UPLOAD_URL }}
           asset_path: sourcehawk.exe
-          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-windows-x86_64.exe
+          asset_name: sourcehawk-${{ needs.build-java11.outputs.RELEASE_VERSION }}-windows-x86_64.exe
           asset_content_type: application/octet-stream

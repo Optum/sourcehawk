@@ -23,7 +23,7 @@
         <docker.workdir>/home/${global.project.name}</docker.workdir>
         <docker.build.executable>${docker.workdir}/${global.project.name}</docker.build.executable>
         <native.image>${project.build.directory}/${global.project.name}</native.image>
-        <native.image.build.skip>false</native.image.build.skip>
+        <native.image.build.skip/> <!-- Defined in jdk specific profile -->
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
@@ -299,6 +299,7 @@
             </activation>
             <properties>
                 <graalvm.version>21.3.0-java11</graalvm.version>
+                <native.image.build.skip>false</native.image.build.skip>
             </properties>
         </profile>
 
@@ -310,6 +311,7 @@
             </activation>
             <properties>
                 <graalvm.version>21.3.0-java17</graalvm.version>
+                <native.image.build.skip>false</native.image.build.skip>
             </properties>
         </profile>
 

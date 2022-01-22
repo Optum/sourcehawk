@@ -116,7 +116,7 @@ jobs:
           report_paths: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
   build-mac-native-image:
     runs-on: macos-latest
-    needs: build
+    needs: build-11
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -168,7 +168,7 @@ jobs:
         run: ./sourcehawk help
   build-windows-native-image:
     runs-on: windows-latest
-    needs: build
+    needs: build-11
     steps:
       - uses: actions/download-artifact@v2
         with:

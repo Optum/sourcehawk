@@ -28,7 +28,7 @@ curl -ksf "$LICENSE_URL" > "$LICENSE_FILE_PATH"
 curl -ksf "$SOURCE_URL" > "$SOURCE_FILE_PATH"
 
 # Add some warning suppression to the java source file
-sed -i.bak -e 's/public\sclass\sCommandLine/@SuppressWarnings({"rawtypes", "deprecation" })\npublic class CommandLine/g' \
+sed -i.bak -e 's/public class CommandLine/@SuppressWarnings({"rawtypes", "deprecation" })\npublic class CommandLine/g' \
   -e 's/TODO/TIDO/g' "$SOURCE_FILE_PATH" \
   && rm -rf "$SOURCE_FILE_PATH.bak"
 

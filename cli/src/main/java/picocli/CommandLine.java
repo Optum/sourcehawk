@@ -142,6 +142,7 @@ import static picocli.CommandLine.Help.Column.Overflow.WRAP;
  * <img src="doc-files/class-diagram-parsing.png" alt="Classes Related to Parsing Command Line Arguments">
  * </p>
  */
+@SuppressWarnings({"rawtypes", "deprecation" })
 public class CommandLine {
 
     /** This is picocli version {@value}. */
