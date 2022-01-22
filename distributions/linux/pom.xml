@@ -23,6 +23,7 @@
         <docker.workdir>/home/${global.project.name}</docker.workdir>
         <docker.build.executable>${docker.workdir}/${global.project.name}</docker.build.executable>
         <native.image>${project.build.directory}/${global.project.name}</native.image>
+        <native.image.build.skip>false</native.image.build.skip>
         <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
@@ -57,6 +58,7 @@
                             <goal>copy-resources</goal>
                         </goals>
                         <configuration>
+                            <skip>${native.image.build.skip}</skip>
                             <resources>
                                 <resource>
                                     <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
@@ -82,6 +84,7 @@
                             <goal>copy-dependencies</goal>
                         </goals>
                         <configuration>
+                            <skip>${native.image.build.skip}</skip>
                             <includeGroupIds>com.optum.sourcehawk</includeGroupIds>
                             <includeArtifactIds>sourcehawk-cli</includeArtifactIds>
                             <includeClassifiers>native-image</includeClassifiers>
@@ -95,6 +98,7 @@
                             <goal>copy</goal>
                         </goals>
                         <configuration>
+                            <skip>${native.image.build.skip}</skip>
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>com.optum.sourcehawk</groupId>
@@ -123,6 +127,7 @@
                             <goal>tag</goal>
                         </goals>
                         <configuration>
+                            <skip>${native.image.build.skip}</skip>
                             <dockerfile>${basedir}/native-image-builder/Dockerfile</dockerfile>
                             <repository>${docker.image}</repository>
                             <tag>${project.version}</tag>
@@ -152,6 +157,7 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
+                            <skip>${native.image.build.skip}</skip>
                             <executable>../scripts/extract-file-from-docker-container.sh</executable>
                             <arguments>
                                 <argument>${docker.image}:${project.version}</argument>
@@ -176,6 +182,7 @@
                         </goals>
                         <phase>post-integration-test</phase>
                         <configuration>
+                            <skipAttach>${native.image.build.skip}</skipAttach>
                             <artifacts>
                                 <artifact>
                                     <file>${native.image}</file>
@@ -259,6 +266,7 @@
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
+                                    <skip>${native.image.build.skip}</skip>
                                     <executable>${native.image}</executable>
                                     <arguments>
                                         <argument>--version</argument>
@@ -270,6 +278,17 @@
                     </plugin>
                 </plugins>
             </build>
+        </profile>
+
+        <!-- JAVA 8 NATIVE IMAGE BUILD (DISABLED) -->
+        <profile>
+            <id>native-image-build-java11</id>
+            <activation>
+                <jdk>8</jdk>
+            </activation>
+            <properties>
+                <native.image.build.skip>true</native.image.build.skip>
+            </properties>
         </profile>
 
         <!-- JAVA 11 NATIVE IMAGE BUILD -->
