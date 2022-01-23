@@ -69,11 +69,4 @@
         </pluginManagement>
     </build>
 
-    <modules>
-        <module>linux</module>
-        <module>debian</module>
-        <module>rpm</module>
-        <module>docker</module>
-    </modules>
-
 </project>
