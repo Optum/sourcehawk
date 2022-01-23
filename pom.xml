@@ -213,7 +213,7 @@
         <profile>
             <id>distributions-build</id>
             <activation>
-                <jdk>!1.8</jdk>
+                <jdk>11</jdk>
                 <property>
                     <name>ci.build</name>
                 </property>
