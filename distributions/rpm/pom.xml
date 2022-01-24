@@ -20,9 +20,10 @@
     <properties>
         <rpm.package>${bintray.package}</rpm.package>
         <rpm.package.version>${project.version}</rpm.package.version>
-        <rpm.package.release>a.${git.commit.time}~${git.commit.id.abbrev}</rpm.package.release> <!-- Default for SNAPSHOT builds -->
+        <rpm.package.release/> <!-- Set by plugin dynamically - default for SNAPSHOT builds -->
         <rpm.package.architecture>x86_64</rpm.package.architecture>
         <rpm.build.directory>${project.build.directory}/rpmbuild</rpm.build.directory>
+        <git.commit.id/>
     </properties>
 
     <dependencies>
@@ -51,8 +52,27 @@
 
             <!-- RESOLVE GIT COMMIT INFORMATION -->
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>save-git-information</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <scripts>
+                                <script>
+                                    def command = "git log -1 --date=format:'%Y%m%d%H%M%S' --pretty=format:'a.%ad~%h'"
+                                    def process = command.execute()
+                                    process.waitFor()
+                                    project.properties.setProperty('rpm.package.release', process.in.text.trim())
+                                </script>
+                            </scripts>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- FILTER RESOURCES TO INJECT MAVEN PROPERTIES INTO PLACEHOLDERS -->

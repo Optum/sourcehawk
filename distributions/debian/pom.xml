@@ -21,7 +21,7 @@
         <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
         <debian.package>${bintray.package}</debian.package>
         <debian.package.version>${project.version}</debian.package.version>
-        <debian.package.version.suffix>~${git.commit.time}+${git.commit.id.abbrev}</debian.package.version.suffix>
+        <debian.package.version.suffix/> <!-- Set dynamically by plugin -->
         <debian.architecture>amd64</debian.architecture>
     </properties>
 
@@ -49,15 +49,27 @@
 
             <!-- RESOLVE GIT COMMIT INFORMATION -->
             <plugin>
-                <groupId>pl.project13.maven</groupId>
-                <artifactId>git-commit-id-plugin</artifactId>
-                <configuration>
-                    <dateFormat>${maven.build.timestamp.format}</dateFormat>
-                    <dotGitDirectory>${maven.multiModuleProjectDirectory}/.git</dotGitDirectory>
-                    <skipPoms>false</skipPoms>
-                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                    <generateGitPropertiesFilename>${project.build.directory}/git.properties</generateGitPropertiesFilename>
-                </configuration>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>save-git-information</id>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                        <configuration>
+                            <scripts>
+                                <script>
+                                    def command = "git log -1 --date=format:'%Y%m%d%H%M%S' --pretty=format:'~%ad+%h'"
+                                    def process = command.execute()
+                                    process.waitFor()
+                                    project.properties.setProperty('debian.package.version.suffix', process.in.text.trim())
+                                </script>
+                            </scripts>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
 
             <!-- FILTER RESOURCES TO INJECT MAVEN PROPERTIES INTO PLACEHOLDERS -->

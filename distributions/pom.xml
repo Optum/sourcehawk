@@ -37,17 +37,6 @@
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>pl.project13.maven</groupId>
-                    <artifactId>git-commit-id-plugin</artifactId>
-                    <configuration>
-                        <dateFormat>${maven.build.timestamp.format}</dateFormat>
-                        <dotGitDirectory>${maven.multiModuleProjectDirectory}/.git</dotGitDirectory>
-                        <skipPoms>false</skipPoms>
-                        <generateGitPropertiesFile>true</generateGitPropertiesFile>
-                        <generateGitPropertiesFilename>${project.build.directory}/git.properties</generateGitPropertiesFilename>
-                    </configuration>
-                </plugin>
-                <plugin>
                     <artifactId>maven-enforcer-plugin</artifactId>
                     <executions>
                         <execution>

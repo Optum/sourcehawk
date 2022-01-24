@@ -82,19 +82,19 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: native-image-11
+          name: native-image
           path: cli/target/*-native-image.jar
       - name: Archive Bash Completion Script
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: bash-completion-script-11
+          name: bash-completion-script
           path: cli/target/sourcehawk-bash-completion.sh
       - name: Archive Manpages
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: manpages-11
+          name: manpages
           path: gh-pages/manpages/sourcehawk*.1
       - name: Aggregate Coverage Reports
         id: aggregate_coverage_reports
@@ -235,7 +235,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: native-image-java11
+          name: native-image
           path: build
       - uses: actions/download-artifact@v2
         with:
@@ -303,7 +303,10 @@ jobs:
           homebrew-tap: optum/homebrew-tap
           base-branch: main
           download-url: ${{ steps.upload_homebrew_tap_formula_archive.outputs.browser_download_url }}
-          commit-message: Updating sourcehawk formula to latest release version ${{ needs.build.outputs.RELEASE_VERSION }}
+          commit-message: |
+            Sourcehawk ${{ needs.build.outputs.RELEASE_VERSION }}
+            
+            Updating sourcehawk formula to latest release version
         env:
           COMMITTER_TOKEN: ${{ secrets.GIT_COMMITTER_TOKEN }}
   build-windows-native-image:

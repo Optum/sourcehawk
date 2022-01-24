@@ -82,19 +82,19 @@ jobs:
         if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
         with:
-          name: native-image-${{ matrix.java }}
+          name: native-image
           path: cli/target/*-native-image.jar
       - name: Archive Bash Completion Script
         if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
         with:
-          name: bash-completion-script-${{ matrix.java }}
+          name: bash-completion-script
           path: cli/target/sourcehawk-bash-completion.sh
       - name: Archive Manpages
         if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
         with:
-          name: manpages-${{ matrix.java }}
+          name: manpages
           path: gh-pages/manpages/sourcehawk*.1
       - name: Aggregate Coverage Reports
         id: aggregate_coverage_reports
@@ -120,15 +120,15 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: native-image-11
+          name: native-image
           path: build
       - uses: actions/download-artifact@v2
         with:
-          name: bash-completion-script-11
+          name: bash-completion-script
           path: build
       - uses: actions/download-artifact@v2
         with:
-          name: manpages-11
+          name: manpages
           path: build
       - name: Rename Native Image JAR
         working-directory: build
@@ -173,7 +173,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: native-image-11
+          name: native-image
           path: build
       - name: Rename Native Image JAR
         working-directory: build
