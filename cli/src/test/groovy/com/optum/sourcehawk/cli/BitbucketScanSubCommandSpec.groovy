@@ -37,13 +37,15 @@ class BitbucketScanSubCommandSpec extends Specification {
         clientAndServer
                 .when(HttpRequest.request()
                         .withMethod("HEAD")
-                        .withPath("/project/repo/raw/master/lombok.config"),
+                        .withPath("/rest/api/1.0/projects/project/repos/repo/raw/lombok.config")
+                        .withQueryStringParameter("at", "main"),
                         Times.exactly(1))
                 .respond(HttpResponse.response().withStatusCode(200))
         clientAndServer
                 .when(HttpRequest.request()
                         .withMethod("GET")
-                        .withPath("/project/repo/raw/master/lombok.config")
+                        .withPath("/rest/api/1.0/projects/project/repos/repo/raw/lombok.config")
+                        .withQueryStringParameter("at", "main")
                         .withHeader("Accept", "text/plain"),
                         Times.exactly(2))
                 .respond(HttpResponse.response()
@@ -65,13 +67,15 @@ class BitbucketScanSubCommandSpec extends Specification {
         clientAndServer
                 .when(HttpRequest.request()
                         .withMethod("HEAD")
-                        .withPath("/project/repo/raw/develop/lombok2.config"),
+                        .withPath("/rest/api/1.0/projects/project/repos/repo/raw/lombok2.config")
+                        .withQueryStringParameter("at", "main"),
                         Times.exactly(1))
                 .respond(HttpResponse.response().withStatusCode(200))
         clientAndServer
                 .when(HttpRequest.request()
                         .withMethod("GET")
-                        .withPath("/project/repo/raw/develop/lombok2.config")
+                        .withPath("/rest/api/1.0/projects/project/repos/repo/raw/lombok2.config")
+                        .withQueryStringParameter("at", "main")
                         .withHeader("Accept", "text/plain"),
                         Times.exactly(2))
                 .respond(HttpResponse.response()
@@ -92,9 +96,9 @@ class BitbucketScanSubCommandSpec extends Specification {
         String[] args = ["bitbucket", "-S", bitbucketServerUrl, "project/repo@develop" ]
         clientAndServer
                 .when(HttpRequest.request()
-                        .withMethod("GET")
-                        .withPath("/project/repo/raw/develop/sourcehawk.yml")
-                        .withHeader("Accept", "text/plain"),
+                        .withMethod("HEAD")
+                        .withPath("/rest/api/1.0/projects/project/repos/repo/raw/lombok.config")
+                        .withQueryStringParameter("at", "main"),
                         Times.exactly(1))
                 .respond(HttpResponse.notFoundResponse())
 

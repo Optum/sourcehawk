@@ -79,26 +79,26 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
       - name: Archive Native Image JAR
-        if: success()
+        if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
         with:
           name: native-image-${{ matrix.java }}
           path: cli/target/*-native-image.jar
       - name: Archive Bash Completion Script
-        if: success()
+        if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
         with:
           name: bash-completion-script-${{ matrix.java }}
           path: cli/target/sourcehawk-bash-completion.sh
       - name: Archive Manpages
-        if: success()
+        if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
         with:
           name: manpages-${{ matrix.java }}
           path: gh-pages/manpages/sourcehawk*.1
       - name: Aggregate Coverage Reports
         id: aggregate_coverage_reports
-        if: success()
+        if: success() && (matrix.java == '11')
         run: echo ::set-output name=JACOCO_XML_REPORT_PATHS::$(find . -name "jacoco.xml" -printf '%P\n' | tr '\r\n' ',')
       - name: Analyze with SonarCloud
         if: success() && (github.event_name == 'push' && matrix.java == '11')
@@ -120,29 +120,26 @@ jobs:
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: native-image-8
+          name: native-image-11
           path: build
       - uses: actions/download-artifact@v2
         with:
-          name: bash-completion-script-8
+          name: bash-completion-script-11
           path: build
       - uses: actions/download-artifact@v2
         with:
-          name: manpages-8
+          name: manpages-11
           path: build
       - name: Rename Native Image JAR
         working-directory: build
         run: mv *.jar native-image.jar
-      - name: Setup Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 8
       - name: Setup GraalVM
-        uses: DeLaGuardo/setup-graalvm@master
+        uses: graalvm/setup-graalvm@v1
         with:
-          graalvm-version: 21.2.0.java8
-      - name: Setup GraalVM Native Image Tool
-        run: gu install native-image
+          version: '21.3.0'
+          java-version: '11'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Mac Native Image
         if: success()
         working-directory: build
@@ -172,6 +169,7 @@ jobs:
   build-windows-native-image:
     runs-on: windows-latest
     needs: build
+    continue-on-error: true
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -180,20 +178,16 @@ jobs:
       - name: Rename Native Image JAR
         working-directory: build
         run: ren *.jar native-image.jar
-      - name: Setup GraalVM Native Image and Visual C Build Tools
-        run: |
-          Invoke-RestMethod -Uri https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-21.3.0/graalvm-ce-java11-windows-amd64-21.3.0.zip -OutFile 'graal.zip'
-          Expand-Archive -path 'graal.zip' -destinationpath '.'
-          graalvm-ce-java11-21.3.0\bin\gu.cmd install native-image
-          choco install visualstudio2017-workload-vctools
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '20.3.0'
+          java-version: '11'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Windows Native Image
         if: success()
-        shell: cmd
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-          graalvm-ce-java11-21.3.0\bin\native-image -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
-        env:
-          JAVA_HOME: ./graalvm-ce-java11-21.3.0
+        run: native-image.cmd -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
       - name: Archive Windows Native Image
         if: success()
         continue-on-error: true

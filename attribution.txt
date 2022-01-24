@@ -390,7 +390,7 @@ https://opensource.org/licenses/BSD-2-Clause
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: org.spockframework:spock-core:2.0-M3-groovy-3.0
+Package: org.spockframework:spock-core:2.0-groovy-3.0
 
 License: Apache-2.0
 
@@ -1847,7 +1847,7 @@ limitations under the License.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: org.codehaus.groovy:groovy:3.0.4
+Package: org.codehaus.groovy:groovy:3.0.9
 
 License: Apache-2.0
 
@@ -1955,7 +1955,7 @@ limitations under the License.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: org.apache.maven:maven-model:3.6.3
+Package: org.apache.maven:maven-model:3.8.4
 
 License: Apache-2.0
 
@@ -2230,7 +2230,7 @@ http://www.apache.org/licenses/LICENSE-2.0
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: info.picocli:4.6.1
+Package: info.picocli:4.6.2
 
 License: Apache-2.0
 

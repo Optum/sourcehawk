@@ -153,6 +153,15 @@ class CommandOptions {
         String token;
 
         @CommandLine.Option(
+                names = {"-a", "--auth-scheme"},
+                paramLabel = "auth-scheme",
+                defaultValue = DEFAULT_AUTH_SCHEME,
+                description = "The authorization scheme to use (either Bearer or Basic).  If Basic, the provided token must be base64 encoded."
+        )
+        String authScheme;
+        static final String DEFAULT_AUTH_SCHEME = "Bearer";
+
+        @CommandLine.Option(
                 names = {"-S", "--server-url"},
                 paramLabel = "bitbucket-server-url",
                 description = "The Bitbucket server URL to use instead of public Bitbucket, i.e - https://bitbucket.example.com"
@@ -162,7 +171,7 @@ class CommandOptions {
         @CommandLine.Parameters(
                 paramLabel = REMOTE_REFERENCE_LABEL,
                 description = "The Bitbucket remote reference - project/repo@ref combination, "
-                        + "i.e - project/repo, project/repo@master,  project/repo@v1.4, or project/repo@a6de43fa51c",
+                        + "i.e - project/repo, project/repo@main,  project/repo@v1.4, or project/repo@a6de43fa51c",
                 arity = "1"
         )
         String remoteReference;

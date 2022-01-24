@@ -56,23 +56,45 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
+  build-java11:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.ref }}
+      - name: Setup Java and Maven
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+      - name: Set Maven Project Version
+        shell: bash
+        run: |
+          RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
+          [[ "$RELEASE_VERSION" == *"-SNAPSHOT" ]] && RELEASE_VERSION="${RELEASE_VERSION%"-SNAPSHOT"}" && ./mvnw --batch-mode versions:set -D removeSnapshot || true
+          [[ "$(git tag -l $RELEASE_VERSION)" == "$RELEASE_VERSION" ]] && echo "Tag $RELEASE_VERSION already exists" && exit 1
+          echo ::set-output name=RELEASE_VERSION::$RELEASE_VERSION
+      - name: Build Maven Project
+        if: success()
+        run: ./mvnw --batch-mode install -D ci.build -D ci.release
       - name: Archive Native Image JAR
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: native-image
+          name: native-image-11
           path: cli/target/*-native-image.jar
       - name: Archive Bash Completion Script
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: bash-completion-script
+          name: bash-completion-script-11
           path: cli/target/sourcehawk-bash-completion.sh
       - name: Archive Manpages
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: manpages
+          name: manpages-11
           path: gh-pages/manpages/sourcehawk*.1
       - name: Aggregate Coverage Reports
         id: aggregate_coverage_reports
@@ -106,10 +128,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: ${{ format('v{0}', steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
-          release_name: ${{ format('{0} {1}', github.event.repository.name, steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
+          release_name: ${{ format('{0} {1}', github.event.repository.name, needs.build.outputs.RELEASE_VERSION) }}
           body_path: CHANGELOG.md
           draft: ${{ github.event.inputs.draft }}
           prerelease: ${{ github.event.inputs.prerelease }}
+      - name: Publish Github Pages
+        if: success()
+        continue-on-error: true
+        uses: jamesives/github-pages-deploy-action@3.7.1
+        with:
+          COMMIT_MESSAGE: ${{ format('Publishing github pages for release version {0}', needs.build.outputs.RELEASE_VERSION) }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: gh-pages
       - name: Upload Sourcehawk Linux Executable
         if: success()
         continue-on-error: true
@@ -119,7 +150,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/linux/target/sourcehawk
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-linux-x86_64
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-linux-x86_64
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Debian Buster Package
         if: success()
@@ -130,7 +161,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/debian/target/sourcehawk-debian-buster.deb
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-debian-buster-amd64.deb
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-debian-buster-amd64.deb
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Ubuntu Focal Package
         if: success()
@@ -141,7 +172,18 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/debian/target/sourcehawk-ubuntu-focal.deb
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-ubuntu-focal-amd64.deb
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-ubuntu-focal-amd64.deb
+          asset_content_type: application/octet-stream
+      - name: Upload Sourcehawk Centos 7 RPM Package
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./distributions/rpm/target/sourcehawk-centos-7.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.el7.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Centos 8 RPM Package
         if: success()
@@ -152,7 +194,29 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-centos-8.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.el8.x86_64.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.el8.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - name: Upload Sourcehawk Fedora 33 RPM Package
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./distributions/rpm/target/sourcehawk-fedora-33.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.fc33.x86_64.rpm
+          asset_content_type: application/octet-stream
+      - name: Upload Sourcehawk Fedora 34 RPM Package
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./distributions/rpm/target/sourcehawk-fedora-34.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.fc34.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Fedora 35 RPM Package
         if: success()
@@ -163,52 +227,15 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-fedora-35.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc35.x86_64.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.fc35.x86_64.rpm
           asset_content_type: application/octet-stream
-      - name: Publish Github Pages
-        if: success()
-        continue-on-error: true
-        uses: jamesives/github-pages-deploy-action@3.7.1
-        with:
-          COMMIT_MESSAGE: ${{ format('Publishing github pages for release version {0}', steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: gh-pages
-  build-java11:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.ref }}
-      - name: Setup Java and Maven
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: Set Maven Project Version
-        shell: bash
-        run: |
-          RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
-          [[ "$RELEASE_VERSION" == *"-SNAPSHOT" ]] && RELEASE_VERSION="${RELEASE_VERSION%"-SNAPSHOT"}" && ./mvnw --batch-mode versions:set -D removeSnapshot || true
-          [[ "$(git tag -l $RELEASE_VERSION)" == "$RELEASE_VERSION" ]] && echo "Tag $RELEASE_VERSION already exists" && exit 1
-          echo ::set-output name=RELEASE_VERSION::$RELEASE_VERSION
-      - name: Build Maven Project
-        if: success()
-        run: ./mvnw --batch-mode install -D ci.build -D ci.release
-      - name: Archive Native Image JAR
-        if: success()
-        uses: actions/upload-artifact@v2
-        with:
-          name: native-image-java11
-          path: cli/target/*-native-image.jar
   build-mac-native-image:
     runs-on: macos-latest
-    needs: build
+    needs: build-java11
     steps:
       - uses: actions/download-artifact@v2
         with:
-          name: native-image
+          name: native-image-java11
           path: build
       - uses: actions/download-artifact@v2
         with:
@@ -224,13 +251,14 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: 8
+          java-version: 11
       - name: Setup GraalVM
-        uses: DeLaGuardo/setup-graalvm@master
+        uses: graalvm/setup-graalvm@v1
         with:
-          graalvm-version: 21.2.0.java8
-      - name: Setup GraalVM Native Image Tool
-        run: gu install native-image
+          version: '21.3.0'
+          java-version: '11'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Mac Native Image
         if: success()
         working-directory: build
@@ -280,7 +308,7 @@ jobs:
           COMMITTER_TOKEN: ${{ secrets.GIT_COMMITTER_TOKEN }}
   build-windows-native-image:
     runs-on: windows-latest
-    needs: [build, build-java11]
+    needs: build-java11
     steps:
       - uses: actions/download-artifact@v2
         with:
@@ -289,20 +317,16 @@ jobs:
       - name: Rename Native Image JAR
         working-directory: build
         run: ren *.jar native-image.jar
-      - name: Setup GraalVM Native Image and Visual C Build Tools
-        run: |
-          Invoke-RestMethod -Uri https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-21.3.0/graalvm-ce-java11-windows-amd64-21.3.0.zip -OutFile 'graal.zip'
-          Expand-Archive -path 'graal.zip' -destinationpath '.'
-          graalvm-ce-java11-21.3.0\bin\gu.cmd install native-image
-          choco install visualstudio2017-workload-vctools
+      - name: Setup GraalVM
+        uses: graalvm/setup-graalvm@v1
+        with:
+          version: '20.3.0'
+          java-version: '11'
+          components: 'native-image'
+          github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Windows Native Image
         if: success()
-        shell: cmd
-        run: |
-          call "C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Auxiliary\Build\vcvars64.bat"
-          graalvm-ce-java11-21.3.0\bin\native-image -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
-        env:
-          JAVA_HOME: ./graalvm-ce-java11-21.3.0
+        run: native-image.cmd -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
       - name: Smoke Test
         if: success()
         shell: cmd

@@ -8,7 +8,7 @@
     <parent>
         <artifactId>sourcehawk</artifactId>
         <groupId>com.optum.sourcehawk</groupId>
-        <version>0.6.0-SNAPSHOT</version>
+        <version>0.7.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>sourcehawk-cli</artifactId>
@@ -23,7 +23,7 @@
         <cli.class>com.optum.sourcehawk.cli.Sourcehawk</cli.class>
 
         <!-- JACOCO OVERRIDES -->
-        <jacoco.coverage.minimum>0.94</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->
+        <jacoco.coverage.minimum>0.91</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->
 
         <!-- SONAR PROPERTIES -->
         <sonar.exclusions>**/picocli/**/*.*</sonar.exclusions>
@@ -31,7 +31,7 @@
         <sonar.cpd.exclusions>**/picocli/**/*.*</sonar.cpd.exclusions>
 
         <!-- PICOCLI VERSION -->
-        <picocli.version>4.6.1</picocli.version>
+        <picocli.version>4.6.2</picocli.version>
 
     </properties>
 

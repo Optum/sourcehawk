@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.6.0-SNAPSHOT</version>
+        <version>0.7.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,6 +19,7 @@
 
     <properties>
         <docker.tag>${project.version}</docker.tag>
+        <ghcr.repository>ghcr.io/optum/sourcehawk</ghcr.repository>
     </properties>
 
     <dependencies>
@@ -61,25 +62,68 @@
                 </executions>
             </plugin>
 
+            <!-- EXEC PROCESSORS AND SCRIPTS -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <executions>
+
+                    <!-- MAKE NATIVE IMAGE EXECUTABLE -->
+                    <execution>
+                        <id>update-native-image-permissions</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>chmod</executable>
+                            <arguments>
+                                <argument>+x</argument>
+                                <argument>target/native-image</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
             <!-- BUILD DOCKER IMAGE -->
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>build-and-tag</id>
+                        <id>build</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>build</goal>
+                        </goals>
+                        <configuration>
+                            <repository>${docker.repository}</repository>
+                            <tag>${docker.tag}</tag>
+                            <skipDockerInfo>true</skipDockerInfo>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>tag-docker-hub</id>
+                        <phase>prepare-package</phase>
+                        <goals>
                             <goal>tag</goal>
                         </goals>
                         <configuration>
                             <repository>${docker.repository}</repository>
                             <tag>${docker.tag}</tag>
-                            <buildArgs>
-                                <NAME>${global.project.name}</NAME>
-                                <NATIVE_IMAGE_PATH>target/native-image</NATIVE_IMAGE_PATH>
-                            </buildArgs>
+                            <skipDockerInfo>true</skipDockerInfo>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>tag-github-container-registry</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>tag</goal>
+                        </goals>
+                        <configuration>
+                            <repository>${ghcr.repository}</repository>
+                            <tag>${docker.tag}</tag>
                             <skipDockerInfo>true</skipDockerInfo>
                         </configuration>
                     </execution>
@@ -103,6 +147,7 @@
                             <executable>docker</executable>
                             <arguments>
                                 <argument>run</argument>
+                                <argument>--rm</argument>
                                 <argument>${docker.repository}:${docker.tag}</argument>
                                 <argument>--version</argument>
                             </arguments>
@@ -119,8 +164,9 @@
                             <workingDirectory>${maven.multiModuleProjectDirectory}</workingDirectory>
                             <arguments>
                                 <argument>run</argument>
+                                <argument>--rm</argument>
                                 <argument>-v</argument>
-                                <argument>${maven.multiModuleProjectDirectory}:/home/sourcehawk</argument>
+                                <argument>${maven.multiModuleProjectDirectory}:/work</argument>
                                 <argument>${docker.repository}:${docker.tag}</argument>
                                 <argument>scan</argument>
                                 <argument>-f</argument>
@@ -137,7 +183,7 @@
 
     <profiles>
         <profile>
-            <id>docker-hub-push</id>
+            <id>docker-push</id>
             <activation>
                 <property>
                     <name>ci.release</name>
@@ -150,15 +196,28 @@
                         <artifactId>exec-maven-plugin</artifactId>
                         <executions>
                             <execution>
-                                <id>deploy-docker-image</id>
+                                <id>push-docker-image-to-docker-hub</id>
                                 <phase>deploy</phase>
                                 <goals>
                                     <goal>exec</goal>
                                 </goals>
                                 <configuration>
-                                    <executable>${project.basedir}/scripts/push-docker-image-to-docker-hub.sh</executable>
+                                    <executable>${project.basedir}/scripts/push-docker-image.sh</executable>
                                     <arguments>
                                         <argument>${docker.repository}:${docker.tag}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>push-docker-image-to-github-container-registry</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${project.basedir}/scripts/push-docker-image.sh</executable>
+                                    <arguments>
+                                        <argument>${ghcr.repository}:${docker.tag}</argument>
                                     </arguments>
                                 </configuration>
                             </execution>

@@ -59,6 +59,12 @@ public class LocalRepositoryFileReader implements RepositoryFileReader {
         return getInputStream(directory.resolve(Paths.get(repositoryFilePath)));
     }
 
+    /** {@inheritDoc} */
+    @Override
+    public String getAbsoluteLocation(final String repositoryFilePath) {
+        return directory.resolve(Paths.get(repositoryFilePath)).toAbsolutePath().toString();
+    }
+
     /**
      * Get the {@link InputStream} from the {@link File} reference
      *

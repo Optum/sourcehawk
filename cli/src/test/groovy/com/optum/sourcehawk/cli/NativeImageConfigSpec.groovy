@@ -19,7 +19,6 @@ class NativeImageConfigSpec extends Specification {
         then:
         args.contains("-H:Class=${Sourcehawk.name}")
         args.contains("-H:Name=sourcehawk")
-        args.contains("--no-server")
     }
 
     def "all native image configs are on classpath"() {

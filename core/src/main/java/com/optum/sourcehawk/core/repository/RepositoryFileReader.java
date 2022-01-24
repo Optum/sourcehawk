@@ -38,4 +38,12 @@ public interface RepositoryFileReader {
      */
     Optional<InputStream> read(final String repositoryFilePath) throws IOException;
 
+    /**
+     * Get a string representation of the absolute location of {@code repositoryFilePath}
+     *
+     * @param repositoryFilePath the repository file path
+     * @return the absolute location
+     */
+    String getAbsoluteLocation(final String repositoryFilePath);
+
 }
