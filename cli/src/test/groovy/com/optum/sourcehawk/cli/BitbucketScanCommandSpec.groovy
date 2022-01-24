@@ -10,11 +10,11 @@ class BitbucketScanCommandSpec extends CliBaseSpecification {
 
     def "getRawRemoteReference"() {
         when:
-        Pair<RemoteRef.Type, String> rawRemoteReference = new BitbucketScanCommand(bitbucket: new CommandOptions.Bitbucket(remoteReference: "owner/repo@master")).getRawRemoteReference()
+        Pair<String, String> rawRemoteReference = new BitbucketScanCommand(bitbucket: new CommandOptions.Bitbucket(remoteReference: "owner/repo@master")).getRawRemoteReference()
 
         then:
-        rawRemoteReference.left == RemoteRef.Type.BITBUCKET
-        rawRemoteReference.right == "owner/repo@master"
+        rawRemoteReference.left == "owner/repo@master"
+        rawRemoteReference.right == "main"
     }
 
     @Unroll
@@ -63,16 +63,16 @@ class BitbucketScanCommandSpec extends CliBaseSpecification {
     def "createRepositoryFileReader"() {
         given:
         String rawReference = "project/repo@master"
-        BitbucketScanCommand githubScanCommand = new BitbucketScanCommand(bitbucket: new CommandOptions.Bitbucket(remoteReference: "owner/repo@main"))
+        BitbucketScanCommand bitbucketScanCommand = new BitbucketScanCommand(bitbucket: new CommandOptions.Bitbucket(remoteReference: "owner/repo@main"))
 
         when:
-        RepositoryFileReader repositoryFileReader = githubScanCommand.createRepositoryFileReader(RemoteRef.parse(RemoteRef.Type.BITBUCKET, rawReference))
+        RepositoryFileReader repositoryFileReader = bitbucketScanCommand.createRepositoryFileReader(RemoteRef.parse(rawReference, "main"))
 
         then:
         repositoryFileReader
     }
 
-    def "createRepositoryFileReader - enterprise"() {
+    def "createRepositoryFileReader - server"() {
         given:
         String rawReference = "project/repo@master"
         BitbucketScanCommand githubScanCommand = new BitbucketScanCommand(bitbucket:
@@ -80,7 +80,7 @@ class BitbucketScanCommandSpec extends CliBaseSpecification {
         )
 
         when:
-        RepositoryFileReader repositoryFileReader = githubScanCommand.createRepositoryFileReader(RemoteRef.parse(RemoteRef.Type.BITBUCKET, rawReference))
+        RepositoryFileReader repositoryFileReader = githubScanCommand.createRepositoryFileReader(RemoteRef.parse(rawReference, "main"))
 
         then:
         repositoryFileReader

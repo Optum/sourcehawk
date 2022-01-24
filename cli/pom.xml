@@ -8,7 +8,7 @@
     <parent>
         <artifactId>sourcehawk</artifactId>
         <groupId>com.optum.sourcehawk</groupId>
-        <version>0.6.0-SNAPSHOT</version>
+        <version>0.7.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>sourcehawk-cli</artifactId>
@@ -23,7 +23,7 @@
         <cli.class>com.optum.sourcehawk.cli.Sourcehawk</cli.class>
 
         <!-- JACOCO OVERRIDES -->
-        <jacoco.coverage.minimum>0.94</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->
+        <jacoco.coverage.minimum>0.91</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->
 
         <!-- SONAR PROPERTIES -->
         <sonar.exclusions>**/picocli/**/*.*</sonar.exclusions>
@@ -31,7 +31,7 @@
         <sonar.cpd.exclusions>**/picocli/**/*.*</sonar.cpd.exclusions>
 
         <!-- PICOCLI VERSION -->
-        <picocli.version>4.6.1</picocli.version>
+        <picocli.version>4.6.2</picocli.version>
 
     </properties>
 
@@ -190,7 +190,7 @@
                     </execution>
 
                     <execution>
-                        <id>generate-bash-completion-script</id>
+                        <id>generate-completion-script</id>
                         <phase>process-classes</phase>
                         <goals>
                             <goal>java</goal>
@@ -207,7 +207,7 @@
                             <arguments>
                                 <argument>--force</argument>
                                 <argument>--completionScript</argument>
-                                <argument>${project.build.directory}/${cli.name}-bash-completion.sh</argument>
+                                <argument>${project.build.directory}/${cli.name}-completion.sh</argument>
                                 <argument>${cli.class}</argument>
                             </arguments>
                         </configuration>
@@ -235,7 +235,7 @@
                 <artifactId>build-helper-maven-plugin</artifactId>
                 <executions>
                     <execution>
-                        <id>attach-bash-completion-script-artifact</id>
+                        <id>attach-completion-script</id>
                         <goals>
                             <goal>attach-artifact</goal>
                         </goals>
@@ -243,8 +243,8 @@
                         <configuration>
                             <artifacts>
                                 <artifact>
-                                    <file>${project.build.directory}/${cli.name}-bash-completion.sh</file>
-                                    <classifier>bash-completion</classifier>
+                                    <file>${project.build.directory}/${cli.name}-completion.sh</file>
+                                    <classifier>completion</classifier>
                                     <type>sh</type>
                                 </artifact>
                             </artifacts>
@@ -389,11 +389,13 @@
                             <rules>
                                 <requireFilesExist>
                                     <files>
-                                        <file>${project.build.directory}/${cli.name}-bash-completion.sh</file>
+                                        <file>${project.build.directory}/${cli.name}-completion.sh</file>
                                         <file>${project.parent.basedir}/gh-pages/index.html</file>
                                         <file>${project.parent.basedir}/gh-pages/stylesheets/sourcehawk.css</file>
                                         <file>${project.parent.basedir}/gh-pages/manpages/sourcehawk.1</file>
                                         <file>${project.parent.basedir}/gh-pages/manpages/scan.1</file>
+                                        <file>${project.parent.basedir}/gh-pages/manpages/scan-bitbucket.1</file>
+                                        <file>${project.parent.basedir}/gh-pages/manpages/scan-github.1</file>
                                         <file>${project.parent.basedir}/gh-pages/manpages/validate-config.1</file>
                                         <file>${project.parent.basedir}/gh-pages/manpages/fix.1</file>
                                         <file>${project.parent.basedir}/gh-pages/manpages/flatten-config.1</file>

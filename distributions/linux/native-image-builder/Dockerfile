@@ -1,5 +1,5 @@
-ARG GRAALVM_VERSION=21.3.0-java8
-FROM ghcr.io/optum/sourcehawk-ci/nativeimage:graalvm-ce-${GRAALVM_VERSION}
+ARG GRAALVM_VERSION=21.3.0-java11
+FROM ghcr.io/optum/ci/nativeimage:graalvm-ce-${GRAALVM_VERSION}
 
 # Build Arguments
 ARG NAME
@@ -17,4 +17,5 @@ RUN native-image -cp native-image.jar \
     -H:+ReportExceptionStackTraces \
     --report-unsupported-elements-at-runtime \
     --no-fallback \
+    --libc=musl \
     --static

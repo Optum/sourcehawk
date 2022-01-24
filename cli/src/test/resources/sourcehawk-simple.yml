@@ -19,25 +19,3 @@ file-protocols:
       - enforcer: .common.StringPropertyEquals
         property-name: lombok.addLombokGeneratedAnnotation
         expected-property-value: false
-  - name: Lombok
-    repository-path: lombok.config
-    required: true
-    severity: WARNING
-    enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation
-        expected-property-value: false
-  - name: Lombok
-    repository-path: lombok.config
-    required: true
-    severity: WARNING
-    enforcers:
-      - enforcer: .common.StringPropertyEquals
-        property-name: config.stopBubbling
-        expected-property-value: false
-      - enforcer: .common.StringPropertyEquals
-        property-name: lombok.addLombokGeneratedAnnotation
-        expected-property-value: false

@@ -5,13 +5,12 @@ import com.optum.sourcehawk.core.protocol.file.FileProtocol;
 import com.optum.sourcehawk.core.result.ScanResult;
 import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.exec.ExecOptions;
-import lombok.experimental.UtilityClass;
-import lombok.val;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.IntConsumer;
+import lombok.experimental.UtilityClass;
+import lombok.val;
 
 /**
  * A factory for creating instances of {@link ScanResult}
@@ -95,18 +94,31 @@ public class ScanResultFactory {
      * @return the file not found scan result
      */
     public ScanResult fileNotFound(final ExecOptions execOptions, final FileProtocol fileProtocol) {
-        val severity = Severity.parse(fileProtocol.getSeverity());
+        return fileNotFound(execOptions, fileProtocol.getRepositoryPath(), fileProtocol.getSeverity());
+    }
+
+    /**
+     * Generate a scan result for situations where the file is not found
+     *
+     * @param execOptions the exec options
+     * @param repositoryPath the repository path
+     * @param fileProtocolSeverity the file protocol severity
+     * @return the file not found scan result
+     */
+    public ScanResult fileNotFound(final ExecOptions execOptions, final String repositoryPath, final String fileProtocolSeverity) {
+        val severity = Severity.parse(fileProtocolSeverity);
         val messageDescriptor = ScanResult.MessageDescriptor.builder()
-                .severity(fileProtocol.getSeverity())
-                .repositoryPath(fileProtocol.getRepositoryPath())
-                .message("File not found")
-                .build();
+            .severity(fileProtocolSeverity)
+            .repositoryPath(repositoryPath)
+            .message("File not found")
+            .build();
         val scanResultBuilder = ScanResult.builder()
-                .passed(Severity.WARNING.equals(severity) && !execOptions.isFailOnWarnings())
-                .messages(Collections.singletonMap(fileProtocol.getRepositoryPath(), Collections.singleton(messageDescriptor)))
-                .formattedMessages(Collections.singleton(messageDescriptor.toString()));
-        return acceptCount(scanResultBuilder, Severity.parse(fileProtocol.getSeverity()), 1)
-                .build();
+
+            .passed(Severity.WARNING.equals(severity) && !execOptions.isFailOnWarnings())
+            .messages(Collections.singletonMap(repositoryPath, Collections.singleton(messageDescriptor)))
+            .formattedMessages(Collections.singleton(messageDescriptor.toString()));
+        return acceptCount(scanResultBuilder, severity, 1)
+            .build();
     }
 
     /**

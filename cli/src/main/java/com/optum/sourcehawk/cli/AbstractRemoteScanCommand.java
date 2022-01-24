@@ -43,7 +43,7 @@ abstract class AbstractRemoteScanCommand implements Callable<Integer> {
      */
     @Override
     public Integer call() {
-        val parentExecOptions = parentCommand.buildExecOptions();
+        val parentExecOptions = parentCommand.buildExecOptions(); // TODO: NPE ??
         val execOptionsBuilder = parentExecOptions.toBuilder();
         val configFileProvided = Optional.ofNullable(parentCommand.spec)
                 .map(CommandLine.Model.CommandSpec::commandLine)
@@ -52,20 +52,13 @@ abstract class AbstractRemoteScanCommand implements Callable<Integer> {
                 .isPresent();
         val remoteRef = validateAndParseRemoteRef();
         execOptionsBuilder.remoteRef(remoteRef);
+        val repositoryFileReader = createRepositoryFileReader(remoteRef);
+        execOptionsBuilder.repositoryFileReader(repositoryFileReader);
         if (StringUtils.equals(SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME, parentExecOptions.getConfigurationFileLocation()) && !configFileProvided) {
-            execOptionsBuilder.configurationFileLocation(constructRemoteConfigFileLocation(remoteRef));
+            execOptionsBuilder.configurationFileLocation(repositoryFileReader.getAbsoluteLocation(SourcehawkConstants.DEFAULT_CONFIG_FILE_NAME));
         }
-        execOptionsBuilder.repositoryFileReader(createRepositoryFileReader(remoteRef)).build();
         return parentCommand.call(execOptionsBuilder.build());
     }
-
-    /**
-     * Construct the remote config file location
-     *
-     * @param remoteRef the remote reference
-     * @return the config file remote location
-     */
-    protected abstract String constructRemoteConfigFileLocation(final RemoteRef remoteRef);
 
     /**
      * Create the repository file reader based off the remote reference
@@ -76,11 +69,11 @@ abstract class AbstractRemoteScanCommand implements Callable<Integer> {
     protected abstract RepositoryFileReader createRepositoryFileReader(final RemoteRef remoteRef);
 
     /**
-     * Get the remote reference descriptor
+     * Get the raw remote reference
      *
-     * @return the raw remote reference descriptor
+     * @return the raw remote reference
      */
-    protected abstract Pair<RemoteRef.Type, String> getRawRemoteReference();
+    protected abstract Pair<String, String> getRawRemoteReference();
 
     /**
      * Parse the coordinates to github options

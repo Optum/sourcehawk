@@ -1,71 +1,168 @@
 package com.optum.sourcehawk.core.repository
 
-import spock.lang.Specification
 
+import org.mockserver.configuration.ConfigurationProperties
+import org.mockserver.integration.ClientAndServer
+import org.mockserver.matchers.Times
+import org.mockserver.model.HttpRequest
+import org.mockserver.model.HttpResponse
+import spock.lang.AutoCleanup
+import spock.lang.Shared
+import spock.lang.Specification
 
 class RemoteRepositoryFileReaderSpec extends Specification {
 
-    def "constructor"() {
-        expect:
-        new GenericRemoteRepositoryFileReader()
-        new TrailingSlashRemoteRepositoryFileReader()
+    @Shared
+    @AutoCleanup
+    ClientAndServer clientAndServer
+
+    @Shared
+    String baseUrl
+
+    def setupSpec() {
+        clientAndServer = ClientAndServer.startClientAndServer("http://127.0.0.1", 8122)
+        ConfigurationProperties.logLevel("WARN")
+        baseUrl = "${clientAndServer.remoteAddress.hostString}:${clientAndServer.port}"
     }
 
-    def "constructor - null argument"() {
-        when:
-        new InvalidRemoteRepositoryFileReader()
-
-        then:
-        thrown(NullPointerException)
-
-        when:
-        new InvalidRemoteRepositoryFileReader2()
-
-        then:
-        thrown(NullPointerException)
-    }
-
-    def "getInputStream - not found"() {
+    def "supportsGlobPatterns"() {
         given:
-        HttpURLConnection mockHttpUrlConnection = Mock()
+        RepositoryFileReader reader = new RemoteRepositoryFileReader("rawFileUrlTemplate", Collections.emptyMap())
 
         when:
-        Optional<InputStream> inputStreamOptional = RemoteRepositoryFileReader.getInputStream(mockHttpUrlConnection)
+        boolean supportsGlobPatterns = reader.supportsGlobPatterns()
 
         then:
-        1 * mockHttpUrlConnection.getInputStream() >> { throw new FileNotFoundException("404") }
-        0 * _
+        !supportsGlobPatterns
+    }
 
-        and:
+    def "exists - found"() {
+        given:
+        String rawFileUrlTemplate = "$baseUrl/project/repo/raw/master/%s"
+        RepositoryFileReader reader = new RemoteRepositoryFileReader(rawFileUrlTemplate, Collections.emptyMap())
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("HEAD")
+                        .withPath("/project/repo/raw/master/README.md"),
+                        Times.exactly(1))
+                .respond(HttpResponse.response().withStatusCode(200))
+
+        when:
+        boolean exists = reader.exists("README.md")
+
+        then:
+        exists
+    }
+
+    def "exists - not found"() {
+        given:
+        String rawFileUrlTemplate = "$baseUrl/project/repo/raw/master/%s"
+        RepositoryFileReader reader = new RemoteRepositoryFileReader(rawFileUrlTemplate, Collections.emptyMap())
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("HEAD")
+                        .withPath("/project/repo/raw/master/README.md"),
+                        Times.exactly(1))
+                .respond(HttpResponse.notFoundResponse())
+
+        when:
+        boolean exists = reader.exists("README.md")
+
+        then:
+        !exists
+    }
+
+    def "read - found"() {
+        given:
+        String rawFileUrlTemplate = "$baseUrl/raw/project/repo/main/%s"
+        RepositoryFileReader reader = new RemoteRepositoryFileReader(rawFileUrlTemplate, Collections.emptyMap())
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("HEAD")
+                        .withPath("/raw/project/repo/main/README.md"),
+                        Times.exactly(1))
+                .respond(HttpResponse.response().withStatusCode(200))
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("GET")
+                        .withPath("/raw/project/repo/main/README.md"),
+                        Times.exactly(2))
+                .respond(HttpResponse.response().withStatusCode(200).withBody("# Title".bytes))
+
+        when:
+        Optional<InputStream> inputStreamOptional = reader.read("README.md")
+
+        then:
+        inputStreamOptional
+        inputStreamOptional.isPresent()
+
+        when:
+        inputStreamOptional = reader.read("/README.md")
+
+        then:
+        inputStreamOptional
+        inputStreamOptional.isPresent()
+    }
+
+    def "read - not found"() {
+        given:
+        String rawFileUrlTemplate = "$baseUrl/raw/project/repo/main/%s"
+        RepositoryFileReader reader = new RemoteRepositoryFileReader(rawFileUrlTemplate, Collections.emptyMap())
+        clientAndServer
+                .when(HttpRequest.request()
+                        .withMethod("HEAD")
+                        .withPath("/raw/project/repo/main/README.md"),
+                        Times.exactly(1))
+                .respond(HttpResponse.notFoundResponse())
+
+        when:
+        Optional<InputStream> inputStreamOptional = reader.read("README.md")
+
+        then:
         !inputStreamOptional.isPresent()
     }
 
-    private static class GenericRemoteRepositoryFileReader extends RemoteRepositoryFileReader {
+    def "getAbsoluteLocation"() {
+        given:
+        String rawFileUrlTemplate = "$baseUrl/raw/project/repo/main/%s"
+        RepositoryFileReader reader = new RemoteRepositoryFileReader(rawFileUrlTemplate, Collections.emptyMap())
+        String repositoryFilePath = "README.md"
 
-        protected GenericRemoteRepositoryFileReader() {
-            super("https://optum.github.io")
-        }
+        when:
+        String absoluteLocation = reader.getAbsoluteLocation(repositoryFilePath)
+
+        then:
+        absoluteLocation
+        absoluteLocation == "$baseUrl/raw/project/repo/main/README.md"
+
+
+        when:
+        repositoryFilePath = "/path/to/file.txt"
+        absoluteLocation = reader.getAbsoluteLocation(repositoryFilePath)
+
+        then:
+        absoluteLocation
+        absoluteLocation == "$baseUrl/raw/project/repo/main/path/to/file.txt"
     }
 
-    private static class TrailingSlashRemoteRepositoryFileReader extends RemoteRepositoryFileReader {
+    def "constructor - null parameter"() {
+        when:
+        new RemoteRepositoryFileReader("abc", null)
 
-        protected TrailingSlashRemoteRepositoryFileReader() {
-            super("https://optum.github.io/")
-        }
-    }
+        then:
+        thrown(NullPointerException)
 
-    private static class InvalidRemoteRepositoryFileReader extends RemoteRepositoryFileReader {
+        when:
+        new RemoteRepositoryFileReader(null, Collections.emptyMap())
 
-        protected InvalidRemoteRepositoryFileReader() {
-            super(null)
-        }
-    }
+        then:
+        thrown(NullPointerException)
 
-    private static class InvalidRemoteRepositoryFileReader2 extends RemoteRepositoryFileReader {
+        when:
+        new RemoteRepositoryFileReader(null, null)
 
-        protected InvalidRemoteRepositoryFileReader2() {
-            super(null, Collections.<String, String>emptyMap())
-        }
+        then:
+        thrown(NullPointerException)
     }
 
 }
