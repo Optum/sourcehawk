@@ -61,7 +61,7 @@
                         <configuration>
                             <scripts>
                                 <script>
-                                    def command = "git log -1 --date=format:'%Y%m%d%H%M%S' --pretty=format:'~%ad+%h'"
+                                    def command = 'git log -1 --date=format:%Y%m%d%H%M%S --pretty=format:~%ad+%h'
                                     def process = command.execute()
                                     process.waitFor()
                                     project.properties.setProperty('debian.package.version.suffix', process.in.text.trim())
