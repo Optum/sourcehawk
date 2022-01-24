@@ -86,7 +86,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: linux-native-image
-          path: distributions/target/sourcehawk
+          path: distributions/linux/target/sourcehawk
       - name: Archive Native Image JAR
         if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
