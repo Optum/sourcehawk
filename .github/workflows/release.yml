@@ -23,7 +23,8 @@ jobs:
       RELEASE_VERSION: ${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}
       RELEASE_ASSET_UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.ref }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -61,7 +62,8 @@ jobs:
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
         with:
           ref: ${{ github.event.inputs.ref }}
       - name: Setup Java and Maven
@@ -82,7 +84,7 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: native-image
+          name: native-image-jar
           path: cli/target/*-native-image.jar
       - name: Archive Completion Script
         if: success()
@@ -233,15 +235,18 @@ jobs:
     runs-on: macos-latest
     needs: build-java11
     steps:
-      - uses: actions/download-artifact@v2
+      - name: Download Native Image JAR
+        uses: actions/download-artifact@v2
         with:
-          name: native-image
+          name: native-image-jar
           path: build
-      - uses: actions/download-artifact@v2
+      - name: Download Completion Script
+        uses: actions/download-artifact@v2
         with:
           name: completion-script
           path: build
-      - uses: actions/download-artifact@v2
+      - name: Download Manpages
+        uses: actions/download-artifact@v2
         with:
           name: manpages
           path: build
@@ -313,9 +318,10 @@ jobs:
     runs-on: windows-latest
     needs: build-java11
     steps:
-      - uses: actions/download-artifact@v2
+      - name: Download Native Image JAR
+        uses: actions/download-artifact@v2
         with:
-          name: native-image-java11
+          name: native-image-jar
           path: build
       - name: Rename Native Image JAR
         working-directory: build

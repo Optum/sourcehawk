@@ -41,13 +41,16 @@ jobs:
       matrix:
         java: ['8', '11', '17']
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/cache@v1
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
+      - name: Setup Maven Cache
+        uses: actions/cache@v1
         with:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
-      - uses: actions/cache@v1
+      - name: Setup Sonar Cache
+        uses: actions/cache@v1
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -78,11 +81,17 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
+      - name: Archive Linux Native Image
+        if: success() && (matrix.java == '11')
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-native-image
+          path: distributions/target/sourcehawk
       - name: Archive Native Image JAR
         if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
         with:
-          name: native-image
+          name: native-image-jar
           path: cli/target/*-native-image.jar
       - name: Archive Completion Script
         if: success() && (matrix.java == '11')
@@ -118,15 +127,18 @@ jobs:
     runs-on: macos-latest
     needs: build
     steps:
-      - uses: actions/download-artifact@v2
+      - name: Download Native Image JAR
+        uses: actions/download-artifact@v2
         with:
-          name: native-image
+          name: native-image-jar
           path: build
-      - uses: actions/download-artifact@v2
+      - name: Download Completion Script
+        uses: actions/download-artifact@v2
         with:
           name: completion-script
           path: build
-      - uses: actions/download-artifact@v2
+      - name: Download Manpages
+        uses: actions/download-artifact@v2
         with:
           name: manpages
           path: build
@@ -171,9 +183,10 @@ jobs:
     needs: build
     continue-on-error: true
     steps:
-      - uses: actions/download-artifact@v2
+      - name: Download Native Image JAR
+        uses: actions/download-artifact@v2
         with:
-          name: native-image
+          name: native-image-jar
           path: build
       - name: Rename Native Image JAR
         working-directory: build
