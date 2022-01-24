@@ -37,7 +37,7 @@
             <groupId>com.optum.sourcehawk</groupId>
             <artifactId>sourcehawk-cli</artifactId>
             <version>${project.version}</version>
-            <classifier>bash-completion</classifier>
+            <classifier>completion</classifier>
             <type>sh</type>
             <scope>provided</scope>
         </dependency>
@@ -89,7 +89,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>copy-native-image-bash-completion</id>
+                        <id>copy-native-image-completion-script</id>
                         <phase>prepare-package</phase>
                         <goals>
                             <goal>copy</goal>
@@ -99,9 +99,9 @@
                                 <artifactItem>
                                     <groupId>com.optum.sourcehawk</groupId>
                                     <artifactId>sourcehawk-cli</artifactId>
-                                    <classifier>bash-completion</classifier>
+                                    <classifier>completion</classifier>
                                     <type>sh</type>
-                                    <outputDirectory>${project.build.directory}/dist/bash-completion</outputDirectory>
+                                    <outputDirectory>${project.build.directory}/dist/completion</outputDirectory>
                                     <destFileName>${global.project.name}</destFileName>
                                 </artifactItem>
                             </artifactItems>

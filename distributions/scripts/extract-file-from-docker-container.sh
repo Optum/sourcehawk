@@ -21,6 +21,7 @@ CONTAINER_ID=$(docker create "$DOCKER_IMAGE")
 
 # Copy the native images out of the docker container
 docker cp "$CONTAINER_ID:${DOCKER_PATH}" "$LOCAL_FILE_SYSTEM_PATH"
+echo "Successfully copied [${DOCKER_PATH}] from container [$CONTAINER_ID] to [$LOCAL_FILE_SYSTEM_PATH]"
 
 # Remove the temporary container
-docker rm -f -v "$CONTAINER_ID"
+docker rm -f -v "$CONTAINER_ID" < /dev/null 2>&1

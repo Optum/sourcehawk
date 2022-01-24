@@ -84,12 +84,12 @@ jobs:
         with:
           name: native-image
           path: cli/target/*-native-image.jar
-      - name: Archive Bash Completion Script
+      - name: Archive Completion Script
         if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
         with:
-          name: bash-completion-script
-          path: cli/target/sourcehawk-bash-completion.sh
+          name: completion-script
+          path: cli/target/sourcehawk-completion.sh
       - name: Archive Manpages
         if: success() && (matrix.java == '11')
         uses: actions/upload-artifact@v2
@@ -124,7 +124,7 @@ jobs:
           path: build
       - uses: actions/download-artifact@v2
         with:
-          name: bash-completion-script
+          name: completion-script
           path: build
       - uses: actions/download-artifact@v2
         with:
@@ -147,7 +147,7 @@ jobs:
       - name: Create Homebrew Tap Formula Archive
         if: success()
         working-directory: build
-        run: gzip sourcehawk*.1 && tar -czvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk sourcehawk-bash-completion.sh sourcehawk*.1.gz
+        run: gzip sourcehawk*.1 && tar -czvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk sourcehawk-completion.sh sourcehawk*.1.gz
       - name: Archive Mac Native Image
         if: success()
         continue-on-error: true
