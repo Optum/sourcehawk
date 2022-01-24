@@ -5,6 +5,7 @@ import com.optum.sourcehawk.enforcer.EnforcerResult;
 import com.optum.sourcehawk.enforcer.file.AbstractFileEnforcer;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Builder.Default;
 import lombok.NonNull;
 import lombok.val;
 
@@ -39,23 +40,43 @@ public class ContentHttpValidated extends AbstractFileEnforcer {
     /**
      * The amount of time allowed to connect to URL before timing out
      */
-    private final int connectTimeout;
+    @Default
+    private final int connectTimeout = 500;
 
     /**
-     * The amount of time allowed to read response from URL before timing out
+     * The amount of time allowed to read the response from URL before timing out
      */
-    private final int readTimeout;
+    @Default
+    private final int readTimeout = 500;
+    /**
+     * The amount of time allowed to read the response from URL before timing out
+     */
+    @Default
+    private final String method = "POST";
+
+    /**
+     * The amount of time allowed to read the response from URL before timing out
+     */
+    @Default
+    private final String contentTypeHeader = "text/plain";
+
+    /**
+     * The amount of time allowed to read the response from URL before timing out
+     */
+    @Default
+    private final String acceptHeader = "text/plain";
+
 
     /** {@inheritDoc} */
     @Override
     protected EnforcerResult enforceInternal(final @NonNull InputStream actualFileInputStream) throws IOException {
         val httpUrlConnection = (HttpURLConnection) new URL(url).openConnection();
         httpUrlConnection.setDoOutput(true);
-        httpUrlConnection.setRequestMethod("POST");
-        httpUrlConnection.setRequestProperty("Content-Type", "text/plain");
-        httpUrlConnection.setRequestProperty("Accept", "text/plain");
-        httpUrlConnection.setConnectTimeout(connectTimeout == 0 ? 500 : connectTimeout);
-        httpUrlConnection.setReadTimeout(readTimeout == 0 ? 500 : readTimeout);
+        httpUrlConnection.setRequestMethod(method);
+        httpUrlConnection.setRequestProperty("Content-Type", contentTypeHeader);
+        httpUrlConnection.setRequestProperty("Accept", acceptHeader);
+        httpUrlConnection.setConnectTimeout(connectTimeout);
+        httpUrlConnection.setReadTimeout(readTimeout);
         try (val outputStream = httpUrlConnection.getOutputStream()) {
             val buffer = new byte[DEFAULT_BUFFER_SIZE];
             int read;
@@ -63,15 +84,15 @@ public class ContentHttpValidated extends AbstractFileEnforcer {
                 outputStream.write(buffer, 0, read);
             }
         }
-        val responseCode = String.valueOf(httpUrlConnection.getResponseCode());
-        if (responseCode.startsWith("2")) {
+        val responseCode = httpUrlConnection.getResponseCode();
+        if (responseCode >= 200 && responseCode < 300) {
             return EnforcerResult.passed();
         }
         try (val errorStream = httpUrlConnection.getErrorStream();
              val bufferedReader = new BufferedReader(new InputStreamReader(errorStream))) {
             val responseMessage = bufferedReader.lines()
                 .collect(Collectors.joining());
-            if (responseCode.startsWith("4")) {
+            if (responseCode >= 400 && responseCode < 500) {
                 return EnforcerResult.failed(String.format(HTTP_RESPONSE_VALIDATION_MESSAGE_TEMPLATE, responseMessage));
             } else {
                 return EnforcerResult.failed(String.format(HTTP_RESPONSE_ERROR_MESSAGE_TEMPLATE, responseCode, responseMessage));
