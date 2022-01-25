@@ -21,6 +21,7 @@ class NativeImageConfigSpec extends Specification {
 
         then:
         args.contains("--enable-url-protocols=http,https")
+        args.contains("--initialize-at-build-time=com.optum.sourcehawk.enforcer.file")
         args.contains("--initialize-at-build-time=com.fasterxml.jackson,org.yaml.snakeyaml")
         args.contains("--initialize-at-build-time=javax,jdk.xml.internal")
         args.contains("--initialize-at-build-time=com.sun.xml.internal.stream.util,com.sun.xml.internal.stream.XMLEntityStorage")
