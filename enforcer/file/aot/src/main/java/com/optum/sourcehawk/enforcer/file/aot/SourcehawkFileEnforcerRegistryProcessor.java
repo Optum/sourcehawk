@@ -45,6 +45,7 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
     private static final String FILE_ENFORCER_PACKAGE = "com.optum.sourcehawk.enforcer.file";
     private static final String FILE_ENFORCER_CLASS_NAME = FILE_ENFORCER_PACKAGE + ".FileEnforcer";
     private static final String REFLECT_CONFIG_OUTPUT_PATH = "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/reflect-config.json";
+    private static final String NATIVE_IMAGE_PROPERTIES_OUTPUT_PATH = "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/native-image.properties";
     private final Class<?> fileEnforcerClass;
     private final Map<String, Class<?>> fileEnforcerClasses = new HashMap<>();
 
@@ -82,6 +83,7 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
         if (roundEnvironment.processingOver()) {
             try {
                 buildFileEnforcerRegistryJavaFile(fileEnforcerClasses).writeTo(processingEnv.getFiler());
+                generateNativeImagePropertiesFile(fileEnforcerClasses);
                 generateNativeImageReflectConfigFile(fileEnforcerClasses);
             } catch (final Exception e) {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Unable to generate file enforcer registry: " + e.toString());
@@ -203,6 +205,26 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
             }
             writer.println();
             writer.println("]");
+        }
+    }
+
+    private void generateNativeImagePropertiesFile(final Map<String, Class<?>> fileEnforcers) throws IOException {
+        final FileObject reflectConfigJsonResource = processingEnv.getFiler()
+            .createResource(StandardLocation.CLASS_OUTPUT, "", NATIVE_IMAGE_PROPERTIES_OUTPUT_PATH);
+        try (final PrintWriter writer = new PrintWriter(reflectConfigJsonResource.openWriter())) {
+            writer.println("Args = \\");
+            final Iterator<Class<?>> fileEnforcersIterator = fileEnforcers.values().iterator();
+            while (fileEnforcersIterator.hasNext()) {
+                final Class<?> fileEnforcer = fileEnforcersIterator.next();
+                writer.print("       --initialize-at-build-time=");
+                writer.print(fileEnforcer.getCanonicalName());
+                writer.print(",");
+                writer.print(fileEnforcer.getCanonicalName() + "$Builder");
+                if (fileEnforcersIterator.hasNext()) {
+                    writer.println(" \\");
+                }
+            }
+            writer.println();
         }
     }
 
