@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: sourcehawk-scan-bitbucket
 .\"    Author: [see the "AUTHOR(S)" section]
-.\" Generator: Asciidoctor 2.0.10
-.\"      Date: 2021-02-25
+.\" Generator: Asciidoctor 2.0.15
+.\"      Date: 2022-01-25
 .\"    Manual: Sourcehawk Manual
 .\"    Source: 
 .\"  Language: English
 .\"
-.TH "SOURCEHAWK\-SCAN\-BITBUCKET" "1" "2021-02-25" "" "Sourcehawk Manual"
+.TH "SOURCEHAWK\-SCAN\-BITBUCKET" "1" "2022-01-25" "" "Sourcehawk Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -28,15 +28,20 @@
 .  LINKSTYLE blue R < >
 .\}
 .SH "NAME"
-sourcehawk\-scan\-bitbucket \- Runs a Sourcehawk scan on remote Bitbucket source code instead of local file system
+sourcehawk-scan-bitbucket \- Runs a Sourcehawk scan on remote Bitbucket source code instead of local file system
 .SH "SYNOPSIS"
 .sp
-\fBsourcehawk scan bitbucket\fP [\fB\-hV\fP] [[\fB\-t\fP=\fIbitbucket\-token\fP] [\fB\-S\fP=\fIbitbucket\-server\-url\fP]
-\fIREMOTE\-REFERENCE\fP] [COMMAND]
+\fBsourcehawk scan bitbucket\fP [\fB\-hV\fP] [[\fB\-t\fP=\fIbitbucket\-token\fP] [\fB\-a\fP=\fIauth\-scheme\fP]
+[\fB\-S\fP=\fIbitbucket\-server\-url\fP] \fIREMOTE\-REFERENCE\fP] [COMMAND]
 .SH "DESCRIPTION"
 .sp
 Runs a Sourcehawk scan on remote Bitbucket source code instead of local file system
 .SH "OPTIONS"
+.sp
+\fB\-a\fP, \fB\-\-auth\-scheme\fP=\fIauth\-scheme\fP
+.RS 4
+The authorization scheme to use (either Bearer or Basic).  If Basic, the provided token must be base64 encoded.
+.RE
 .sp
 \fB\-h\fP, \fB\-\-help\fP
 .RS 4
@@ -62,7 +67,7 @@ Print version information and exit.
 .sp
 \fIREMOTE\-REFERENCE\fP
 .RS 4
-The Bitbucket remote reference \- project/repo@ref combination, i.e \- project/repo, project/repo@master,  project/repo@v1.4, or project/repo@a6de43fa51c
+The Bitbucket remote reference \- project/repo@ref combination, i.e \- project/repo, project/repo@main,  project/repo@v1.4, or project/repo@a6de43fa51c
 .RE
 .SH "COMMANDS"
 .sp

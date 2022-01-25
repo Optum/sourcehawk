@@ -1,13 +1,13 @@
 '\" t
 .\"     Title: flatten-config
 .\"    Author: [see the "AUTHOR(S)" section]
-.\" Generator: Asciidoctor 2.0.10
-.\"      Date: 2021-02-25
+.\" Generator: Asciidoctor 2.0.15
+.\"      Date: 2022-01-25
 .\"    Manual: Flatten-config Manual
 .\"    Source: 
 .\"  Language: English
 .\"
-.TH "FLATTEN\-CONFIG" "1" "2021-02-25" "" "Flatten\-config Manual"
+.TH "FLATTEN\-CONFIG" "1" "2022-01-25" "" "Flatten\-config Manual"
 .ie \n(.g .ds Aq \(aq
 .el       .ds Aq '
 .ss \n[.ss] 0
@@ -28,7 +28,7 @@
 .  LINKSTYLE blue R < >
 .\}
 .SH "NAME"
-flatten\-config \- Flatten the sourcehawk configuration onto system by recursively reading and merging local and remote configurations will output to console by default
+flatten-config \- Flatten the sourcehawk configuration onto system by recursively reading and merging local and remote configurations will output to console by default
 .SH "SYNOPSIS"
 .sp
 \fBflatten\-config\fP [\fB\-hV\fP] [\fB\-o\fP=\fI<outputPath>\fP] [[\fB\-c\fP=\fIconfig\-file\-path\fP] |
@@ -44,7 +44,9 @@ The configuration file, can be relative, or absolute
 .sp
 .if n .RS 4
 .nf
+.fam C
 Default: sourcehawk.yml
+.fam
 .fi
 .if n .RE
 .RE
