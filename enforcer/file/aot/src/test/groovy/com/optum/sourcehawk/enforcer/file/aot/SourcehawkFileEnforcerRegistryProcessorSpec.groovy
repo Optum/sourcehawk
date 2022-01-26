@@ -98,7 +98,6 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         FileObject mockReflectConfigJsonResourceObject = Mock()
 
         Writer javaFileWriter = new StringWriter()
-        Writer nativeImagePropertiesResourceWriter = new StringWriter()
         Writer reflectConfigJsonResourceWriter = new StringWriter()
 
         when:
@@ -110,14 +109,12 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         1 * mockPackageElement.getQualifiedName() >> mockPackageName
         1 * mockPackageName.toString() >> "com.optum.sourcehawk.enforcer.file"
         1 * mockRoundEnvironment.processingOver() >> true
-        4 * mockProcessingEnvironment.getFiler() >> mockFiler
+        3 * mockProcessingEnvironment.getFiler() >> mockFiler
         1 * mockFiler.createSourceFile("com.optum.sourcehawk.enforcer.file.FileEnforcerRegistry", []) >> mockJavaFileObject
         1 * mockJavaFileObject.openWriter() >> javaFileWriter
         1 * mockFiler.getResource(StandardLocation.CLASS_PATH, "", "reflect-config-template.json") >> mockFileObject
         1 * mockFileObject.getCharContent(false) >> IoUtil.getResourceAsStream("/reflect-config-template.json").text
-        1 * mockFiler.createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/native-image.properties") >> mockNativeImagePropertiesResourceObject
         1 * mockFiler.createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/reflect-config.json") >> mockReflectConfigJsonResourceObject
-        1 * mockNativeImagePropertiesResourceObject.openWriter() >> nativeImagePropertiesResourceWriter
         1 * mockReflectConfigJsonResourceObject.openWriter() >> reflectConfigJsonResourceWriter
         0 * _
 
@@ -126,12 +123,10 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
 
         when:
         String javaFileContents = javaFileWriter.toString()
-        String nativeImagePropertiesResourceContents = nativeImagePropertiesResourceWriter.toString()
         String reflectConfigJsonResourceContents = reflectConfigJsonResourceWriter.toString()
 
         then:
         javaFileContents == IoUtil.getResourceAsStream("/FileEnforcerRegistry.java.txt").text
-        nativeImagePropertiesResourceContents.trim() == IoUtil.getResourceAsStream("/native-image.properties.txt").text.trim()
         reflectConfigJsonResourceContents.trim() == IoUtil.getResourceAsStream("/reflect-config.json.txt").text.trim()
     }
 

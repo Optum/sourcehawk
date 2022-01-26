@@ -83,7 +83,6 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
         if (roundEnvironment.processingOver()) {
             try {
                 buildFileEnforcerRegistryJavaFile(fileEnforcerClasses).writeTo(processingEnv.getFiler());
-                generateNativeImagePropertiesFile(fileEnforcerClasses);
                 generateNativeImageReflectConfigFile(fileEnforcerClasses);
             } catch (final Exception e) {
                 processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Unable to generate file enforcer registry: " + e.toString());
@@ -205,26 +204,6 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
             }
             writer.println();
             writer.println("]");
-        }
-    }
-
-    private void generateNativeImagePropertiesFile(final Map<String, Class<?>> fileEnforcers) throws IOException {
-        final FileObject reflectConfigJsonResource = processingEnv.getFiler()
-            .createResource(StandardLocation.CLASS_OUTPUT, "", NATIVE_IMAGE_PROPERTIES_OUTPUT_PATH);
-        try (final PrintWriter writer = new PrintWriter(reflectConfigJsonResource.openWriter())) {
-            writer.println("Args = \\");
-            final Iterator<Class<?>> fileEnforcersIterator = fileEnforcers.values().iterator();
-            while (fileEnforcersIterator.hasNext()) {
-                final Class<?> fileEnforcer = fileEnforcersIterator.next();
-                writer.print("       --initialize-at-build-time=");
-                writer.print(fileEnforcer.getCanonicalName());
-                writer.print(",");
-                writer.print(fileEnforcer.getCanonicalName() + "$Builder");
-                if (fileEnforcersIterator.hasNext()) {
-                    writer.println(" \\");
-                }
-            }
-            writer.println();
         }
     }
 
