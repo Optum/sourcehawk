@@ -94,7 +94,8 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         Filer mockFiler = Mock()
         JavaFileObject mockJavaFileObject = Mock()
         FileObject mockFileObject = Mock()
-        FileObject mockResourceObject = Mock()
+        FileObject mockNativeImagePropertiesResourceObject = Mock()
+        FileObject mockReflectConfigJsonResourceObject = Mock()
 
         Writer javaFileWriter = new StringWriter()
         Writer reflectConfigJsonResourceWriter = new StringWriter()
@@ -113,8 +114,8 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         1 * mockJavaFileObject.openWriter() >> javaFileWriter
         1 * mockFiler.getResource(StandardLocation.CLASS_PATH, "", "reflect-config-template.json") >> mockFileObject
         1 * mockFileObject.getCharContent(false) >> IoUtil.getResourceAsStream("/reflect-config-template.json").text
-        1 * mockFiler.createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/reflect-config.json") >> mockResourceObject
-        1 * mockResourceObject.openWriter() >> reflectConfigJsonResourceWriter
+        1 * mockFiler.createResource(StandardLocation.CLASS_OUTPUT, "", "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/reflect-config.json") >> mockReflectConfigJsonResourceObject
+        1 * mockReflectConfigJsonResourceObject.openWriter() >> reflectConfigJsonResourceWriter
         0 * _
 
         and:

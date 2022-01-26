@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.7.0-SNAPSHOT</version>
+        <version>0.7.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,9 +19,10 @@
 
     <properties>
         <!-- SONAR PROPERTIES -->
-        <sonar.exclusions>**/utils/ModifiableProperties.java</sonar.exclusions>
-        <sonar.coverage.exclusions>**/utils/ModifiableProperties.java</sonar.coverage.exclusions>
-        <sonar.cpd.exclusions>**/utils/ModifiableProperties.java</sonar.cpd.exclusions>
+        <sca.exclusions>**/utils/ModifiableProperties.java</sca.exclusions>
+        <sonar.exclusions>${sca.exclusions}</sonar.exclusions>
+        <sonar.coverage.exclusions>${sca.exclusions}</sonar.coverage.exclusions>
+        <sonar.cpd.exclusions>${sca.exclusions}</sonar.cpd.exclusions>
     </properties>
 
     <dependencies>

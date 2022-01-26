@@ -8,7 +8,7 @@
     <parent>
         <artifactId>sourcehawk-dist</artifactId>
         <groupId>com.optum.sourcehawk</groupId>
-        <version>0.7.0-SNAPSHOT</version>
+        <version>0.7.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>sourcehawk-dist-rpm</artifactId>
@@ -18,12 +18,11 @@
     <description>Sourcehawk RPM Packages</description>
 
     <properties>
-        <rpm.package>${bintray.package}</rpm.package>
+        <rpm.package>${global.project.name}</rpm.package>
         <rpm.package.version>${project.version}</rpm.package.version>
         <rpm.package.release/> <!-- Set by plugin dynamically - default for SNAPSHOT builds -->
         <rpm.package.architecture>x86_64</rpm.package.architecture>
         <rpm.build.directory>${project.build.directory}/rpmbuild</rpm.build.directory>
-        <git.commit.id/>
     </properties>
 
     <dependencies>
@@ -106,7 +105,7 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
+                                    <directory>${maven.multiModuleProjectDirectory}/gh-pages/manpages</directory>
                                     <includes>
                                         <include>${rpm.package}*</include>
                                     </includes>

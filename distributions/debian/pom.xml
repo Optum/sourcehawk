@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.7.0-SNAPSHOT</version>
+        <version>0.7.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -19,7 +19,7 @@
 
     <properties>
         <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
-        <debian.package>${bintray.package}</debian.package>
+        <debian.package>${global.project.name}</debian.package>
         <debian.package.version>${project.version}</debian.package.version>
         <debian.package.version.suffix/> <!-- Set dynamically by plugin -->
         <debian.architecture>amd64</debian.architecture>
@@ -85,7 +85,7 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
+                                    <directory>${maven.multiModuleProjectDirectory}/gh-pages/manpages</directory>
                                     <includes>
                                         <include>${debian.package}*</include>
                                     </includes>

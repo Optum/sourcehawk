@@ -1,0 +1,3 @@
+Args = \
+       --initialize-at-build-time=com.optum.sourcehawk.enforcer.file.ConcreteTestFileEnforcer,com.optum.sourcehawk.enforcer.file.ConcreteTestFileEnforcer$Builder \
+       --initialize-at-build-time=com.optum.sourcehawk.enforcer.file.Concrete2TestFileEnforcer,com.optum.sourcehawk.enforcer.file.Concrete2TestFileEnforcer$Builder
