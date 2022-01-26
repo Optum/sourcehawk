@@ -18,7 +18,7 @@
     <description>Sourcehawk RPM Packages</description>
 
     <properties>
-        <rpm.package>${bintray.package}</rpm.package>
+        <rpm.package>${global.project.name}</rpm.package>
         <rpm.package.version>${project.version}</rpm.package.version>
         <rpm.package.release/> <!-- Set by plugin dynamically - default for SNAPSHOT builds -->
         <rpm.package.architecture>x86_64</rpm.package.architecture>

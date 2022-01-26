@@ -45,7 +45,6 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
     private static final String FILE_ENFORCER_PACKAGE = "com.optum.sourcehawk.enforcer.file";
     private static final String FILE_ENFORCER_CLASS_NAME = FILE_ENFORCER_PACKAGE + ".FileEnforcer";
     private static final String REFLECT_CONFIG_OUTPUT_PATH = "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/reflect-config.json";
-    private static final String NATIVE_IMAGE_PROPERTIES_OUTPUT_PATH = "META-INF/native-image/sourcehawk-generated/sourcehawk-enforcer-file/native-image.properties";
     private final Class<?> fileEnforcerClass;
     private final Map<String, Class<?>> fileEnforcerClasses = new HashMap<>();
 

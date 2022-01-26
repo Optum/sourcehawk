@@ -19,7 +19,7 @@
 
     <properties>
         <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
-        <debian.package>${bintray.package}</debian.package>
+        <debian.package>${global.project.name}</debian.package>
         <debian.package.version>${project.version}</debian.package.version>
         <debian.package.version.suffix/> <!-- Set dynamically by plugin -->
         <debian.architecture>amd64</debian.architecture>
