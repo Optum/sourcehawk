@@ -105,7 +105,7 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
+                                    <directory>${maven.multiModuleProjectDirectory}/gh-pages/manpages</directory>
                                     <includes>
                                         <include>${rpm.package}*</include>
                                     </includes>
