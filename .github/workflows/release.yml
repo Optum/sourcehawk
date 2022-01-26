@@ -230,7 +230,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-fedora-35.rpm
-          asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-1.fc35.x86_64.rpm
+          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc35.x86_64.rpm
           asset_content_type: application/octet-stream
   build-mac-native-image:
     runs-on: macos-latest
@@ -304,7 +304,7 @@ jobs:
           asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
           asset_content_type: application/octet-stream
       - name: Update Optum Homebrew Tap Formula
-        uses: mislav/bump-homebrew-formula-action@v1.10
+        uses: mislav/bump-homebrew-formula-action@v1.16
         continue-on-error: true
         with:
           formula-name: sourcehawk
