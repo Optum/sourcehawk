@@ -105,10 +105,6 @@ jobs:
         with:
           name: manpages
           path: gh-pages/manpages/sourcehawk*.1
-      - name: Aggregate Coverage Reports
-        id: aggregate_coverage_reports
-        if: success() && (matrix.java == '11')
-        run: echo ::set-output name=JACOCO_XML_REPORT_PATHS::$(find . -name "jacoco.xml" -printf '%P\n' | tr '\r\n' ',')
       - name: Analyze with SonarCloud
         if: success() && (github.event_name == 'push' && matrix.java == '11')
         continue-on-error: true

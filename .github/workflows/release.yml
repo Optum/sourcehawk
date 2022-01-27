@@ -77,10 +77,6 @@ jobs:
         with:
           name: manpages
           path: gh-pages/manpages/sourcehawk*.1
-      - name: Aggregate Coverage Reports
-        id: aggregate_coverage_reports
-        if: success()
-        run: echo ::set-output name=JACOCO_XML_REPORT_PATHS::$(find . -name "jacoco.xml" -printf '%P\n' | tr '\r\n' ',')
       - name: Generate Changelog
         if: success()
         uses: heinrichreimer/github-changelog-generator-action@v2.1.1
