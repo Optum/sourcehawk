@@ -16,6 +16,9 @@ on:
         required: false
         default: 'false'
 
+env:
+  PRIMARY_JAVA_VERSION: '11'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,7 +26,6 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
       RELEASE_VERSION: ${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}
-      RELEASE_ASSET_UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
@@ -34,7 +36,7 @@ jobs:
       - name: Setup Java and Maven
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           server-id: ossrh
           server-username: SONATYPE_USERNAME
           server-password: SONATYPE_PASSWORD
@@ -59,6 +61,12 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
+      - name: Archive Workspace
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: workspace
+          path: ${{ github.workspace }}
       - name: Archive Native Image JAR
         if: success()
         uses: actions/upload-artifact@v2
@@ -77,17 +85,17 @@ jobs:
         with:
           name: manpages
           path: gh-pages/manpages/sourcehawk*.1
-      - name: Generate Changelog
-        if: success()
-        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+  release:
+    runs-on: ubuntu-latest
+    needs: build
+    outputs:
+      RELEASE_ASSET_UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Download Workspace
+        uses: actions/download-artifact@v2
         with:
-          futureRelease: ${{ format('v{0}', steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
-          output: CHANGELOG.md
-          releaseBranch: ${{ github.event.inputs.ref }}
-          stripGeneratorNotice: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          usernamesAsGithubLogins: true
-      - name: Tag
+          name: workspace
+      - name: Git Tag
         if: success()
         run: |
           git config user.name "$GIT_USERNAME" && git config user.email "$GIT_EMAIL"
@@ -97,6 +105,16 @@ jobs:
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
           RELEASE_VERSION: ${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}
+      - name: Generate Changelog
+        if: success()
+        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+        with:
+          futureRelease: ${{ format('v{0}', needs.build.outputs.RELEASE_VERSION) }}
+          output: CHANGELOG.md
+          releaseBranch: ${{ github.event.inputs.ref }}
+          stripGeneratorNotice: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          usernamesAsGithubLogins: true
       - name: Create Release
         if: success()
         id: create_release
@@ -104,20 +122,11 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ format('v{0}', steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
-          release_name: ${{ format('{0} {1}', github.event.repository.name, steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
+          tag_name: ${{ format('v{0}', needs.build.outputs.RELEASE_VERSION) }}
+          release_name: ${{ format('{0} {1}', github.event.repository.name, needs.build.outputs.RELEASE_VERSION) }}
           body_path: CHANGELOG.md
           draft: ${{ github.event.inputs.draft }}
           prerelease: ${{ github.event.inputs.prerelease }}
-      - name: Publish Github Pages
-        if: success()
-        continue-on-error: true
-        uses: jamesives/github-pages-deploy-action@3.7.1
-        with:
-          COMMIT_MESSAGE: ${{ format('Publishing github pages for release version {0}', steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BRANCH: gh-pages
-          FOLDER: gh-pages
       - name: Upload Sourcehawk Linux Executable
         if: success()
         continue-on-error: true
@@ -127,7 +136,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/linux/target/sourcehawk
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-linux-x86_64
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-linux-x86_64
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Debian Buster Package
         if: success()
@@ -138,7 +147,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/debian/target/sourcehawk-debian-buster.deb
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-debian-buster-amd64.deb
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-debian-buster-amd64.deb
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Ubuntu Focal Package
         if: success()
@@ -149,7 +158,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/debian/target/sourcehawk-ubuntu-focal.deb
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-ubuntu-focal-amd64.deb
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-ubuntu-focal-amd64.deb
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Centos 7 RPM Package
         if: success()
@@ -160,7 +169,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-centos-7.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.el7.x86_64.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.el7.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Centos 8 RPM Package
         if: success()
@@ -171,7 +180,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-centos-8.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.el8.x86_64.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.el8.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Fedora 33 RPM Package
         if: success()
@@ -182,7 +191,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-fedora-33.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc33.x86_64.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.fc33.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Fedora 34 RPM Package
         if: success()
@@ -193,7 +202,7 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-fedora-34.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc34.x86_64.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.fc34.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Fedora 35 RPM Package
         if: success()
@@ -204,8 +213,17 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-fedora-35.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc35.x86_64.rpm
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-1.fc35.x86_64.rpm
           asset_content_type: application/octet-stream
+      - name: Publish Github Pages
+        if: success()
+        continue-on-error: true
+        uses: jamesives/github-pages-deploy-action@3.7.1
+        with:
+          COMMIT_MESSAGE: ${{ format('Publishing github pages for release version {0}', needs.build.outputs.RELEASE_VERSION) }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: gh-pages
   build-mac-native-image:
     runs-on: macos-latest
     needs: build
@@ -215,31 +233,17 @@ jobs:
         with:
           name: native-image-jar
           path: build
-      - name: Download Completion Script
-        uses: actions/download-artifact@v2
-        with:
-          name: completion-script
-          path: build
-      - name: Download Manpages
-        uses: actions/download-artifact@v2
-        with:
-          name: manpages
-          path: build
       - name: Rename Native Image JAR
         working-directory: build
         run: mv *.jar native-image.jar
-      - name: Setup Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
       - name: Setup GraalVM
         uses: graalvm/setup-graalvm@v1
         with:
           version: '21.3.0'
-          java-version: '11'
+          java-version: '${{ env.PRIMARY_JAVA_VERSION }}
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Mac Native Image
+      - name: Build Native Image
         if: success()
         working-directory: build
         run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback
@@ -247,25 +251,53 @@ jobs:
         if: success()
         working-directory: build
         run: ./sourcehawk help
-      - name: Create Homebrew Tap Formula Archive
+      - name: Archive Mac Native Image
         if: success()
-        working-directory: build
-        run: |
-          cp sourcehawk-completion.sh sourcehawk-bash-completion.sh
-          cp sourcehawk-completion.sh sourcehawk-zsh-completion.sh
-          gzip sourcehawk*.1 && tar -czvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk sourcehawk-bash-completion.sh sourcehawk-zsh-completion.sh sourcehawk*.1.gz
-      - name: Upload Sourcehawk Mac Executable
+        uses: actions/upload-artifact@v2
+        with:
+          name: mac-native-image
+          path: build/sourcehawk
+      - name: Upload Binary Release Asset
         if: success()
         continue-on-error: true
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          upload_url: ${{ needs.release.outputs.RELEASE_ASSET_UPLOAD_URL }}
           asset_path: build/sourcehawk
           asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64
           asset_content_type: application/octet-stream
-      - name: Upload Sourcehawk Mac Homebrew Tap Formula Archive
+  update-homebrew-tap:
+    runs-on: macos-latest
+    needs: build-mac-native-image
+    steps:
+      - name: Download Mac Native Image
+        uses: actions/download-artifact@v2
+        with:
+          name: mac-native-image
+          path: homebrew
+      - name: Download Completion Script
+        uses: actions/download-artifact@v2
+        with:
+          name: completion-script
+          path: homebrew
+      - name: Download Manpages
+        uses: actions/download-artifact@v2
+        with:
+          name: manpages
+          path: homebrew
+      - name: Create Homebrew Tap Formula Archive
+        if: success()
+        working-directory: homebrew
+        run: |
+          chmod +x sourcehawk
+          cp sourcehawk-completion.sh sourcehawk-bash-completion.sh
+          cp sourcehawk-completion.sh sourcehawk-zsh-completion.sh
+          chmod +x *.sh
+          gzip sourcehawk*.1
+          tar -cvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk*
+      - name: Upload Homebrew Tap Formula Archive
         id: upload_homebrew_tap_formula_archive
         if: success()
         continue-on-error: true
@@ -273,12 +305,12 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
-          asset_path: build/sourcehawk-homebrew-tap-formula.tar.gz
+          upload_url: ${{ needs.release.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          asset_path: homebrew/sourcehawk-homebrew-tap-formula.tar.gz
           asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
           asset_content_type: application/octet-stream
       - name: Update Optum Homebrew Tap Formula
-        uses: mislav/bump-homebrew-formula-action@v1.10
+        uses: mislav/bump-homebrew-formula-action@v1.16
         continue-on-error: true
         with:
           formula-name: sourcehawk
@@ -308,24 +340,24 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
           version: '20.3.0'
-          java-version: '11'
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Windows Native Image
+      - name: Build Native Image
         if: success()
         run: native-image.cmd -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
       - name: Smoke Test
         if: success()
         shell: cmd
         run: sourcehawk.exe help
-      - name: Upload Sourcehawk Windows Executable
+      - name: Upload Binary Release Asset
         if: success()
         continue-on-error: true
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          upload_url: ${{ needs.release.outputs.RELEASE_ASSET_UPLOAD_URL }}
           asset_path: sourcehawk.exe
           asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-windows-x86_64.exe
           asset_content_type: application/octet-stream

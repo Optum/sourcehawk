@@ -18,6 +18,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <global.project.license.abbrev>GPL-3</global.project.license.abbrev>
         <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
         <debian.package>${global.project.name}</debian.package>
         <debian.package.version>${project.version}</debian.package.version>

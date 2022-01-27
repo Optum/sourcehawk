@@ -18,8 +18,9 @@
     <packaging>pom</packaging>
 
     <properties>
+        <docker.repository>${docker.organization}/${global.project.name}</docker.repository>
+        <ghcr.repository>ghcr.io/optum/${global.project.name}</ghcr.repository>
         <docker.tag>${project.version}</docker.tag>
-        <ghcr.repository>ghcr.io/optum/sourcehawk</ghcr.repository>
     </properties>
 
     <dependencies>

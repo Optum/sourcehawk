@@ -18,8 +18,9 @@
     <packaging>pom</packaging>
 
     <properties>
+        <global.project.license>GNU General Public License version 3</global.project.license>
+        <global.project.license.abbrev>GPLv3</global.project.license.abbrev>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
-        <docker.repository>${docker.organization}/${global.project.name}</docker.repository>
     </properties>
 
     <dependencyManagement>
