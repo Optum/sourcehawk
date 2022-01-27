@@ -1,4 +1,5 @@
 name: Release
+
 on:
   workflow_dispatch:
     inputs:
@@ -14,11 +15,15 @@ on:
         description: 'Is this a pre-release?'
         required: false
         default: 'false'
+
 jobs:
-  build-java-8:
+  build:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    outputs:
+      RELEASE_VERSION: ${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}
+      RELEASE_ASSET_UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
@@ -29,7 +34,7 @@ jobs:
       - name: Setup Java and Maven
         uses: actions/setup-java@v1
         with:
-          java-version: 8
+          java-version: 11
           server-id: ossrh
           server-username: SONATYPE_USERNAME
           server-password: SONATYPE_PASSWORD
@@ -54,33 +59,6 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
-  build-java-11:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    outputs:
-      RELEASE_VERSION: ${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}
-      RELEASE_ASSET_UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.ref }}
-      - name: Setup Java and Maven
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: Set Maven Project Version
-        id: set_maven_project_version
-        shell: bash
-        run: |
-          RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
-          [[ "$RELEASE_VERSION" == *"-SNAPSHOT" ]] && RELEASE_VERSION="${RELEASE_VERSION%"-SNAPSHOT"}" && ./mvnw --batch-mode versions:set -D removeSnapshot || true
-          [[ "$(git tag -l $RELEASE_VERSION)" == "$RELEASE_VERSION" ]] && echo "Tag $RELEASE_VERSION already exists" && exit 1
-          echo ::set-output name=RELEASE_VERSION::$RELEASE_VERSION
-      - name: Build Maven Project
-        if: success()
-        run: ./mvnw --batch-mode install -D ci.build -D ci.release
       - name: Archive Native Image JAR
         if: success()
         uses: actions/upload-artifact@v2
@@ -230,11 +208,11 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./distributions/rpm/target/sourcehawk-fedora-35.rpm
-          asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-1.fc35.x86_64.rpm
+          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc35.x86_64.rpm
           asset_content_type: application/octet-stream
   build-mac-native-image:
     runs-on: macos-latest
-    needs: build-java-11
+    needs: build
     steps:
       - name: Download Native Image JAR
         uses: actions/download-artifact@v2
@@ -287,9 +265,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build-java-11.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
           asset_path: build/sourcehawk
-          asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-darwin-x86_64
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Mac Homebrew Tap Formula Archive
         id: upload_homebrew_tap_formula_archive
@@ -299,28 +277,28 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build-java-11.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
           asset_path: build/sourcehawk-homebrew-tap-formula.tar.gz
-          asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
           asset_content_type: application/octet-stream
       - name: Update Optum Homebrew Tap Formula
         uses: mislav/bump-homebrew-formula-action@v1.10
         continue-on-error: true
         with:
           formula-name: sourcehawk
-          tag-name: ${{ needs.build-java-11.outputs.RELEASE_VERSION }}
+          tag-name: ${{ needs.build.outputs.RELEASE_VERSION }}
           homebrew-tap: optum/homebrew-tap
           base-branch: main
           download-url: ${{ steps.upload_homebrew_tap_formula_archive.outputs.browser_download_url }}
           commit-message: |
-            Sourcehawk ${{ needs.build-java-11.outputs.RELEASE_VERSION }}
+            Sourcehawk ${{ needs.build.outputs.RELEASE_VERSION }}
             
             Updating sourcehawk formula to latest release version
         env:
           COMMITTER_TOKEN: ${{ secrets.GIT_COMMITTER_TOKEN }}
   build-windows-native-image:
     runs-on: windows-latest
-    needs: build-java-11
+    needs: build
     steps:
       - name: Download Native Image JAR
         uses: actions/download-artifact@v2
@@ -351,7 +329,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build-java-11.outputs.RELEASE_ASSET_UPLOAD_URL }}
+          upload_url: ${{ needs.build.outputs.RELEASE_ASSET_UPLOAD_URL }}
           asset_path: sourcehawk.exe
-          asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-windows-x86_64.exe
+          asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-windows-x86_64.exe
           asset_content_type: application/octet-stream
