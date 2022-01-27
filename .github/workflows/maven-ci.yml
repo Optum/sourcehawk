@@ -44,7 +44,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [${{ env.PRIMARY_JAVA_VERSION }}, '17']
+        java: [env.PRIMARY_JAVA_VERSION, '17']
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
