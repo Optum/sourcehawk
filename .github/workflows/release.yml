@@ -240,7 +240,7 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
           version: '21.3.0'
-          java-version: '${{ env.PRIMARY_JAVA_VERSION }}
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Native Image
