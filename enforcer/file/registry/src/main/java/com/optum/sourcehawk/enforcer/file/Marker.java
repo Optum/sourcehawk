@@ -10,4 +10,4 @@ import com.optum.sourcehawk.enforcer.file.aot.SourcehawkFileEnforcerRegistry;
  */
 @SuppressWarnings("unused")
 @SourcehawkFileEnforcerRegistry
-public interface Marker { }
+interface Marker { }
