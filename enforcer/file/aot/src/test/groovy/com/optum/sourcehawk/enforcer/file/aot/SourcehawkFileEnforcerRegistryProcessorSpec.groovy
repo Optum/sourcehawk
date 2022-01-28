@@ -14,7 +14,6 @@ import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Name
-import javax.lang.model.element.PackageElement
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
 import javax.tools.FileObject
@@ -58,12 +57,12 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
 
     def "process - not over"() {
         given:
-        TypeElement mockTypeElement = Mock()
-        Set<? extends TypeElement> annotations = [ mockTypeElement ] as Set
+        TypeElement mockAnnotationTypeElement = Mock()
+        Set<? extends TypeElement> annotations = [ mockAnnotationTypeElement ] as Set
         RoundEnvironment mockRoundEnvironment = Mock()
         AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor()
 
-        PackageElement mockPackageElement = Mock()
+        TypeElement mockTypeElement = Mock()
         Name mockPackageName = Mock()
 
         when:
@@ -71,8 +70,8 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         boolean process = sourcehawkFileEnforcerRegistryProcessor.process(annotations, mockRoundEnvironment)
 
         then:
-        1 * mockRoundEnvironment.getElementsAnnotatedWith(mockTypeElement) >> [ mockPackageElement ]
-        1 * mockPackageElement.getQualifiedName() >> mockPackageName
+        1 * mockRoundEnvironment.getElementsAnnotatedWith(mockAnnotationTypeElement) >> [ mockTypeElement ]
+        1 * mockTypeElement.getQualifiedName() >> mockPackageName
         1 * mockPackageName.toString() >> "com.optum.sourcehawk.enforcer.file"
         1 * mockRoundEnvironment.processingOver() >> false
         0 * _
@@ -84,17 +83,16 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
     def "process - over"() {
         given:
         ProcessingEnvironment mockProcessingEnvironment = Mock()
-        TypeElement mockTypeElement = Mock()
-        Set<? extends TypeElement> annotations = [ mockTypeElement ] as Set
+        TypeElement mockAnnotationTypeElement = Mock()
+        Set<? extends TypeElement> annotations = [ mockAnnotationTypeElement ] as Set
         RoundEnvironment mockRoundEnvironment = Mock()
         AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor(TestFileEnforcer.class.canonicalName)
 
-        PackageElement mockPackageElement = Mock()
+        TypeElement mockTypeElement = Mock()
         Name mockPackageName = Mock()
         Filer mockFiler = Mock()
         JavaFileObject mockJavaFileObject = Mock()
         FileObject mockFileObject = Mock()
-        FileObject mockNativeImagePropertiesResourceObject = Mock()
         FileObject mockReflectConfigJsonResourceObject = Mock()
 
         Writer javaFileWriter = new StringWriter()
@@ -105,8 +103,8 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         boolean process = sourcehawkFileEnforcerRegistryProcessor.process(annotations, mockRoundEnvironment)
 
         then:
-        1 * mockRoundEnvironment.getElementsAnnotatedWith(mockTypeElement) >> [ mockPackageElement ]
-        1 * mockPackageElement.getQualifiedName() >> mockPackageName
+        1 * mockRoundEnvironment.getElementsAnnotatedWith(mockAnnotationTypeElement) >> [ mockTypeElement ]
+        1 * mockTypeElement.getQualifiedName() >> mockPackageName
         1 * mockPackageName.toString() >> "com.optum.sourcehawk.enforcer.file"
         1 * mockRoundEnvironment.processingOver() >> true
         3 * mockProcessingEnvironment.getFiler() >> mockFiler
@@ -133,12 +131,12 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
     def "process - over (error during code generation)"() {
         given:
         ProcessingEnvironment mockProcessingEnvironment = Mock()
-        TypeElement mockTypeElement = Mock()
-        Set<? extends TypeElement> annotations = [ mockTypeElement ] as Set
+        TypeElement mockAnnotationTypeElement = Mock()
+        Set<? extends TypeElement> annotations = [ mockAnnotationTypeElement ] as Set
         RoundEnvironment mockRoundEnvironment = Mock()
         AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor()
 
-        PackageElement mockPackageElement = Mock()
+        TypeElement mockTypeElement = Mock()
         Name mockPackageName = Mock()
         Filer mockFiler = Mock()
         Messager mockMessager = Mock()
@@ -148,8 +146,8 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         boolean process = sourcehawkFileEnforcerRegistryProcessor.process(annotations, mockRoundEnvironment)
 
         then:
-        1 * mockRoundEnvironment.getElementsAnnotatedWith(mockTypeElement) >> [ mockPackageElement ]
-        1 * mockPackageElement.getQualifiedName() >> mockPackageName
+        1 * mockRoundEnvironment.getElementsAnnotatedWith(mockAnnotationTypeElement) >> [ mockTypeElement ]
+        1 * mockTypeElement.getQualifiedName() >> mockPackageName
         1 * mockPackageName.toString() >> "com.optum.sourcehawk.enforcer.file"
         1 * mockRoundEnvironment.processingOver() >> true
         1 * mockProcessingEnvironment.getFiler() >> mockFiler
