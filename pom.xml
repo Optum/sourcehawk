@@ -238,6 +238,7 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <configuration>
                             <sourcepath>${project.build.directory}/delombok</sourcepath>
+                            <doclint>none</doclint>
                         </configuration>
                     </plugin>
                 </plugins>
