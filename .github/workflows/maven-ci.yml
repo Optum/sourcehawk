@@ -136,10 +136,8 @@ jobs:
     runs-on: macos-latest
     needs: build
     steps:
-      - name: Download Workspace
-        uses: actions/download-artifact@v2
-        with:
-          name: workspace
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
       - name: Record Git Info
         run: |
           echo -n "Current branch: "
@@ -150,7 +148,7 @@ jobs:
           echo "$CURRENT_BRANCH"
           
           echo -n "Determining lastest tag: "
-          LATEST_TAG="$(curl -s https://api.github.com/repos/optum.sourcehawk/releases | jq -cr ".[] | select (.target_commitish == \"$CURRENT_BRANCH\") | .tag_name" | head -1)"
+          LATEST_TAG="$(curl -s https://api.github.com/repos/optum/sourcehawk/releases | jq -cr ".[] | select (.target_commitish == \"$CURRENT_BRANCH\") | .tag_name" | head -1)"
           echo "$LATEST_TAG"
           
           echo -n "Determining lastest version: "
