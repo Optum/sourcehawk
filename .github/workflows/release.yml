@@ -16,9 +16,6 @@ on:
         required: false
         default: 'false'
 
-env:
-  PRIMARY_JAVA_VERSION: '11'
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -36,7 +33,7 @@ jobs:
       - name: Setup Java and Maven
         uses: actions/setup-java@v1
         with:
-          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
+          java-version: 11
           server-id: ossrh
           server-username: SONATYPE_USERNAME
           server-password: SONATYPE_PASSWORD
@@ -240,7 +237,7 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
           version: '21.3.0'
-          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
+          java-version: 11
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Native Image
@@ -340,7 +337,7 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
           version: '20.3.0'
-          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
+          java-version: 11
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Native Image
