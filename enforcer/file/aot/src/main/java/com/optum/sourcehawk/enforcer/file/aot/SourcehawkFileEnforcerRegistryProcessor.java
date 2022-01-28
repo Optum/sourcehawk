@@ -10,17 +10,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
-import org.reflections.Reflections;
-
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
@@ -34,6 +23,15 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import org.reflections.Reflections;
 
 /**
  * An annotation processor for generating a file enforcer registry
@@ -75,7 +73,7 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
         annotations.stream()
                 .map(roundEnvironment::getElementsAnnotatedWith)
                 .flatMap(Collection::stream)
-                .map(PackageElement.class::cast)
+                .map(TypeElement.class::cast)
                 .map(this::createFileEnforcers)
                 .filter(Objects::nonNull)
                 .forEach(fileEnforcerClasses::putAll);
@@ -106,12 +104,12 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
     /**
      * Create the file enforcers
      *
-     * @param packageElement the package element
+     * @param typeElement the type element
      * @return the file enforcer entry
      */
-    private Map<String, Class<?>> createFileEnforcers(final PackageElement packageElement) {
-        return Stream.of(packageElement)
-                .map(PackageElement::getQualifiedName)
+    private Map<String, Class<?>> createFileEnforcers(final TypeElement typeElement) {
+        return Stream.of(typeElement)
+                .map(TypeElement::getQualifiedName)
                 .map(String::valueOf)
                 .map(Reflections::new)
                 .map(reflections -> reflections.getSubTypesOf(fileEnforcerClass))
