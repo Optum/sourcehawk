@@ -194,7 +194,7 @@ jobs:
         continue-on-error: true
         uses: actions/upload-artifact@v2
         with:
-          name: homebrew-tap-formula
+          name: homebrew-tap-formula-archive
           path: build/sourcehawk-homebrew-tap-formula.tar.gz
   build-windows-native-image:
     runs-on: windows-latest

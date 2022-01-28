@@ -104,7 +104,7 @@ jobs:
         env:
           GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
           GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          RELEASE_VERSION: ${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}
+          RELEASE_VERSION: ${{ needs.build.outputs.RELEASE_VERSION }}
       - name: Generate Changelog
         if: success()
         uses: heinrichreimer/github-changelog-generator-action@v2.1.1
@@ -268,7 +268,7 @@ jobs:
           asset_path: build/sourcehawk
           asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64
           asset_content_type: application/octet-stream
-  update-homebrew-tap:
+  build-homebrew-tap-formula-archive:
     runs-on: macos-latest
     needs: build-mac-native-image
     steps:
@@ -276,20 +276,20 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: mac-native-image
-          path: homebrew
+          path: build
       - name: Download Completion Script
         uses: actions/download-artifact@v2
         with:
           name: completion-script
-          path: homebrew
+          path: build
       - name: Download Manpages
         uses: actions/download-artifact@v2
         with:
           name: manpages
-          path: homebrew
+          path: build
       - name: Create Homebrew Tap Formula Archive
         if: success()
-        working-directory: homebrew
+        working-directory: build
         run: |
           chmod +x sourcehawk
           cp sourcehawk-completion.sh sourcehawk-bash-completion.sh
@@ -297,6 +297,22 @@ jobs:
           chmod +x *.sh
           gzip sourcehawk*.1
           tar -cvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk*
+      - name: Archive Homebrew Tap Formula Archive
+        if: success()
+        continue-on-error: true
+        uses: actions/upload-artifact@v2
+        with:
+          name: homebrew-tap-formula-archive
+          path: build/sourcehawk-homebrew-tap-formula.tar.gz
+  update-homebrew-tap:
+    runs-on: macos-latest
+    needs: build-homebrew-tap-formula-archive
+    steps:
+      - name: Download Homebrew Tap Formula Archive
+        uses: actions/download-artifact@v2
+        with:
+          name: homebrew-tap-formula-archive
+          path: homebrew
       - name: Upload Homebrew Tap Formula Archive
         id: upload_homebrew_tap_formula_archive
         if: success()
