@@ -14,6 +14,7 @@ import javax.annotation.processing.ProcessingEnvironment
 import javax.annotation.processing.RoundEnvironment
 import javax.lang.model.SourceVersion
 import javax.lang.model.element.Name
+import javax.lang.model.element.PackageElement
 import javax.lang.model.element.TypeElement
 import javax.tools.Diagnostic
 import javax.tools.FileObject
@@ -57,21 +58,24 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
 
     def "process - not over"() {
         given:
+        ProcessingEnvironment mockProcessingEnvironment = Mock()
         TypeElement mockAnnotationTypeElement = Mock()
         Set<? extends TypeElement> annotations = [ mockAnnotationTypeElement ] as Set
         RoundEnvironment mockRoundEnvironment = Mock()
         AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor()
 
         TypeElement mockTypeElement = Mock()
+        PackageElement mockPackageElement = Mock()
         Name mockPackageName = Mock()
 
         when:
-        sourcehawkFileEnforcerRegistryProcessor.init(Mock(ProcessingEnvironment))
+        sourcehawkFileEnforcerRegistryProcessor.init(mockProcessingEnvironment)
         boolean process = sourcehawkFileEnforcerRegistryProcessor.process(annotations, mockRoundEnvironment)
 
         then:
         1 * mockRoundEnvironment.getElementsAnnotatedWith(mockAnnotationTypeElement) >> [ mockTypeElement ]
-        1 * mockTypeElement.getQualifiedName() >> mockPackageName
+        1 * mockTypeElement.getEnclosingElement() >> mockPackageElement
+        1 * mockPackageElement.getQualifiedName() >> mockPackageName
         1 * mockPackageName.toString() >> "com.optum.sourcehawk.enforcer.file"
         1 * mockRoundEnvironment.processingOver() >> false
         0 * _
@@ -89,7 +93,9 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor(TestFileEnforcer.class.canonicalName)
 
         TypeElement mockTypeElement = Mock()
+        PackageElement mockPackageElement = Mock()
         Name mockPackageName = Mock()
+        Messager mockMessager = Mock()
         Filer mockFiler = Mock()
         JavaFileObject mockJavaFileObject = Mock()
         FileObject mockFileObject = Mock()
@@ -104,8 +110,12 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
 
         then:
         1 * mockRoundEnvironment.getElementsAnnotatedWith(mockAnnotationTypeElement) >> [ mockTypeElement ]
-        1 * mockTypeElement.getQualifiedName() >> mockPackageName
+        1 * mockTypeElement.getEnclosingElement() >> mockPackageElement
+        1 * mockPackageElement.getQualifiedName() >> mockPackageName
         1 * mockPackageName.toString() >> "com.optum.sourcehawk.enforcer.file"
+        2 * mockProcessingEnvironment.getMessager() >> mockMessager
+        1 * mockMessager.printMessage(Diagnostic.Kind.NOTE, "FileEnforcer registered: com.optum.sourcehawk.enforcer.file.ConcreteTestFileEnforcer")
+        1 * mockMessager.printMessage(Diagnostic.Kind.NOTE, "FileEnforcer registered: com.optum.sourcehawk.enforcer.file.Concrete2TestFileEnforcer")
         1 * mockRoundEnvironment.processingOver() >> true
         3 * mockProcessingEnvironment.getFiler() >> mockFiler
         1 * mockFiler.createSourceFile("com.optum.sourcehawk.enforcer.file.FileEnforcerRegistry", []) >> mockJavaFileObject
@@ -137,6 +147,7 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
         AbstractProcessor sourcehawkFileEnforcerRegistryProcessor = new SourcehawkFileEnforcerRegistryProcessor()
 
         TypeElement mockTypeElement = Mock()
+        PackageElement mockPackageElement = Mock()
         Name mockPackageName = Mock()
         Filer mockFiler = Mock()
         Messager mockMessager = Mock()
@@ -147,7 +158,8 @@ class SourcehawkFileEnforcerRegistryProcessorSpec extends Specification {
 
         then:
         1 * mockRoundEnvironment.getElementsAnnotatedWith(mockAnnotationTypeElement) >> [ mockTypeElement ]
-        1 * mockTypeElement.getQualifiedName() >> mockPackageName
+        1 * mockTypeElement.getEnclosingElement() >> mockPackageElement
+        1 * mockPackageElement.getQualifiedName() >> mockPackageName
         1 * mockPackageName.toString() >> "com.optum.sourcehawk.enforcer.file"
         1 * mockRoundEnvironment.processingOver() >> true
         1 * mockProcessingEnvironment.getFiler() >> mockFiler
