@@ -36,6 +36,9 @@ on:
       - 'install-*.sh'
       - '**/README.md'
 
+env:
+  PRIMARY_JAVA_VERSION: '11'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -52,7 +55,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Setup Sonar Cache
-        if: (github.event_name == 'push' && matrix.java == '11')
+        if: (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/cache@v1
         with:
           path: ~/.sonar/cache
@@ -73,10 +76,10 @@ jobs:
           BUILD_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
           [[ "$BUILD_VERSION" != *"-SNAPSHOT" ]] && BUILD_VERSION="${BUILD_VERSION}-SNAPSHOT" && ./mvnw --batch-mode versions:set -DnewVersion=$BUILD_VERSION || true
       - name: Build Maven Project
-        if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != '11'))
+        if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
         run: ./mvnw --batch-mode install -D ci.build
       - name: Build Maven Project and Deploy Snapshot
-        if: success() && (github.event_name == 'push' && matrix.java == '11')
+        if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
         run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
@@ -85,31 +88,31 @@ jobs:
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
       - name: Archive Linux Native Image
-        if: success() && (matrix.java == '11')
+        if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
           name: linux-native-image
           path: distributions/linux/target/sourcehawk
       - name: Archive Native Image JAR
-        if: success() && (matrix.java == '11')
+        if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
           name: native-image-jar
           path: cli/target/*-native-image.jar
       - name: Archive Completion Script
-        if: success() && (matrix.java == '11')
+        if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
           name: completion-script
           path: cli/target/sourcehawk-completion.sh
       - name: Archive Manpages
-        if: success() && (matrix.java == '11')
+        if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
           name: manpages
           path: gh-pages/manpages/sourcehawk*.1
       - name: Analyze with SonarCloud
-        if: success() && (github.event_name == 'push' && matrix.java == '11')
+        if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
         continue-on-error: true
         run: ./mvnw --batch-mode sonar:sonar -Dsonar.login=$SONAR_TOKEN
         env:
@@ -122,6 +125,7 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           report_paths: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
+          check_name: Test Report (${{ matrix.java }})
   build-mac-native-image:
     runs-on: macos-latest
     needs: build
@@ -138,7 +142,7 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
           version: '21.3.0'
-          java-version: '11'
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Mac Native Image
@@ -209,7 +213,7 @@ jobs:
         uses: graalvm/setup-graalvm@v1
         with:
           version: '20.3.0'
-          java-version: '11'
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
       - name: Build Windows Native Image
