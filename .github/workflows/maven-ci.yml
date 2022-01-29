@@ -94,7 +94,7 @@ jobs:
           path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
       - name: Build Linux Distributions
-        if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
+        if: success() && (github.event_name == 'pull_request' && matrix.java == env.PRIMARY_JAVA_VERSION)
         run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-dist
       - name: Build Linux Distributions and Publish Snapshots
         if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
@@ -105,6 +105,14 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
+      - name: Publish Linux Distributions Test Report
+        if: (matrix.java == env.PRIMARY_JAVA_VERSION)
+        continue-on-error: true
+        uses: dorny/test-reporter@v1
+        with:
+          name: Distributions Test Report (${{ matrix.java }})
+          path: 'distributions/**/target/surefire-reports/TEST-*.xml,distributions/**/target/failsafe-reports/TEST-*.xml'
+          reporter: java-junit
       - name: Archive Linux Native Image
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
