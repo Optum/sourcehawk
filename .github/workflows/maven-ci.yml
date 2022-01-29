@@ -87,12 +87,6 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
-      - name: Archive Workspace
-        if: success()
-        uses: actions/upload-artifact@v2
-        with:
-          name: workspace
-          path: ${{ github.workspace }}
       - name: Archive Linux Native Image
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
@@ -131,33 +125,14 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           report_paths: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
-          check_name: Test Report (${{ matrix.java }})
-  record-git-info:
-    runs-on: macos-latest
-    needs: build
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v2
-      - name: Record Git Info
-        run: |
-          echo -n "Current branch: "
-          CURRENT_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
-          if [ "$CURRENT_BRANCH" == "HEAD" ]; then
-            CURRENT_BRANCH=`cat $GITHUB_EVENT_PATH | jq -r '.base.ref'`
-          fi
-          echo "$CURRENT_BRANCH"
-          
-          echo -n "Determining lastest tag: "
-          LATEST_TAG="$(curl -s https://api.github.com/repos/optum/sourcehawk/releases | jq -cr ".[] | select (.target_commitish == \"$CURRENT_BRANCH\") | .tag_name" | head -1)"
-          echo "$LATEST_TAG"
-          
-          echo -n "Determining lastest version: "
-          LATEST_VERSION=`echo $LATEST_TAG | sed -e 's/v//g'`
-          echo "$LATEST_VERSION"
-          
-          echo -n "Default branch: "
-          DEFAULT_BRANCH="$(curl -s https://api.github.com/repos/optum/sourcehawk | jq -r .default_branch)"
-          echo "$DEFAULT_BRANCH"
+      - name: Publish Test Report
+        if: always()
+        continue-on-error: true
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Report (${{ matrix.java }})
+          path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
+          reporter: java-junit
   build-mac-native-image:
     runs-on: macos-latest
     needs: build

@@ -61,12 +61,38 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
-      - name: Archive Workspace
+      - name: Git Tag
+        if: success()
+        run: |
+          git config user.name "$GIT_USERNAME" && git config user.email "$GIT_EMAIL"
+          git tag -a "v$RELEASE_VERSION" -m "Release v$RELEASE_VERSION created by @$GITHUB_ACTOR"
+          git push origin --tags
+        env:
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+          RELEASE_VERSION: ${{ needs.build.outputs.RELEASE_VERSION }}
+      - name: Generate Changelog
+        if: success()
+        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+        with:
+          futureRelease: ${{ format('v{0}', needs.build.outputs.RELEASE_VERSION) }}
+          output: CHANGELOG.md
+          releaseBranch: ${{ github.event.inputs.ref }}
+          stripGeneratorNotice: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          usernamesAsGithubLogins: true
+      - name: Archive Worksapce
         if: success()
         uses: actions/upload-artifact@v2
         with:
           name: workspace
           path: ${{ github.workspace }}
+      - name: Archive Changelog
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: changelog
+          path: CHANGELOG.md
       - name: Archive Native Image JAR
         if: success()
         uses: actions/upload-artifact@v2
@@ -95,26 +121,11 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: workspace
-      - name: Git Tag
-        if: success()
-        run: |
-          git config user.name "$GIT_USERNAME" && git config user.email "$GIT_EMAIL"
-          git tag -a "v$RELEASE_VERSION" -m "Release v$RELEASE_VERSION created by @$GITHUB_ACTOR"
-          git push origin --tags
-        env:
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          RELEASE_VERSION: ${{ needs.build.outputs.RELEASE_VERSION }}
-      - name: Generate Changelog
-        if: success()
-        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
+      - name: Download Changelog
+        uses: actions/download-artifact@v2
         with:
-          futureRelease: ${{ format('v{0}', needs.build.outputs.RELEASE_VERSION) }}
-          output: CHANGELOG.md
-          releaseBranch: ${{ github.event.inputs.ref }}
-          stripGeneratorNotice: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          usernamesAsGithubLogins: true
+          name: changelog
+          path: release
       - name: Create Release
         if: success()
         id: create_release
@@ -124,7 +135,7 @@ jobs:
         with:
           tag_name: ${{ format('v{0}', needs.build.outputs.RELEASE_VERSION) }}
           release_name: ${{ format('{0} {1}', github.event.repository.name, needs.build.outputs.RELEASE_VERSION) }}
-          body_path: CHANGELOG.md
+          body_path: release/CHANGELOG.md
           draft: ${{ github.event.inputs.draft }}
           prerelease: ${{ github.event.inputs.prerelease }}
       - name: Upload Sourcehawk Linux Executable
