@@ -59,7 +59,7 @@ jobs:
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
       - name: Build Linux Distributions and Deploy Release
         if: success()
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.release -D dist.build -rf :sourcehawk-distrbutions
+        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.release -D dist.build -rf :sourcehawk-dist
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}

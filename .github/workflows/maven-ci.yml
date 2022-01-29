@@ -95,10 +95,10 @@ jobs:
           reporter: java-junit
       - name: Build Linux Distributions
         if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
-        run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-distrbutions
+        run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-dist
       - name: Build Linux Distributions and Publish Snapshots
         if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -rf :sourcehawk-distrbutions
+        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -rf :sourcehawk-dist
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
