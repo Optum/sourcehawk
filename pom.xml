@@ -249,7 +249,7 @@
             <activation>
                 <jdk>11</jdk>
                 <property>
-                    <name>ci.build</name>
+                    <name>dist.build</name>
                 </property>
             </activation>
             <modules>

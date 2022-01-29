@@ -78,9 +78,27 @@ jobs:
       - name: Build Maven Project
         if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
         run: ./mvnw --batch-mode install -D ci.build
-      - name: Build Maven Project and Deploy Snapshot
+      - name: Build Maven Project and Deploy Snapshots
         if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
         run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot
+        env:
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
+      - name: Publish Test Report
+        if: always()
+        continue-on-error: true
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Report (${{ matrix.java }})
+          path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
+          reporter: java-junit
+      - name: Build Linux Distributions
+        if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
+        run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-distrbutions
+      - name: Build Linux Distributions and Publish Snapshots
+        if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
+        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -rf :sourcehawk-distrbutions
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
@@ -118,21 +136,6 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-      - name: Publish Test Report
-        if: always()
-        continue-on-error: true
-        uses: scacap/action-surefire-report@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          report_paths: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
-      - name: Publish Test Report
-        if: always()
-        continue-on-error: true
-        uses: dorny/test-reporter@v1
-        with:
-          name: Test Report (${{ matrix.java }})
-          path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
-          reporter: java-junit
   build-mac-native-image:
     runs-on: macos-latest
     needs: build
