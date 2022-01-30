@@ -50,27 +50,30 @@ runs:
       run: |
         POM_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
         echo ::set-output name=POM_VERSION::$POM_VERSION
-    - name: Set Maven Project Version (Release)
+    - name: Set Maven Project Version
       id: set-maven-project-version
-      if: inputs.release == 'true'
       shell: bash
       run: |
-        if [[ "$POM_VERSION" == *"-SNAPSHOT" ]]; 
+        if [[ "$RELEASE_BUILD" = true ]];
         then
-          BUILD_VERSION="${POM_VERSION%"-SNAPSHOT"}"
-          ./mvnw --batch-mode versions:set -D removeSnapshot || true
+          if [[ "$POM_VERSION" == *"-SNAPSHOT" ]]; 
+          then
+            BUILD_VERSION="${POM_VERSION%"-SNAPSHOT"}"
+            ./mvnw --batch-mode versions:set -D removeSnapshot || true
+          else
+            BUILD_VERSION="$POM_VERSION"
+          fi
+          [[ "$(git tag -l $BUILD_VERSION)" == "$BUILD_VERSION" ]] && echo "Tag $BUILD_VERSION already exists" && exit 1
         else
-          BUILD_VERSION="$POM_VERSION"
+          if [[ "$POM_VERSION" != *"-SNAPSHOT" ]]; 
+          then
+            BUILD_VERSION="$POM_VERSION-SNAPSHOT"
+            ./mvnw --batch-mode versions:set -DnewVersion="$BUILD_VERSION" || true
+          else
+            BUILD_VERSION="$POM_VERSION"
+          fi
         fi
-        [[ "$(git tag -l $BUILD_VERSION)" == "$BUILD_VERSION" ]] && echo "Tag $BUILD_VERSION already exists" && exit 1
         echo ::set-output name=VERSION::$BUILD_VERSION
       env:
         POM_VERSION: ${{ steps.read-maven-project-version.outputs.POM_VERSION }}
-    - name: Set Maven Project Version (Snapshot)
-      id: set-maven-project-version
-      if: inputs.release == 'false'
-      shell: bash
-      run: |
-        [[ "$POM_VERSION" != *"-SNAPSHOT" ]] && ./mvnw --batch-mode versions:set -DnewVersion="$POM_VERSION-SNAPSHOT" || true
-      env:
-        POM_VERSION: ${{ steps.read-maven-project-version.outputs.POM_VERSION }}
+        RELEASE_BUILD: ${{ inputs.release }}
