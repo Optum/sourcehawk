@@ -93,32 +93,12 @@ jobs:
           name: Test Report (${{ matrix.java }})
           path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
-      - name: Build Linux Distributions
-        if: success() && (github.event_name == 'pull_request' && matrix.java == env.PRIMARY_JAVA_VERSION)
-        run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-dist
-      - name: Build Linux Distributions and Publish Snapshots
-        if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -rf :sourcehawk-dist
-        env:
-          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
-      - name: Publish Linux Distributions Test Report
-        if: (matrix.java == env.PRIMARY_JAVA_VERSION)
-        continue-on-error: true
-        uses: dorny/test-reporter@v1
-        with:
-          name: Distributions Test Report (${{ matrix.java }})
-          path: 'distributions/**/target/surefire-reports/TEST-*.xml,distributions/**/target/failsafe-reports/TEST-*.xml'
-          reporter: java-junit
-      - name: Archive Linux Native Image
+      - name: Archive Workspace
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
-          name: linux-native-image
-          path: distributions/linux/target/sourcehawk
+          name: workspace
+          path: ${{ github.workspace }}
       - name: Archive Native Image JAR
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
@@ -144,6 +124,40 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+  build-linux-distributions:
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download Workspace
+        uses: actions/download-artifact@v2
+        with:
+          name: workspace
+      - name: Build Distributions
+        if: success() && (github.event_name == 'pull_request' && matrix.java == env.PRIMARY_JAVA_VERSION)
+        run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-dist
+      - name: Build Distributions and Publish Snapshots
+        if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
+        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -rf :sourcehawk-dist
+        env:
+          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
+      - name: Publish Test Report
+        if: (matrix.java == env.PRIMARY_JAVA_VERSION)
+        continue-on-error: true
+        uses: dorny/test-reporter@v1
+        with:
+          name: Linux Distributions Test Report (${{ matrix.java }})
+          path: 'distributions/**/target/surefire-reports/TEST-*.xml,distributions/**/target/failsafe-reports/TEST-*.xml'
+          reporter: java-junit
+      - name: Archive Linux Native Image
+        if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-native-image
+          path: distributions/linux/target/sourcehawk
   build-mac-native-image:
     runs-on: macos-latest
     needs: build
