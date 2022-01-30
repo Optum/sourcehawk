@@ -97,13 +97,8 @@ jobs:
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
-          name: maven-build
-          path: |
-            ./mvn/**/*.*
-            mvnw
-            gh-pages/**/*.*
-            pom.xml
-            distributions/**/*.*
+          name: workspace
+          path: ${{ github.workspace }}
       - name: Archive Native Image JAR
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
@@ -142,10 +137,7 @@ jobs:
       - name: Download Maven Build
         uses: actions/download-artifact@v2
         with:
-          name: maven-build
-      - name: Fix Permissions
-        if: success()
-        run: chmod +x mvnw
+          name: workspace
       - name: Build Distributions
         if: success() && (github.event_name == 'pull_request')
         run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-dist
