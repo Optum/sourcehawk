@@ -99,8 +99,11 @@ jobs:
         with:
           name: maven-build
           path: |
-            **/pom.xml
-            **/target/**/*.*
+            ./mvn
+            mvnw
+            gh-pages
+            pom.xml
+            distributions
       - name: Archive Native Image JAR
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
