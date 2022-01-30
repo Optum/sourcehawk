@@ -143,6 +143,9 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: maven-build
+      - name: Fix Permissions
+        if: success()
+        run: chmod +x mvnw
       - name: Build Distributions
         if: success() && (github.event_name == 'pull_request')
         run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-dist
