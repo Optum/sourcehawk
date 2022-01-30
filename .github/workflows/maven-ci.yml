@@ -93,12 +93,14 @@ jobs:
           name: Test Report (${{ matrix.java }})
           path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
-      - name: Archive Workspace
+      - name: Archive Maven Build
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
-          name: workspace
-          path: ${{ github.workspace }}
+          name: maven-build
+          path: |
+            **/pom.xml
+            **/target/**/*.*
       - name: Archive Native Image JAR
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
@@ -128,15 +130,21 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
-      - name: Download Workspace
+      - name: Setup Maven Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Download Maven Build
         uses: actions/download-artifact@v2
         with:
-          name: workspace
+          name: maven-build
       - name: Build Distributions
-        if: success() && (github.event_name == 'pull_request' && matrix.java == env.PRIMARY_JAVA_VERSION)
+        if: success() && (github.event_name == 'pull_request')
         run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-dist
       - name: Build Distributions and Publish Snapshots
-        if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
+        if: success() && (github.event_name == 'push')
         run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -rf :sourcehawk-dist
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
