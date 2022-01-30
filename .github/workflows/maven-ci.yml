@@ -93,17 +93,17 @@ jobs:
           name: Test Report (${{ matrix.java }})
           path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
-      - name: Archive Maven Build
+      - name: Archive Workspace
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
           name: maven-build
           path: |
-            ./mvn
+            ./mvn/**/*.*
             mvnw
-            gh-pages
+            gh-pages/**/*.*
             pom.xml
-            distributions
+            distributions/**/*.*
       - name: Archive Native Image JAR
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
