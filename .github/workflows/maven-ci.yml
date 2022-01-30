@@ -90,7 +90,7 @@ jobs:
         continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
-          name: Test Report (${{ matrix.java }})
+          name: test-report (${{ matrix.java }})
           path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
       - name: Archive Native Image JAR
@@ -118,7 +118,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-  build-linux-distributions:
+  build-linux-native-image:
     runs-on: ubuntu-latest
     needs: build
     steps:
@@ -140,12 +140,63 @@ jobs:
         run: |
           BUILD_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
           [[ "$BUILD_VERSION" != *"-SNAPSHOT" ]] && BUILD_VERSION="${BUILD_VERSION}-SNAPSHOT" && ./mvnw --batch-mode versions:set -DnewVersion=$BUILD_VERSION || true
-      - name: Build Distributions
+      - name: Build Native Image
         if: success() && (github.event_name == 'pull_request')
-        run: ./mvnw --batch-mode install -D ci.build -D dist.build -rf :sourcehawk-dist
+        run: ./mvnw --batch-mode install -D ci.build -D dist.build -pl distributions,distributions/linux
+      - name: Build Native Image
+        if: success() && (github.event_name == 'push')
+        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions,distributions/linux
+        env:
+          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
+          SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
+      - name: Publish Test Report
+        if: always()
+        continue-on-error: true
+        uses: dorny/test-reporter@v1
+        with:
+          name: Linux Distributions Test Report
+          path: 'distributions/linux/**/target/surefire-reports/TEST-*.xml,distributions/linux/**/target/failsafe-reports/TEST-*.xml'
+          reporter: java-junit
+      - name: Archive Linux Native Image
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-native-image
+          path: distributions/linux/target/sourcehawk
+  build-linux-distribution:
+    runs-on: ubuntu-latest
+    needs: build-linux-native-image
+    strategy:
+      matrix:
+        dist: ['debian', 'rpm', 'docker']
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
+      - name: Download Manpages
+        uses: actions/download-artifact@v2
+        with:
+          name: manpages
+          path: gh-pages/manpages
+      - name: Setup Maven Cache
+        uses: actions/cache@v1
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+      - name: Set Maven Project Version
+        shell: bash
+        run: |
+          BUILD_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
+          [[ "$BUILD_VERSION" != *"-SNAPSHOT" ]] && BUILD_VERSION="${BUILD_VERSION}-SNAPSHOT" && ./mvnw --batch-mode versions:set -DnewVersion=$BUILD_VERSION || true
+      - name: Build Distribution
+        if: success() && (github.event_name == 'pull_request')
+        run: ./mvnw --batch-mode install -D ci.build -D dist.build -D dist.build -pl distributions/${{ matrix.dist }}
       - name: Build Distributions and Publish Snapshots
         if: success() && (github.event_name == 'push')
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -rf :sourcehawk-dist
+        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions/${{ matrix.dist }}
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
@@ -157,15 +208,15 @@ jobs:
         continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
-          name: Linux Distributions Test Report
-          path: 'distributions/**/target/surefire-reports/TEST-*.xml,distributions/**/target/failsafe-reports/TEST-*.xml'
+          name: Distribution Test Report (${{ matrix.dist }})
+          path: distributions/${{ matrix.dist }}/target/surefire-reports/TEST-*.xml,distributions/${{ matrix.dist }}/target/failsafe-reports/TEST-*.xml
           reporter: java-junit
-      - name: Archive Linux Native Image
-        if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
+      - name: Archive Distribution
+        if: success()
         uses: actions/upload-artifact@v2
         with:
-          name: linux-native-image
-          path: distributions/linux/target/sourcehawk
+          name: linux-dist-${{ matrix.dist }}
+          path: distributions/${{ matrix.dist }}/target/**
   build-mac-native-image:
     runs-on: macos-latest
     needs: build
