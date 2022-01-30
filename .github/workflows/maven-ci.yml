@@ -48,33 +48,11 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
-      - name: Setup Maven Cache
-        uses: actions/cache@v1
-        with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Setup Sonar Cache
-        if: (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
-        uses: actions/cache@v1
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Setup Java and Maven
-        uses: actions/setup-java@v1
+      - name: Maven Prepare
+        id: maven-prepare
+        uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
           java-version: ${{ matrix.java }}
-          server-id: ossrh
-          server-username: SONATYPE_USERNAME
-          server-password: SONATYPE_PASSWORD
-          gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
-          gpg-passphrase: SONATYPE_GPG_PASSPHRASE
-      - name: Set Maven Project Version
-        shell: bash
-        run: |
-          BUILD_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
-          [[ "$BUILD_VERSION" != *"-SNAPSHOT" ]] && BUILD_VERSION="${BUILD_VERSION}-SNAPSHOT" && ./mvnw --batch-mode versions:set -DnewVersion=$BUILD_VERSION || true
       - name: Build Maven Project
         if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
         run: ./mvnw --batch-mode install -D ci.build
@@ -129,17 +107,10 @@ jobs:
         with:
           name: manpages
           path: gh-pages/manpages
-      - name: Setup Maven Cache
-        uses: actions/cache@v1
+      - name: Maven Prepare
+        uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Set Maven Project Version
-        shell: bash
-        run: |
-          BUILD_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
-          [[ "$BUILD_VERSION" != *"-SNAPSHOT" ]] && BUILD_VERSION="${BUILD_VERSION}-SNAPSHOT" && ./mvnw --batch-mode versions:set -DnewVersion=$BUILD_VERSION || true
+          java-version: ${{ matrix.java }}
       - name: Build Native Image
         if: success() && (github.event_name == 'pull_request')
         run: ./mvnw --batch-mode install -D ci.build -D dist.build -pl distributions,distributions/linux
@@ -180,17 +151,10 @@ jobs:
         with:
           name: manpages
           path: gh-pages/manpages
-      - name: Setup Maven Cache
-        uses: actions/cache@v1
+      - name: Maven Prepare
+        uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Set Maven Project Version
-        shell: bash
-        run: |
-          BUILD_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
-          [[ "$BUILD_VERSION" != *"-SNAPSHOT" ]] && BUILD_VERSION="${BUILD_VERSION}-SNAPSHOT" && ./mvnw --batch-mode versions:set -DnewVersion=$BUILD_VERSION || true
+          java-version: 11
       - name: Build Distribution
         if: success() && (github.event_name == 'pull_request')
         run: ./mvnw --batch-mode install -D ci.build -D dist.build -D dist.build -pl distributions/${{ matrix.dist }}
