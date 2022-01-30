@@ -53,6 +53,7 @@ jobs:
         uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
           java-version: ${{ matrix.java }}
+          gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Maven Project
         if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
         run: ./mvnw --batch-mode install -D ci.build
@@ -111,6 +112,7 @@ jobs:
         uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
           java-version: ${{ matrix.java }}
+          gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Native Image
         if: success() && (github.event_name == 'pull_request')
         run: ./mvnw --batch-mode install -D ci.build -D dist.build -pl distributions,distributions/linux
@@ -155,6 +157,7 @@ jobs:
         uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
           java-version: 11
+          gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Distribution
         if: success() && (github.event_name == 'pull_request')
         run: ./mvnw --batch-mode install -D ci.build -D dist.build -D dist.build -pl distributions/${{ matrix.dist }}

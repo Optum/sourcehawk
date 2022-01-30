@@ -9,6 +9,9 @@ inputs:
   java-version:
     description: 'Java Version'
     required: true
+  gpg-private-key:
+    description: 'GPG Private Key'
+    required: true
   release:
     description: 'Release build?'
     required: true
@@ -42,7 +45,7 @@ runs:
         server-id: ossrh
         server-username: SONATYPE_USERNAME
         server-password: SONATYPE_PASSWORD
-        gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
+        gpg-private-key: ${{ inputs.gpg-private-key }}
         gpg-passphrase: SONATYPE_GPG_PASSPHRASE
     - name: Read Maven Project Version
       id: read-maven-project-version
