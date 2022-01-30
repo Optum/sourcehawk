@@ -122,6 +122,11 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     steps:
+      - name: Download Native Image JAR
+        uses: actions/download-artifact@v2
+        with:
+          name: native-image-jar
+          path: gh-pages/manpages
       - name: Checkout Source Code
         uses: actions/checkout@v2
       - name: Setup Maven Cache
@@ -152,7 +157,7 @@ jobs:
         continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
-          name: Linux Distributions Test Report (${{ matrix.java }})
+          name: Linux Distributions Test Report
           path: 'distributions/**/target/surefire-reports/TEST-*.xml,distributions/**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
       - name: Archive Linux Native Image
