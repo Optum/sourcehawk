@@ -111,7 +111,7 @@ jobs:
       - name: Maven Prepare
         uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
-          java-version: ${{ matrix.java }}
+          java-version: 11
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Native Image
         if: success() && (github.event_name == 'pull_request')

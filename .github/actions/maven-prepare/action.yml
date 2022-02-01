@@ -1,4 +1,4 @@
-name: 'Maven Prepare'
+name: 'Prepare Maven'
 description: 'Prepare maven for the build'
 
 inputs:
