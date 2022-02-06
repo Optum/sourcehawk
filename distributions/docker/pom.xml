@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.7.1-SNAPSHOT</version>
+        <version>0.7.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -20,7 +20,7 @@
     <properties>
         <docker.repository>${docker.organization}/${global.project.name}</docker.repository>
         <ghcr.repository>ghcr.io/optum/${global.project.name}</ghcr.repository>
-        <docker.tag>${project.version}</docker.tag>
+        <docker.tag/>
     </properties>
 
     <dependencies>
@@ -63,30 +63,6 @@
                 </executions>
             </plugin>
 
-            <!-- EXEC PROCESSORS AND SCRIPTS -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>exec-maven-plugin</artifactId>
-                <executions>
-
-                    <!-- MAKE NATIVE IMAGE EXECUTABLE -->
-                    <execution>
-                        <id>update-native-image-permissions</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>exec</goal>
-                        </goals>
-                        <configuration>
-                            <executable>chmod</executable>
-                            <arguments>
-                                <argument>+x</argument>
-                                <argument>target/native-image</argument>
-                            </arguments>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
             <!-- BUILD DOCKER IMAGE -->
             <plugin>
                 <groupId>com.spotify</groupId>
@@ -94,7 +70,7 @@
                 <executions>
                     <execution>
                         <id>build</id>
-                        <phase>prepare-package</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>build</goal>
                         </goals>
@@ -106,7 +82,7 @@
                     </execution>
                     <execution>
                         <id>tag-docker-hub</id>
-                        <phase>prepare-package</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>tag</goal>
                         </goals>
@@ -118,7 +94,7 @@
                     </execution>
                     <execution>
                         <id>tag-github-container-registry</id>
-                        <phase>prepare-package</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>tag</goal>
                         </goals>
@@ -136,6 +112,22 @@
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <executions>
+
+                    <!-- MAKE NATIVE IMAGE EXECUTABLE -->
+                    <execution>
+                        <id>update-native-image-permissions</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>chmod</executable>
+                            <arguments>
+                                <argument>+x</argument>
+                                <argument>target/native-image</argument>
+                            </arguments>
+                        </configuration>
+                    </execution>
 
                     <!-- VERIFY DOCKER IMAGE -->
                     <execution>
@@ -184,7 +176,63 @@
 
     <profiles>
         <profile>
-            <id>docker-push</id>
+            <id>docker-default</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <docker.tag>${project.version}</docker.tag>
+            </properties>
+        </profile>
+        <profile>
+            <id>docker-push-snapshot</id>
+            <activation>
+                <property>
+                    <name>ci.snapshot</name>
+                </property>
+            </activation>
+            <properties>
+                <docker.tag>unstable</docker.tag>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>push-docker-image-to-docker-hub</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${project.basedir}/scripts/push-docker-image.sh</executable>
+                                    <arguments>
+                                        <argument>${docker.repository}:${docker.tag}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                            <execution>
+                                <id>push-docker-image-to-github-container-registry</id>
+                                <phase>deploy</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${project.basedir}/scripts/push-docker-image.sh</executable>
+                                    <arguments>
+                                        <argument>${ghcr.repository}:${docker.tag}</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>docker-push-release</id>
             <activation>
                 <property>
                     <name>ci.release</name>
