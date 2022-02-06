@@ -45,7 +45,7 @@ jobs:
     strategy:
       matrix:
         java: ['11', '17']
-    name: build-java-${{ matrix.java }}
+#    name: build-java-${{ matrix.java }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
