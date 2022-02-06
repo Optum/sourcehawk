@@ -6,7 +6,7 @@ on:
       ref:
         description: 'Github Ref'
         required: false
-        default: $default-branch
+        default: 'main'
       draft:
         description: 'Is the release a draft?'
         required: false

@@ -3,7 +3,7 @@ name: Maven CI
 on:
   push:
     branches:
-      - $default-branch
+      - 'main'
       - 'releases/[1-9]+.[0-9]+.x'
     paths-ignore:
       - '.github/**'
@@ -21,7 +21,7 @@ on:
       - '**/README.md'
   pull_request:
     branches:
-      - $default-branch
+      - 'main'
       - 'releases/[1-9]+.[0-9]+.x'
     paths-ignore:
       - '.github/**'
@@ -45,7 +45,7 @@ jobs:
     strategy:
       matrix:
         java: ['11', '17']
-#    name: build-java-${{ matrix.java }}
+    name: build-java-${{ matrix.java }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
