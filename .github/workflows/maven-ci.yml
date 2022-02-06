@@ -67,14 +67,14 @@ jobs:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
-#      - name: Publish Test Report
-#        if: always()
-#        continue-on-error: true
-#        uses: dorny/test-reporter@v1
-#        with:
-#          name: Test Report - Java ${{ matrix.java }}
-#          path: '**/target/(surefire|failsafe)-reports/TEST-*.xml'
-#          reporter: java-junit
+      - name: Publish Test Report
+        if: always()
+        continue-on-error: true
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Report - Java ${{ matrix.java }}
+          path: '**/target/(surefire|failsafe)-reports/TEST-*.xml'
+          reporter: java-junit
       - name: Archive Native Image JAR
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2

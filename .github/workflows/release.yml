@@ -328,7 +328,7 @@ jobs:
           asset_content_type: application/octet-stream
 
   update-homebrew-tap-formula:
-    uses: optum/sourcehawk/.github/workflows/update-homebrew-tap-formula@main
+    uses: optum/sourcehawk/.github/workflows/update-homebrew-tap-formula.yml@main
     needs: build-homebrew-tap-formula-archive
     with:
       version: ${{ github.event.inputs.version }}
