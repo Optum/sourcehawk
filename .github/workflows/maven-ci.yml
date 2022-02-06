@@ -111,7 +111,7 @@ jobs:
       - name: Maven Prepare
         uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
-          java-version: 11
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Native Image
         if: success() && (github.event_name == 'pull_request')
@@ -156,11 +156,11 @@ jobs:
       - name: Maven Prepare
         uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
-          java-version: 11
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Distribution
         if: success() && (github.event_name == 'pull_request')
-        run: ./mvnw --batch-mode install -D ci.build -D dist.build -D dist.build -pl distributions/${{ matrix.dist }}
+        run: ./mvnw --batch-mode install -D ci.build -D dist.build -pl distributions/${{ matrix.dist }}
       - name: Build Distributions and Publish Snapshots
         if: success() && (github.event_name == 'push')
         run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions/${{ matrix.dist }}
@@ -188,103 +188,25 @@ jobs:
     runs-on: macos-latest
     needs: build
     steps:
-      - name: Download Native Image JAR
-        uses: actions/download-artifact@v2
+      - name: Build
+        uses: optum/sourcehawk/.github/actions/build-native-image@workflow-updates
         with:
-          name: native-image-jar
-          path: build
-      - name: Rename Native Image JAR
-        working-directory: build
-        run: mv *.jar native-image.jar
-      - name: Setup GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          version: '21.3.0'
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
-          components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Mac Native Image
-        if: success()
-        working-directory: build
-        run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback
-      - name: Archive Mac Native Image
-        if: success()
-        continue-on-error: true
-        uses: actions/upload-artifact@v2
-        with:
-          name: mac-native-image
-          path: build/sourcehawk
-      - name: Smoke Test
-        if: success()
-        working-directory: build
-        run: ./sourcehawk help
+          artifact-name: mac-native-image
   build-homebrew-tap-formula-archive:
     runs-on: macos-latest
     needs: build-mac-native-image
     steps:
-      - name: Download Mac Native Image
-        uses: actions/download-artifact@v2
-        with:
-          name: mac-native-image
-          path: build
-      - name: Download Completion Script
-        uses: actions/download-artifact@v2
-        with:
-          name: completion-script
-          path: build
-      - name: Download Manpages
-        uses: actions/download-artifact@v2
-        with:
-          name: manpages
-          path: build
-      - name: Create Homebrew Tap Formula Archive
-        if: success()
-        working-directory: build
-        run: |
-          chmod +x sourcehawk
-          cp sourcehawk-completion.sh sourcehawk-bash-completion.sh
-          cp sourcehawk-completion.sh sourcehawk-zsh-completion.sh
-          chmod +x *.sh
-          gzip sourcehawk*.1
-          tar -cvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk*
-      - name: Archive Homebrew Tap Formula Archive
-        if: success()
-        continue-on-error: true
-        uses: actions/upload-artifact@v2
-        with:
-          name: homebrew-tap-formula-archive
-          path: build/sourcehawk-homebrew-tap-formula.tar.gz
+      - name: Build
+        uses: optum/sourcehawk/.github/actions/build-homebrew-tap-formula-archive@workflow-updates
   build-windows-native-image:
     runs-on: windows-latest
     needs: build
     continue-on-error: true
     steps:
-      - name: Download Native Image JAR
-        uses: actions/download-artifact@v2
+      - name: Build
+        uses: optum/sourcehawk/.github/actions/build-windows-native-image@workflow-updates
         with:
-          name: native-image-jar
-          path: build
-      - name: Rename Native Image JAR
-        working-directory: build
-        run: ren *.jar native-image.jar
-      - name: Setup GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          version: '20.3.0'
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
-          components: 'native-image'
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Windows Native Image
-        if: success()
-        run: native-image.cmd -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
-      - name: Archive Windows Native Image
-        if: success()
-        continue-on-error: true
-        uses: actions/upload-artifact@v2
-        with:
-          name: windows-native-image
-          path: sourcehawk.exe
-      - name: Smoke Test
-        if: success()
-        shell: cmd
-        run: sourcehawk.exe help

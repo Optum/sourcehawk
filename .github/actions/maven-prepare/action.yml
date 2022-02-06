@@ -25,12 +25,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Setup Maven Cache
-      uses: actions/cache@v1
-      with:
-        path: ~/.m2
-        key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-        restore-keys: ${{ runner.os }}-m2
     - name: Setup Sonar Cache
       if: (github.event_name == 'push' && inputs.java-version == inputs.primary-java-version)
       uses: actions/cache@v1
@@ -39,9 +33,12 @@ runs:
         key: ${{ runner.os }}-sonar
         restore-keys: ${{ runner.os }}-sonar
     - name: Setup Java and Maven
-      uses: actions/setup-java@v1
+      uses: actions/setup-java@v2
       with:
         java-version: ${{ inputs.java-version }}
+        distribution: 'adopt'
+        architecture: x64
+        cache: maven
         server-id: ossrh
         server-username: SONATYPE_USERNAME
         server-password: SONATYPE_PASSWORD

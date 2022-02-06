@@ -1,0 +1,61 @@
+name: 'Build Native Image'
+description: 'Build native image distribution'
+
+inputs:
+  jar-artifact-name:
+    description: 'Name of the JAR artifact to download'
+    default: 'native-image-jar'
+    required: true
+  java-version:
+    description: 'Java Version'
+    required: true
+  graalvm-version:
+    description: 'GraalVM Version'
+    default: '21.3.0'
+    required: true
+  github-token:
+    description: 'Github Token'
+    required: true
+  native-image-options:
+    description: 'Options to pass to native-image build'
+    default: '-H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback'
+    required: false
+  artifact-name:
+    description: 'Name of the uploaded native image artifact'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download Native Image JAR
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{ inputs.jar-artifact-name }}
+        path: build
+    - name: Rename Native Image JAR
+      working-directory: build
+      shell: sh
+      run: mv *.jar native-image.jar
+    - name: Setup GraalVM
+      uses: graalvm/setup-graalvm@v1
+      with:
+        version: ${{ inputs.graalvm-version }}
+        java-version: ${{ inputs.java-version }}
+        components: 'native-image'
+        github-token: ${{ inputs.github-token }}
+    - name: Build Native Image
+      if: success()
+      working-directory: build
+      shell: sh
+      run: native-image -cp native-image.jar ${{ inputs.native-image-options }}
+    - name: Archive Native Image
+      if: success()
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: build/sourcehawk
+    - name: Smoke Test
+      if: success()
+      working-directory: build
+      shell: sh
+      run: ./sourcehawk help
