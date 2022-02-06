@@ -3,7 +3,7 @@ name: Maven CI
 on:
   push:
     branches:
-      - main
+      - $default-branch
       - 'releases/[1-9]+.[0-9]+.x'
     paths-ignore:
       - '.github/**'
@@ -21,7 +21,7 @@ on:
       - '**/README.md'
   pull_request:
     branches:
-      - main
+      - $default-branch
       - 'releases/[1-9]+.[0-9]+.x'
     paths-ignore:
       - '.github/**'
@@ -41,6 +41,7 @@ env:
 
 jobs:
   build:
+    name: build-java-${{ matrix.java }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -52,14 +53,15 @@ jobs:
         id: maven-prepare
         uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
+          cache-key-suffix: build-java
           java-version: ${{ matrix.java }}
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Maven Project
         if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
-        run: ./mvnw --batch-mode install -D ci.build
+        run: ./mvnw --batch-mode --update-snapshots install -D ci.build
       - name: Build Maven Project and Deploy Snapshots
         if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot
+        run: ./mvnw --batch-mode --update-snapshots deploy -D ci.build -D ci.deploy -D ci.snapshot
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
@@ -69,7 +71,7 @@ jobs:
         continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
-          name: test-report (${{ matrix.java }})
+          name: test-report-java-${{ matrix.java }}
           path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
       - name: Archive Native Image JAR
@@ -111,14 +113,15 @@ jobs:
       - name: Maven Prepare
         uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
+          cache-key-suffix: build-linux-native-image
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Native Image
         if: success() && (github.event_name == 'pull_request')
-        run: ./mvnw --batch-mode install -D ci.build -D dist.build -pl distributions,distributions/linux
+        run: ./mvnw --batch-mode --update-snapshots install -D ci.build -D dist.build -pl distributions,distributions/linux
       - name: Build Native Image
         if: success() && (github.event_name == 'push')
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions,distributions/linux
+        run: ./mvnw --batch-mode --update-snapshots deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions,distributions/linux
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
@@ -130,7 +133,7 @@ jobs:
         continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
-          name: Linux Distributions Test Report
+          name: test-report-linux-native-image
           path: 'distributions/linux/**/target/surefire-reports/TEST-*.xml,distributions/linux/**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
       - name: Archive Linux Native Image
@@ -156,14 +159,15 @@ jobs:
       - name: Maven Prepare
         uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
         with:
+          cache-key-suffix: build-linux-distribution
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Distribution
         if: success() && (github.event_name == 'pull_request')
-        run: ./mvnw --batch-mode install -D ci.build -D dist.build -pl distributions/${{ matrix.dist }}
+        run: ./mvnw --batch-mode --update-snapshots install -D ci.build -D dist.build -pl distributions/${{ matrix.dist }}
       - name: Build Distributions and Publish Snapshots
         if: success() && (github.event_name == 'push')
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions/${{ matrix.dist }}
+        run: ./mvnw --batch-mode --update-snapshots deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions/${{ matrix.dist }}
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
@@ -175,7 +179,7 @@ jobs:
         continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
-          name: Distribution Test Report (${{ matrix.dist }})
+          name: test-report-linux-distribution-${{ matrix.dist }}
           path: distributions/${{ matrix.dist }}/target/surefire-reports/TEST-*.xml,distributions/${{ matrix.dist }}/target/failsafe-reports/TEST-*.xml
           reporter: java-junit
       - name: Archive Distribution

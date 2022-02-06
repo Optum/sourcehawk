@@ -2,6 +2,9 @@ name: 'Prepare Maven'
 description: 'Prepare maven for the build'
 
 inputs:
+  cache-key-suffix:
+    description: 'Cache Key Suffix for maven caching'
+    required: true
   primary-java-version:
     description: 'Primary Java Version'
     required: true
@@ -20,7 +23,7 @@ inputs:
 outputs:
   build-version:
     description: "Build Version"
-    value: ${{ steps.set-maven-project-version.outputs.VERSION }}
+    value: ${{ steps.set-maven-project-version.outputs.build-version }}
 
 runs:
   using: "composite"
@@ -29,12 +32,13 @@ runs:
       uses: actions/cache@v2
       with:
         path: ~/.m2/repository
-        key: ${{ runner.os }}-maven-${{ inputs.java-version }}-${{ hashFiles('**/pom.xml') }}
+        key: ${{ runner.os }}-maven-${{ inputs.java-version }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
+          ${{ runner.os }}-maven-${{ inputs.java-version }}-${{ inputs.cache-key-suffix }}
           ${{ runner.os }}-maven-${{ inputs.java-version }}-
     - name: Setup Sonar Cache
       if: (github.event_name == 'push' && inputs.java-version == inputs.primary-java-version)
-      uses: actions/cache@v1
+      uses: actions/cache@v2
       with:
         path: ~/.sonar/cache
         key: ${{ runner.os }}-sonar
@@ -45,7 +49,6 @@ runs:
         java-version: ${{ inputs.java-version }}
         distribution: 'adopt'
         architecture: x64
-        cache: maven
         server-id: ossrh
         server-username: SONATYPE_USERNAME
         server-password: SONATYPE_PASSWORD
@@ -56,7 +59,7 @@ runs:
       shell: bash
       run: |
         POM_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
-        echo ::set-output name=POM_VERSION::$POM_VERSION
+        echo ::set-output name=pom-version::$POM_VERSION
     - name: Set Maven Project Version
       id: set-maven-project-version
       shell: bash
@@ -80,7 +83,7 @@ runs:
             BUILD_VERSION="$POM_VERSION"
           fi
         fi
-        echo ::set-output name=VERSION::$BUILD_VERSION
+        echo ::set-output name=build-version::$BUILD_VERSION
       env:
-        POM_VERSION: ${{ steps.read-maven-project-version.outputs.POM_VERSION }}
+        POM_VERSION: ${{ steps.read-maven-project-version.outputs.pom-version }}
         RELEASE_BUILD: ${{ inputs.release }}
