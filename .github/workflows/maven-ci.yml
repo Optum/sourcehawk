@@ -41,11 +41,11 @@ env:
 
 jobs:
   build:
-    name: build-java-${{ matrix.java }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java: ['11', '17']
+    name: build-java-${{ matrix.java }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
@@ -148,6 +148,7 @@ jobs:
     strategy:
       matrix:
         dist: ['debian', 'rpm', 'docker']
+    name: build-linux-distribution-${{ matrix.dist }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
