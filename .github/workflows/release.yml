@@ -6,11 +6,12 @@ on:
       version:
         description: 'Version (tag must exist)'
         required: true
-        type: choice
+        type: string
       prerelease:
         description: 'Is this a pre-release?'
         required: false
         default: 'false'
+        type: boolean
 
 env:
   PRIMARY_JAVA_VERSION: '11'
