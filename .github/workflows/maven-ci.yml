@@ -59,10 +59,10 @@ jobs:
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Maven Project
         if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
-        run: ./mvnw -B -U install -D ci.build
-      - name: Build Maven Project and Deploy Snapshots
+        run: ./mvnw -B -U -D ci.build install
+      - name: Build Maven Project and Deploy Snapshots to Sonatype OSSRH
         if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
-        run: ./mvnw -B -U deploy -D ci.build -D ci.deploy -D ci.snapshot
+        run: ./mvnw -B -U -D ci.build -D ci.deploy -D ci.snapshot deploy
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
@@ -73,7 +73,7 @@ jobs:
         uses: dorny/test-reporter@v1
         with:
           name: Test Report - Java ${{ matrix.java }}
-          path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
+          path: '**/target/(surefire|failsafe)-reports/TEST-*.xml'
           reporter: java-junit
       - name: Archive Native Image JAR
         if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
@@ -120,22 +120,19 @@ jobs:
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
       - name: Build Native Image
         if: success() && (github.event_name == 'pull_request')
-        run: ./mvnw -B -U install -D ci.build -D dist.build -pl distributions,distributions/linux
+        run: ./mvnw -B -U -D ci.build -D dist.build -pl distributions,distributions/linux install
       - name: Build Native Image
         if: success() && (github.event_name == 'push')
-        run: ./mvnw -B -U deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions,distributions/linux
-        env:
-          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+        run: ./mvnw -B -U -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions,distributions/linux deploy
       - name: Publish Test Report
         if: always()
         continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
           name: Test Report - Linux Native Image
-          path: 'distributions/linux/**/target/surefire-reports/TEST-*.xml,distributions/linux/**/target/failsafe-reports/TEST-*.xml'
+          path: 'distributions/linux/**/target/(surefire|failsafe)-reports/TEST-*.xml'
           reporter: java-junit
-      - name: Archive Linux Native Image
+      - name: Archive Native Image
         if: success()
         uses: actions/upload-artifact@v2
         with:
@@ -164,10 +161,10 @@ jobs:
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
       - name: Build Distribution
         if: success() && (github.event_name == 'pull_request')
-        run: ./mvnw -B -U install -D ci.build -D dist.build -pl distributions/${{ matrix.dist }}
+        run: ./mvnw -B -U -D ci.build -D dist.build -pl distributions/${{ matrix.dist }} install
       - name: Build Distributions and Publish Snapshots
         if: success() && (github.event_name == 'push')
-        run: ./mvnw -B -U deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions/${{ matrix.dist }}
+        run: ./mvnw -B -U -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions/${{ matrix.dist }} deploy
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}

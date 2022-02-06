@@ -13,12 +13,11 @@ inputs:
     description: 'Java Version'
     required: true
   gpg-private-key:
-    description: 'GPG Private Key'
+    description: 'GPG Private Key (required for releases being deployed to Sonatype OSSRH)'
     required: false
-  release:
-    description: 'Release build?'
-    required: true
-    default: 'false'
+  build-version:
+    description: 'Build version (required for releases)'
+    required: false
 
 outputs:
   build-version:
@@ -54,11 +53,12 @@ runs:
         server-password: SONATYPE_PASSWORD
         gpg-private-key: ${{ inputs.gpg-private-key || '' }}
         gpg-passphrase: SONATYPE_GPG_PASSPHRASE
-    - name: Read Maven Project Version
-      id: read-maven-project-version
+    - name: Parse Version From Maven Pom
+      id: parse-version
+      if: ${{ inputs.build-version == '' }}
       shell: bash
       run: |
-        POM_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
+        POM_VERSION="$(./mvnw -q -D expression=project.version -D forceStdout help:evaluate | tail -1 | tr -d '\r\n')"
         echo ::set-output name=pom-version::$POM_VERSION
     - name: Set Maven Project Version
       id: set-maven-project-version
@@ -66,24 +66,22 @@ runs:
       run: |
         if [[ "$RELEASE_BUILD" = true ]];
         then
-          if [[ "$POM_VERSION" == *"-SNAPSHOT" ]]; 
-          then
-            BUILD_VERSION="${POM_VERSION%"-SNAPSHOT"}"
-            ./mvnw -B versions:set -D removeSnapshot || true
-          else
-            BUILD_VERSION="$POM_VERSION"
-          fi
-          [[ "$(git tag -l $BUILD_VERSION)" == "$BUILD_VERSION" ]] && echo "Tag $BUILD_VERSION already exists" && exit 1
+          ./mvnw -B -D newVersion="$BUILD_VERSION" versions:set || true
+          echo "Updated Pom project version for release: $BUILD_VERSION"
+          [[ "$(git tag -l $BUILD_VERSION)" == "$BUILD_VERSION" ]] && echo "Tag $BUILD_VERSION already exists, will overwrite"
         else
           if [[ "$POM_VERSION" != *"-SNAPSHOT" ]]; 
           then
             BUILD_VERSION="$POM_VERSION-SNAPSHOT"
-            ./mvnw -B versions:set -DnewVersion="$BUILD_VERSION" || true
+            ./mvnw -B -D newVersion="$BUILD_VERSION" versions:set || true
+          echo "Updated Pom project version for snapshot: $BUILD_VERSION"
           else
             BUILD_VERSION="$POM_VERSION"
           fi
         fi
+        echo "Project will be built with version: $BUILD_VERSION"
         echo ::set-output name=build-version::$BUILD_VERSION
       env:
-        POM_VERSION: ${{ steps.read-maven-project-version.outputs.pom-version }}
-        RELEASE_BUILD: ${{ inputs.release }}
+        POM_VERSION: ${{ steps.parse-version.outputs.pom-version }}
+        RELEASE_BUILD: ${{ inputs.build-version != '' }}
+        BUILD_VERSION: ${{ inputs.build-version }}
