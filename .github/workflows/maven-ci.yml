@@ -40,12 +40,13 @@ env:
   PRIMARY_JAVA_VERSION: '11'
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         java: ['11', '17']
-    name: build-java-${{ matrix.java }}
+    name: Build Java - ${{ matrix.java }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
@@ -58,10 +59,10 @@ jobs:
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Maven Project
         if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
-        run: ./mvnw --batch-mode --update-snapshots install -D ci.build
+        run: ./mvnw -B -U install -D ci.build
       - name: Build Maven Project and Deploy Snapshots
         if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
-        run: ./mvnw --batch-mode --update-snapshots deploy -D ci.build -D ci.deploy -D ci.snapshot
+        run: ./mvnw -B -U deploy -D ci.build -D ci.deploy -D ci.snapshot
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
@@ -71,7 +72,7 @@ jobs:
         continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
-          name: test-report-java-${{ matrix.java }}
+          name: Test Report - Java ${{ matrix.java }}
           path: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
       - name: Archive Native Image JAR
@@ -95,13 +96,15 @@ jobs:
       - name: Analyze with SonarCloud
         if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
         continue-on-error: true
-        run: ./mvnw --batch-mode sonar:sonar -Dsonar.login=$SONAR_TOKEN
+        run: ./mvnw -B sonar:sonar -Dsonar.login=$SONAR_TOKEN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
+
   build-linux-native-image:
     runs-on: ubuntu-latest
     needs: build
+    name: Build Native Image - Linux
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
@@ -115,25 +118,21 @@ jobs:
         with:
           cache-key-suffix: build-linux-native-image
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
-          gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Native Image
         if: success() && (github.event_name == 'pull_request')
-        run: ./mvnw --batch-mode --update-snapshots install -D ci.build -D dist.build -pl distributions,distributions/linux
+        run: ./mvnw -B -U install -D ci.build -D dist.build -pl distributions,distributions/linux
       - name: Build Native Image
         if: success() && (github.event_name == 'push')
-        run: ./mvnw --batch-mode --update-snapshots deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions,distributions/linux
+        run: ./mvnw -B -U deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions,distributions/linux
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
       - name: Publish Test Report
         if: always()
         continue-on-error: true
         uses: dorny/test-reporter@v1
         with:
-          name: test-report-linux-native-image
+          name: Test Report - Linux Native Image
           path: 'distributions/linux/**/target/surefire-reports/TEST-*.xml,distributions/linux/**/target/failsafe-reports/TEST-*.xml'
           reporter: java-junit
       - name: Archive Linux Native Image
@@ -142,13 +141,14 @@ jobs:
         with:
           name: linux-native-image
           path: distributions/linux/target/sourcehawk
+
   build-linux-distribution:
     runs-on: ubuntu-latest
     needs: build-linux-native-image
     strategy:
       matrix:
         dist: ['debian', 'rpm', 'docker']
-    name: build-linux-distribution-${{ matrix.dist }}
+    name: Build Linux Distribution - ${{ matrix.dist }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
@@ -162,36 +162,26 @@ jobs:
         with:
           cache-key-suffix: build-linux-distribution
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
-          gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Distribution
         if: success() && (github.event_name == 'pull_request')
-        run: ./mvnw --batch-mode --update-snapshots install -D ci.build -D dist.build -pl distributions/${{ matrix.dist }}
+        run: ./mvnw -B -U install -D ci.build -D dist.build -pl distributions/${{ matrix.dist }}
       - name: Build Distributions and Publish Snapshots
         if: success() && (github.event_name == 'push')
-        run: ./mvnw --batch-mode --update-snapshots deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions/${{ matrix.dist }}
+        run: ./mvnw -B -U deploy -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions/${{ matrix.dist }}
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
-      - name: Publish Test Report
-        if: (matrix.java == env.PRIMARY_JAVA_VERSION)
-        continue-on-error: true
-        uses: dorny/test-reporter@v1
-        with:
-          name: test-report-linux-distribution-${{ matrix.dist }}
-          path: distributions/${{ matrix.dist }}/target/surefire-reports/TEST-*.xml,distributions/${{ matrix.dist }}/target/failsafe-reports/TEST-*.xml
-          reporter: java-junit
       - name: Archive Distribution
         if: success()
         uses: actions/upload-artifact@v2
         with:
           name: linux-dist-${{ matrix.dist }}
           path: distributions/${{ matrix.dist }}/target/**
+
   build-mac-native-image:
     runs-on: macos-latest
     needs: build
+    name: Build Native Image - Mac
     steps:
       - name: Build
         uses: optum/sourcehawk/.github/actions/build-native-image@workflow-updates
@@ -199,16 +189,19 @@ jobs:
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           artifact-name: mac-native-image
+
   build-homebrew-tap-formula-archive:
     runs-on: macos-latest
     needs: build-mac-native-image
+    name: Build Homebrew Tap Formula Archive
     steps:
       - name: Build
         uses: optum/sourcehawk/.github/actions/build-homebrew-tap-formula-archive@workflow-updates
+
   build-windows-native-image:
     runs-on: windows-latest
     needs: build
-    continue-on-error: true
+    name: Build Native Image - Windows
     steps:
       - name: Build
         uses: optum/sourcehawk/.github/actions/build-windows-native-image@workflow-updates

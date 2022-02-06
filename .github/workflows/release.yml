@@ -20,8 +20,10 @@ env:
   PRIMARY_JAVA_VERSION: '11'
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
+    name: Build Java - ${{ env.PRIMARY_JAVA_VERSION }}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     outputs:
@@ -41,14 +43,14 @@ jobs:
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
       - name: Build Maven Project and Deploy Release
         if: success()
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.release
+        run: ./mvnw -B deploy -D ci.build -D ci.deploy -D ci.release
         env:
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
       - name: Build Linux Distributions and Deploy Release
         if: success()
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.release -D dist.build -rf :sourcehawk-dist
+        run: ./mvnw -B deploy -D ci.build -D ci.deploy -D ci.release -D dist.build -rf :sourcehawk-dist
         env:
           BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
           BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
@@ -107,9 +109,11 @@ jobs:
         with:
           name: manpages
           path: gh-pages/manpages/sourcehawk*.1
+
   release:
     runs-on: ubuntu-latest
     needs: build
+    name: Release
     outputs:
       RELEASE_ASSET_UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
     steps:
@@ -231,9 +235,11 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: gh-pages
+
   build-mac-native-image:
     runs-on: macos-latest
     needs: build
+    name: Build Native Image - Mac
     steps:
       - name: Build
         uses: optum/sourcehawk/.github/actions/build-native-image@workflow-updates
@@ -252,25 +258,19 @@ jobs:
           asset_path: build/sourcehawk
           asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64
           asset_content_type: application/octet-stream
+
   build-homebrew-tap-formula-archive:
     runs-on: macos-latest
     needs: build-mac-native-image
+    name: Build Homebrew Tap Formula Archive
+    outputs:
+      DOWNLOAD_URL: ${{ steps.upload.outputs.browser_download_url }}
     steps:
       - name: Build
         uses: optum/sourcehawk/.github/actions/build-homebrew-tap-formula-archive@workflow-updates
-  update-homebrew-tap:
-    runs-on: macos-latest
-    needs: build-homebrew-tap-formula-archive
-    steps:
-      - name: Download Homebrew Tap Formula Archive
-        uses: actions/download-artifact@v2
-        with:
-          name: homebrew-tap-formula-archive
-          path: homebrew
       - name: Upload Homebrew Tap Formula Archive
-        id: upload_homebrew_tap_formula_archive
+        id: upload
         if: success()
-        continue-on-error: true
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -279,24 +279,20 @@ jobs:
           asset_path: homebrew/sourcehawk-homebrew-tap-formula.tar.gz
           asset_name: sourcehawk-${{ needs.build.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
           asset_content_type: application/octet-stream
-      - name: Update Optum Homebrew Tap Formula
-        uses: mislav/bump-homebrew-formula-action@v1.16
-        continue-on-error: true
-        with:
-          formula-name: sourcehawk
-          tag-name: ${{ needs.build.outputs.RELEASE_VERSION }}
-          homebrew-tap: optum/homebrew-tap
-          base-branch: main
-          download-url: ${{ steps.upload_homebrew_tap_formula_archive.outputs.browser_download_url }}
-          commit-message: |
-            Sourcehawk ${{ needs.build.outputs.RELEASE_VERSION }}
-            
-            Updating sourcehawk formula to latest release version
-        env:
-          COMMITTER_TOKEN: ${{ secrets.GIT_COMMITTER_TOKEN }}
+
+  update-homebrew-tap-formula:
+    uses: optum/sourcehawk/.github/workflows/update-homebrew-tap-formula@main
+    needs: build-homebrew-tap-formula-archive
+    with:
+      version: ${{ needs.build.outputs.RELEASE_VERSION }}
+      download-url: ${{ needs.build-homebrew-tap-formula-archive.outputs.DOWNLOAD_URL }}
+    secrets:
+      git-committer-token: ${{ secrets.GIT_COMMITTER_TOKEN }}
+
   build-windows-native-image:
     runs-on: windows-latest
     needs: build
+    name: Build Native Image - Windows
     steps:
       - name: Build
         uses: optum/sourcehawk/.github/actions/build-windows-native-image@workflow-updates

@@ -14,7 +14,7 @@ inputs:
     required: true
   gpg-private-key:
     description: 'GPG Private Key'
-    required: true
+    required: false
   release:
     description: 'Release build?'
     required: true
@@ -52,7 +52,7 @@ runs:
         server-id: ossrh
         server-username: SONATYPE_USERNAME
         server-password: SONATYPE_PASSWORD
-        gpg-private-key: ${{ inputs.gpg-private-key }}
+        gpg-private-key: ${{ inputs.gpg-private-key || '' }}
         gpg-passphrase: SONATYPE_GPG_PASSPHRASE
     - name: Read Maven Project Version
       id: read-maven-project-version
@@ -69,7 +69,7 @@ runs:
           if [[ "$POM_VERSION" == *"-SNAPSHOT" ]]; 
           then
             BUILD_VERSION="${POM_VERSION%"-SNAPSHOT"}"
-            ./mvnw --batch-mode versions:set -D removeSnapshot || true
+            ./mvnw -B versions:set -D removeSnapshot || true
           else
             BUILD_VERSION="$POM_VERSION"
           fi
@@ -78,7 +78,7 @@ runs:
           if [[ "$POM_VERSION" != *"-SNAPSHOT" ]]; 
           then
             BUILD_VERSION="$POM_VERSION-SNAPSHOT"
-            ./mvnw --batch-mode versions:set -DnewVersion="$BUILD_VERSION" || true
+            ./mvnw -B versions:set -DnewVersion="$BUILD_VERSION" || true
           else
             BUILD_VERSION="$POM_VERSION"
           fi

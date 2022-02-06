@@ -1,0 +1,47 @@
+name: Update Homebrew Tap Formula Action
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        type: string
+      download-url:
+        description: 'Homebrew Tap Formula Archive Download URL'
+        required: true
+        type: string
+    secrets:
+      git-committer-token:
+        required: true
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version'
+        required: true
+        type: string
+      download-url:
+        description: 'Homebrew Tap Formula Archive Download URL'
+        required: true
+        type: string
+
+jobs:
+
+  update-homebrew-tap:
+    runs-on: ubuntu-latest
+    name: Update Homebrew Tap
+    steps:
+      - name: Update Sourcehawk Formula
+        uses: mislav/bump-homebrew-formula-action@v1.16
+        with:
+          formula-name: sourcehawk
+          tag-name: ${{ github.event.inputs.version || inputs.version }}
+          homebrew-tap: optum/homebrew-tap
+          base-branch: main
+          download-url: ${{ github.event.inputs.download-url || inputs.download-url }}
+          commit-message: |
+            Sourcehawk ${{ github.event.inputs.version || inputs.version }}
+            
+            Updating sourcehawk formula to latest release version
+        env:
+          COMMITTER_TOKEN: ${{ secrets.git-committer-token || secrets.GIT_COMMITTER_TOKEN }}
