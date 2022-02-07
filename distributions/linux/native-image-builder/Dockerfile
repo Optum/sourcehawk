@@ -12,9 +12,9 @@ COPY ${JAR} ${WORKDIR}/native-image.jar
 WORKDIR ${WORKDIR}
 
 # Build the native image
-RUN cd /opt/graalvm-ce-*/bin \
-    GRAALVM_BIN_DIR="$(pwd)" \
-    cd ${WORKDIR} \
+RUN cd /opt/graalvm-ce-*/bin; \
+    GRAALVM_BIN_DIR="$(pwd)"; \
+    cd ${WORKDIR}; \
     "$GRAALVM_BIN_DIR"/native-image -cp native-image.jar \
     -H:+ReportExceptionStackTraces \
     --report-unsupported-elements-at-runtime \
