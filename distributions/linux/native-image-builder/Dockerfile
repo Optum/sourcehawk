@@ -1,4 +1,4 @@
-ARG GRAALVM_VERSION=21.3.0-java11
+ARG GRAALVM_VERSION=22.0.0-java11
 FROM ghcr.io/optum/ci/nativeimage:graalvm-ce-${GRAALVM_VERSION}
 
 # Build Arguments

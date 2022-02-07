@@ -116,7 +116,7 @@
                     <!-- MAKE NATIVE IMAGE EXECUTABLE -->
                     <execution>
                         <id>update-native-image-permissions</id>
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>exec</goal>
                         </goals>
