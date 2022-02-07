@@ -30,7 +30,7 @@ runs:
     - name: Setup Maven Cache
       uses: actions/cache@v2
       with:
-        path: ~/.m2/repository
+        path: ~/.m2
         key: ${{ runner.os }}-maven-${{ inputs.java-version }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/pom.xml') }}
         restore-keys: |
           ${{ runner.os }}-maven-${{ inputs.java-version }}-${{ inputs.cache-key-suffix }}
