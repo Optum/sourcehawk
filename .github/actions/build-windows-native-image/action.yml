@@ -11,14 +11,14 @@ inputs:
     required: true
   graalvm-version:
     description: 'GraalVM Version'
-    default: '22.0.0.2'
+    default: '20.3.0'
     required: true
   github-token:
     description: 'Github Token'
     required: true
   native-image-options:
     description: 'Options to pass to native-image build'
-    default: '-H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --gc=epsilon --no-fallback'
+    default: '-H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback'
     required: false
   artifact-name:
     description: 'Name of the uploaded native image artifact'
