@@ -1,4 +1,6 @@
-name: Push And Build Docker Builders
+name: Build and Push Docker Builders
+
+# TODO: Remove me after merged to main
 
 on:
   workflow_dispatch:

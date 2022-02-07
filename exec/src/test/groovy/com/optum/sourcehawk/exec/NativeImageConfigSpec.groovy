@@ -20,6 +20,7 @@ class NativeImageConfigSpec extends Specification {
         String args = nativeImageProperties.getProperty("Args")
 
         then:
+        args.contains("--gc=epsilon")
         args.contains("--enable-url-protocols=http,https")
         args.contains("--initialize-at-build-time=com.optum.sourcehawk.enforcer.file")
         args.contains("--initialize-at-build-time=com.fasterxml.jackson,org.yaml.snakeyaml")
