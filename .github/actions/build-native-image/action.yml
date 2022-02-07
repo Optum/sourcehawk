@@ -18,7 +18,7 @@ inputs:
     required: true
   native-image-options:
     description: 'Options to pass to native-image build'
-    default: '-H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback'
+    default: '-H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --gc=epsilon --no-fallback'
     required: false
   artifact-name:
     description: 'Name of the uploaded native image artifact'

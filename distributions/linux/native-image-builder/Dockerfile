@@ -16,6 +16,7 @@ WORKDIR ${WORKDIR}
 RUN native-image -cp native-image.jar \
     -H:+ReportExceptionStackTraces \
     --report-unsupported-elements-at-runtime \
+    --gc=epsilon \
     --no-fallback \
     --libc=musl \
     --static
