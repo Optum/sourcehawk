@@ -17,7 +17,7 @@ class SourcehawkFileEnforcerRegistrySpec extends Specification {
         SourcehawkFileEnforcerRegistry.getAnnotation(Documented)
         SourcehawkFileEnforcerRegistry.getAnnotation(Inherited)
         SourcehawkFileEnforcerRegistry.getAnnotation(Retention).value() == RetentionPolicy.SOURCE
-        SourcehawkFileEnforcerRegistry.getAnnotation(Target).value()[0] == ElementType.PACKAGE
+        SourcehawkFileEnforcerRegistry.getAnnotation(Target).value()[0] == ElementType.TYPE
     }
 
 }

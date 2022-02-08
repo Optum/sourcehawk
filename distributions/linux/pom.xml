@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.7.1-SNAPSHOT</version>
+        <version>0.7.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -59,7 +59,7 @@
                         <configuration>
                             <resources>
                                 <resource>
-                                    <directory>${project.parent.parent.basedir}/gh-pages/manpages</directory>
+                                    <directory>${maven.multiModuleProjectDirectory}/gh-pages/manpages</directory>
                                     <includes>
                                         <include>${global.project.name}*</include>
                                     </includes>
@@ -279,7 +279,7 @@
                 <jdk>11</jdk>
             </activation>
             <properties>
-                <graalvm.version>21.3.0-java11</graalvm.version>
+                <graalvm.version>22.0.0-java11</graalvm.version>
             </properties>
         </profile>
 
@@ -290,7 +290,7 @@
                 <jdk>17</jdk>
             </activation>
             <properties>
-                <graalvm.version>21.3.0-java17</graalvm.version>
+                <graalvm.version>22.0.0-java17</graalvm.version>
             </properties>
         </profile>
 

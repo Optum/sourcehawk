@@ -1,5 +1,5 @@
 # GraalVM Community Edition Base Container
-ARG FROM_VERSION=java11-21.3.0
+ARG FROM_VERSION=java11-22.0.0
 FROM ghcr.io/graalvm/graalvm-ce:${FROM_VERSION}
 
 # Install native-image tool

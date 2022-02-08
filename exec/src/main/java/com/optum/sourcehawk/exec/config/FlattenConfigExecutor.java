@@ -1,6 +1,7 @@
 package com.optum.sourcehawk.exec.config;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import com.fasterxml.jackson.dataformat.yaml.YAMLMapper;
@@ -26,7 +27,7 @@ public final class FlattenConfigExecutor {
      */
     private static final ObjectWriter YAML_WRITER = new YAMLMapper()
             .configure(YAMLGenerator.Feature.WRITE_DOC_START_MARKER, false)
-            .setPropertyNamingStrategy(new PropertyNamingStrategy.KebabCaseStrategy())
+            .setPropertyNamingStrategy(PropertyNamingStrategies.KEBAB_CASE)
             .writerWithDefaultPrettyPrinter();
 
     /**

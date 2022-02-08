@@ -4,6 +4,8 @@ import com.optum.sourcehawk.enforcer.file.common.StringPropertyEquals
 import com.optum.sourcehawk.enforcer.file.docker.DockerfileFromHasTag
 import com.optum.sourcehawk.enforcer.file.maven.MavenBannedProperties
 import org.reflections.Reflections
+import org.reflections.scanners.Scanners
+import org.reflections.util.ConfigurationBuilder
 import spock.lang.Specification
 
 import java.lang.reflect.Modifier
@@ -17,7 +19,9 @@ class FileEnforcerRegistrySpec extends Specification {
 
     def "getEnforcers"() {
         given:
-        Reflections reflections = new Reflections("com.optum.sourcehawk.enforcer.file")
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .forPackages("com.optum.sourcehawk.enforcer.file")
+                .setScanners(Scanners.SubTypes))
         Set<Class<? extends FileEnforcer>> fileEnforcerClasses = reflections.getSubTypesOf(FileEnforcer)
                 .findAll { !Modifier.isAbstract(it.getModifiers()) }
 

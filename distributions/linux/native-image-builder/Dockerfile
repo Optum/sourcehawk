@@ -1,8 +1,7 @@
-ARG GRAALVM_VERSION=21.3.0-java11
+ARG GRAALVM_VERSION=22.0.0-java11
 FROM ghcr.io/optum/ci/nativeimage:graalvm-ce-${GRAALVM_VERSION}
 
 # Build Arguments
-ARG NAME
 ARG JAR
 ARG WORKDIR
 
@@ -13,9 +12,13 @@ COPY ${JAR} ${WORKDIR}/native-image.jar
 WORKDIR ${WORKDIR}
 
 # Build the native image
-RUN native-image -cp native-image.jar \
+RUN cd /opt/graalvm-ce-*/bin; \
+    GRAALVM_BIN_DIR="$(pwd)"; \
+    cd ${WORKDIR}; \
+    "$GRAALVM_BIN_DIR"/native-image -cp native-image.jar \
     -H:+ReportExceptionStackTraces \
     --report-unsupported-elements-at-runtime \
-    --no-fallback \
+    --gc=epsilon \
     --libc=musl \
+    --no-fallback \
     --static

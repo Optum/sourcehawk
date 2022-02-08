@@ -10,17 +10,6 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.WildcardTypeName;
-import org.reflections.Reflections;
-
-import javax.annotation.processing.AbstractProcessor;
-import javax.annotation.processing.RoundEnvironment;
-import javax.lang.model.SourceVersion;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.PackageElement;
-import javax.lang.model.element.TypeElement;
-import javax.tools.Diagnostic;
-import javax.tools.FileObject;
-import javax.tools.StandardLocation;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Collection;
@@ -34,6 +23,19 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.SourceVersion;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.PackageElement;
+import javax.lang.model.element.TypeElement;
+import javax.tools.Diagnostic;
+import javax.tools.Diagnostic.Kind;
+import javax.tools.FileObject;
+import javax.tools.StandardLocation;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+import org.reflections.util.ConfigurationBuilder;
 
 /**
  * An annotation processor for generating a file enforcer registry
@@ -75,7 +77,7 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
         annotations.stream()
                 .map(roundEnvironment::getElementsAnnotatedWith)
                 .flatMap(Collection::stream)
-                .map(PackageElement.class::cast)
+                .map(TypeElement.class::cast)
                 .map(this::createFileEnforcers)
                 .filter(Objects::nonNull)
                 .forEach(fileEnforcerClasses::putAll);
@@ -84,7 +86,7 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
                 buildFileEnforcerRegistryJavaFile(fileEnforcerClasses).writeTo(processingEnv.getFiler());
                 generateNativeImageReflectConfigFile(fileEnforcerClasses);
             } catch (final Exception e) {
-                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Unable to generate file enforcer registry: " + e.toString());
+                processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "Unable to generate file enforcer registry: " + e);
                 return false;
             }
         }
@@ -106,19 +108,26 @@ public class SourcehawkFileEnforcerRegistryProcessor extends AbstractProcessor {
     /**
      * Create the file enforcers
      *
-     * @param packageElement the package element
+     * @param typeElement the type element
      * @return the file enforcer entry
      */
-    private Map<String, Class<?>> createFileEnforcers(final PackageElement packageElement) {
-        return Stream.of(packageElement)
-                .map(PackageElement::getQualifiedName)
-                .map(String::valueOf)
-                .map(Reflections::new)
-                .map(reflections -> reflections.getSubTypesOf(fileEnforcerClass))
-                .flatMap(Collection::stream)
-                .filter(enforcerClass -> !java.lang.reflect.Modifier.isAbstract(enforcerClass.getModifiers()))
-                .filter(enforcerClass -> !java.lang.reflect.Modifier.isInterface(enforcerClass.getModifiers()))
-                .collect(Collectors.toMap(SourcehawkFileEnforcerRegistryProcessor::generateAlias, Function.identity()));
+    @SuppressWarnings("java:S3864")
+    private Map<String, Class<?>> createFileEnforcers(final TypeElement typeElement) {
+        return Stream.of(typeElement)
+            .map(TypeElement::getEnclosingElement)
+            .map(PackageElement.class::cast)
+            .map(PackageElement::getQualifiedName)
+            .map(String::valueOf)
+            .map(packageName -> new ConfigurationBuilder()
+                .forPackages(packageName)
+                .setScanners(Scanners.SubTypes))
+            .map(Reflections::new)
+            .map(reflections -> reflections.getSubTypesOf(fileEnforcerClass))
+            .flatMap(Collection::stream)
+            .filter(enforcerClass -> !java.lang.reflect.Modifier.isAbstract(enforcerClass.getModifiers()))
+            .filter(enforcerClass -> !java.lang.reflect.Modifier.isInterface(enforcerClass.getModifiers()))
+            .peek(enforcerClass -> processingEnv.getMessager().printMessage(Kind.NOTE, "FileEnforcer registered: " + enforcerClass.getCanonicalName()))
+            .collect(Collectors.toMap(SourcehawkFileEnforcerRegistryProcessor::generateAlias, Function.identity()));
     }
 
     /**

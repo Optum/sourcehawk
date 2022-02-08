@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk</artifactId>
-        <version>0.7.1-SNAPSHOT</version>
+        <version>0.7.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -18,8 +18,9 @@
     <packaging>pom</packaging>
 
     <properties>
+        <global.project.license>GNU General Public License version 3</global.project.license>
+        <global.project.license.abbrev>GPLv3</global.project.license.abbrev>
         <maven.build.timestamp.format>yyyyMMddHHmmss</maven.build.timestamp.format>
-        <docker.repository>${docker.organization}/${global.project.name}</docker.repository>
     </properties>
 
     <dependencyManagement>
@@ -53,6 +54,13 @@
                 <plugin>
                     <groupId>com.spotify</groupId>
                     <artifactId>dockerfile-maven-plugin</artifactId>
+                </plugin>
+                <plugin>
+                    <groupId>org.sonatype.plugins</groupId>
+                    <artifactId>nexus-staging-maven-plugin</artifactId>
+                    <configuration>
+                        <skipStaging>true</skipStaging>
+                    </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>

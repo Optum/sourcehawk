@@ -378,7 +378,7 @@ That's all there is to it!
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: org.reflections:reflections:0.9.11
+Package: org.reflections:reflections:0.10.2
 
 License: undefined
 
@@ -606,7 +606,7 @@ limitations under the License.
 
 -------------------------------------------------------------------------------------------------------------------------------
 
-Package: org.reflections:reflections:0.9.11
+Package: org.reflections:reflections:0.10.2
 
 License: undefined
 

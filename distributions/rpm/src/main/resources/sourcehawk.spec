@@ -8,7 +8,7 @@ Vendor: ${global.organization.name}
 Group: Development/Tools
 Packager: ${global.organization.name}
 
-License: ${global.project.license.abbrev.rpm}
+License: ${global.project.license.abbrev}
 URL: ${global.project.url}
 Source0: ${project.scm.url}/archive/v${rpm.package.version}.tar.gz
 
