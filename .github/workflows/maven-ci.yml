@@ -52,7 +52,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Maven Prepare
         id: maven-prepare
-        uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
+        uses: optum/sourcehawk/.github/actions/maven-prepare@main
         with:
           cache-key-suffix: build-java
           java-version: ${{ matrix.java }}
@@ -114,7 +114,7 @@ jobs:
           name: manpages
           path: gh-pages/manpages
       - name: Maven Prepare
-        uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
+        uses: optum/sourcehawk/.github/actions/maven-prepare@main
         with:
           cache-key-suffix: build-linux-native-image
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
@@ -155,7 +155,7 @@ jobs:
           name: manpages
           path: gh-pages/manpages
       - name: Maven Prepare
-        uses: optum/sourcehawk/.github/actions/maven-prepare@workflow-updates
+        uses: optum/sourcehawk/.github/actions/maven-prepare@main
         with:
           cache-key-suffix: build-linux-distribution
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
@@ -181,7 +181,7 @@ jobs:
     name: Build Native Image - Mac
     steps:
       - name: Build
-        uses: optum/sourcehawk/.github/actions/build-native-image@workflow-updates
+        uses: optum/sourcehawk/.github/actions/build-native-image@main
         with:
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -193,7 +193,7 @@ jobs:
     name: Build Homebrew Tap Formula Archive
     steps:
       - name: Build
-        uses: optum/sourcehawk/.github/actions/build-homebrew-tap-formula-archive@workflow-updates
+        uses: optum/sourcehawk/.github/actions/build-homebrew-tap-formula-archive@main
 
   build-windows-native-image:
     runs-on: windows-latest
@@ -201,7 +201,7 @@ jobs:
     name: Build Native Image - Windows
     steps:
       - name: Build
-        uses: optum/sourcehawk/.github/actions/build-windows-native-image@workflow-updates
+        uses: optum/sourcehawk/.github/actions/build-windows-native-image@main
         with:
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
