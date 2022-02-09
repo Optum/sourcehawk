@@ -27,7 +27,7 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.version }}
+          ref: ${{ format('v{0}', github.event.inputs.version) }}
           token: ${{ secrets.GITHUB_TOKEN }}
       - name: Maven Prepare
         id: maven-prepare
