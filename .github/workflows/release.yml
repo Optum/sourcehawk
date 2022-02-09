@@ -20,7 +20,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    name: Build Java - ${{ env.PRIMARY_JAVA_VERSION }}
+    name: Build Java 11
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
