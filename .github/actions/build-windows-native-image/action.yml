@@ -25,6 +25,11 @@ inputs:
     default: 'windows-native-image'
     required: false
 
+outputs:
+  native-image-path:
+    description: "Native Image Path"
+    value: build/sourcehawk.exe
+
 runs:
   using: "composite"
   steps:
@@ -46,15 +51,17 @@ runs:
         github-token: ${{ inputs.github-token }}
     - name: Build Windows Native Image
       if: success()
+      working-directory: build
       shell: cmd
-      run: native-image.cmd -cp .\build\native-image.jar ${{ inputs.native-image-options }}
+      run: native-image.cmd -cp .\native-image.jar ${{ inputs.native-image-options }}
     - name: Archive Windows Native Image
       if: success()
       uses: actions/upload-artifact@v2
       with:
         name: ${{ inputs.artifact-name }}
-        path: sourcehawk.exe
+        path: build/sourcehawk.exe
     - name: Smoke Test
       if: success()
+      working-directory: build
       shell: cmd
       run: sourcehawk.exe help
