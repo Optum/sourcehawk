@@ -24,6 +24,11 @@ inputs:
     description: 'Name of the uploaded native image artifact'
     required: true
 
+outputs:
+  native-image-path:
+    description: "Native Image Path"
+    value: build/sourcehawk
+
 runs:
   using: "composite"
   steps:

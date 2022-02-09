@@ -74,7 +74,7 @@ jobs:
     needs: build
     name: Create Release
     outputs:
-      release-asset-upload-url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+      release-asset-upload-url: ${{ steps.create-release.outputs.upload_url }}
     steps:
       - name: Create Release
         if: success()
@@ -290,6 +290,7 @@ jobs:
     steps:
       - name: Build
         uses: optum/sourcehawk/.github/actions/build-native-image@main
+        id: build
         with:
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -302,7 +303,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
-          asset_path: build/sourcehawk
+          asset_path: ${{ steps.build.outputs.native-image-path }}
           asset_name: sourcehawk-${{ github.event.inputs.version }}-darwin-x86_64
           asset_content_type: application/octet-stream
 
@@ -330,6 +331,7 @@ jobs:
   update-homebrew-tap-formula:
     uses: optum/sourcehawk/.github/workflows/update-homebrew-tap-formula.yml@main
     needs: build-homebrew-tap-formula-archive
+    name: Update Homebrew Tap Formula
     with:
       version: ${{ github.event.inputs.version }}
       download-url: ${{ needs.build-homebrew-tap-formula-archive.outputs.download-url }}
@@ -343,6 +345,7 @@ jobs:
     steps:
       - name: Build
         uses: optum/sourcehawk/.github/actions/build-windows-native-image@main
+        id: build
         with:
           java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -353,7 +356,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build.outputs.release-asset-upload-url }}
-          asset_path: build/sourcehawk.exe
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ${{ steps.build.outputs.native-image-path }}
           asset_name: sourcehawk-${{ github.event.inputs.version }}-windows-x86_64.exe
           asset_content_type: application/octet-stream
