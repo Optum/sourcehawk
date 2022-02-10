@@ -128,7 +128,6 @@
                             <tag>${project.version}</tag>
                             <buildArgs>
                                 <GRAALVM_VERSION>${graalvm.version}</GRAALVM_VERSION>
-                                <NAME>${global.project.name}</NAME>
                                 <JAR>target/dist/sourcehawk-cli-${project.version}-native-image.jar</JAR>
                                 <WORKDIR>${docker.workdir}</WORKDIR>
                             </buildArgs>
