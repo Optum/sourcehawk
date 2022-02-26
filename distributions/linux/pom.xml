@@ -36,7 +36,6 @@
         <dependency>
             <groupId>com.optum.sourcehawk</groupId>
             <artifactId>sourcehawk-cli</artifactId>
-            <version>${project.version}</version>
             <classifier>completion</classifier>
             <type>sh</type>
             <scope>provided</scope>
