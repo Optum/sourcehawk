@@ -1,4 +1,5 @@
-name: Build and Push Docker Builders
+name: Update RPM Builders
+
 on:
   workflow_dispatch:
     inputs:
@@ -6,6 +7,7 @@ on:
         description: 'Github Ref'
         required: false
         default: 'main'
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -23,26 +25,9 @@ jobs:
           registry: ghcr.io
           username: ${{ secrets.GIT_USERNAME }}
           password: ${{ secrets.GIT_PACKAGE_TOKEN }}
-      - name: Build and Push graalvm-ce-21.3.0-java11
-        uses: docker/build-push-action@v2
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: distributions/docker-builders/Dockerfile-nativeimage
-          build-args: FROM_VERSION=java11-21.3.0
-          tags: ghcr.io/optum/ci/nativeimage:graalvm-ce-21.3.0-java11
-          push: true
-      - name: Build and Push graalvm-ce-21.3.0-java17
-        uses: docker/build-push-action@v2
-        with:
-          builder: ${{ steps.buildx.outputs.name }}
-          context: .
-          file: distributions/docker-builders/Dockerfile-nativeimage
-          build-args: FROM_VERSION=java17-21.3.0
-          tags: ghcr.io/optum/ci/nativeimage:graalvm-ce-21.3.0-java17
-          push: true
       - name: Build and Push rpmbuild centos7
         uses: docker/build-push-action@v2
+        continue-on-error: true
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -52,6 +37,7 @@ jobs:
           push: true
       - name: Build and Push rpmbuild centos8
         uses: docker/build-push-action@v2
+        continue-on-error: true
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -61,6 +47,7 @@ jobs:
           push: true
       - name: Build and Push rpmbuild fedora33
         uses: docker/build-push-action@v2
+        continue-on-error: true
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -70,6 +57,7 @@ jobs:
           push: true
       - name: Build and Push rpmbuild fedora34
         uses: docker/build-push-action@v2
+        continue-on-error: true
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .
@@ -79,6 +67,7 @@ jobs:
           push: true
       - name: Build and Push rpmbuild fedora35
         uses: docker/build-push-action@v2
+        continue-on-error: true
         with:
           builder: ${{ steps.buildx.outputs.name }}
           context: .

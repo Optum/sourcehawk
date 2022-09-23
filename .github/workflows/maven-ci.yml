@@ -1,8 +1,9 @@
 name: Maven CI
+
 on:
   push:
     branches:
-      - main
+      - 'main'
       - 'releases/[1-9]+.[0-9]+.x'
     paths-ignore:
       - '.github/**'
@@ -20,7 +21,7 @@ on:
       - '**/README.md'
   pull_request:
     branches:
-      - main
+      - 'main'
       - 'releases/[1-9]+.[0-9]+.x'
     paths-ignore:
       - '.github/**'
@@ -34,184 +35,175 @@ on:
       - 'OSSMETADATA'
       - 'install-*.sh'
       - '**/README.md'
+
+env:
+  PRIMARY_JAVA_VERSION: '11'
+
 jobs:
+
   build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: ['8', '11', '17']
+        java: ['11', '17']
+    name: Build Java - ${{ matrix.java }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
-      - name: Setup Maven Cache
-        uses: actions/cache@v1
+      - name: Maven Prepare
+        id: maven-prepare
+        uses: optum/sourcehawk/.github/actions/maven-prepare@main
         with:
-          path: ~/.m2
-          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
-          restore-keys: ${{ runner.os }}-m2
-      - name: Setup Sonar Cache
-        uses: actions/cache@v1
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-      - name: Setup Java and Maven
-        uses: actions/setup-java@v1
-        with:
+          cache-key-suffix: build-java
           java-version: ${{ matrix.java }}
-          server-id: ossrh
-          server-username: SONATYPE_USERNAME
-          server-password: SONATYPE_PASSWORD
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
-          gpg-passphrase: SONATYPE_GPG_PASSPHRASE
-      - name: Set Maven Project Version
-        shell: bash
-        run: |
-          BUILD_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
-          [[ "$BUILD_VERSION" != *"-SNAPSHOT" ]] && BUILD_VERSION="${BUILD_VERSION}-SNAPSHOT" && ./mvnw --batch-mode versions:set -DnewVersion=$BUILD_VERSION || true
       - name: Build Maven Project
-        if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != '8'))
-        run: ./mvnw --batch-mode install -D ci.build
-      - name: Build Maven Project and Deploy Snapshot
-        if: success() && (github.event_name == 'push' && matrix.java == '8')
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.snapshot
+        if: success() && (github.event_name == 'pull_request' || (github.event_name == 'push' && matrix.java != env.PRIMARY_JAVA_VERSION))
+        run: ./mvnw -B -U -D ci.build install
+      - name: Build Maven Project and Deploy Snapshots to Sonatype OSSRH
+        if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
+        run: ./mvnw -B -U -D ci.build -D ci.deploy -D ci.snapshot deploy
         env:
-          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
-      - name: Archive Linux Native Image
-        if: success() && (matrix.java == '11')
-        uses: actions/upload-artifact@v2
+      - name: Publish Test Report
+        if: always()
+        continue-on-error: true
+        uses: dorny/test-reporter@v1
         with:
-          name: linux-native-image
-          path: distributions/linux/target/sourcehawk
+          name: Test Report - Java ${{ matrix.java }}
+          path: '**/target/(surefire|failsafe)-reports/TEST-*.xml'
+          reporter: java-junit
       - name: Archive Native Image JAR
-        if: success() && (matrix.java == '11')
+        if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
           name: native-image-jar
           path: cli/target/*-native-image.jar
       - name: Archive Completion Script
-        if: success() && (matrix.java == '11')
+        if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
           name: completion-script
           path: cli/target/sourcehawk-completion.sh
       - name: Archive Manpages
-        if: success() && (matrix.java == '11')
+        if: success() && (matrix.java == env.PRIMARY_JAVA_VERSION)
         uses: actions/upload-artifact@v2
         with:
           name: manpages
           path: gh-pages/manpages/sourcehawk*.1
-      - name: Aggregate Coverage Reports
-        id: aggregate_coverage_reports
-        if: success() && (matrix.java == '11')
-        run: echo ::set-output name=JACOCO_XML_REPORT_PATHS::$(find . -name "jacoco.xml" -printf '%P\n' | tr '\r\n' ',')
       - name: Analyze with SonarCloud
-        if: success() && (github.event_name == 'push' && matrix.java == '11')
+        if: success() && (github.event_name == 'push' && matrix.java == env.PRIMARY_JAVA_VERSION)
         continue-on-error: true
-        run: ./mvnw --batch-mode sonar:sonar -Dsonar.login=$SONAR_TOKEN
+        run: ./mvnw -B sonar:sonar -Dsonar.login=$SONAR_TOKEN
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONARCLOUD_TOKEN }}
-      - name: Publish Test Report
-        if: always()
-        continue-on-error: true
-        uses: scacap/action-surefire-report@v1
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          report_paths: '**/target/surefire-reports/TEST-*.xml,**/target/failsafe-reports/TEST-*.xml'
-  build-mac-native-image:
-    runs-on: macos-latest
+
+  build-linux-native-image:
+    runs-on: ubuntu-latest
     needs: build
+    name: Build Native Image - Linux
     steps:
-      - name: Download Native Image JAR
-        uses: actions/download-artifact@v2
-        with:
-          name: native-image-jar
-          path: build
-      - name: Download Completion Script
-        uses: actions/download-artifact@v2
-        with:
-          name: completion-script
-          path: build
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
       - name: Download Manpages
         uses: actions/download-artifact@v2
         with:
           name: manpages
-          path: build
-      - name: Rename Native Image JAR
-        working-directory: build
-        run: mv *.jar native-image.jar
-      - name: Setup GraalVM
-        uses: graalvm/setup-graalvm@v1
+          path: gh-pages/manpages
+      - name: Maven Prepare
+        uses: optum/sourcehawk/.github/actions/maven-prepare@main
         with:
-          version: '21.3.0'
-          java-version: '11'
-          components: 'native-image'
+          cache-key-suffix: build-linux-native-image
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
+      - name: Build Native Image
+        if: success() && (github.event_name == 'pull_request')
+        run: ./mvnw -B -U -D ci.build -D dist.build -pl distributions,distributions/linux install
+      - name: Build Native Image
+        if: success() && (github.event_name == 'push')
+        run: ./mvnw -B -U -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions,distributions/linux deploy
+      - name: Publish Test Report
+        if: always()
+        continue-on-error: true
+        uses: dorny/test-reporter@v1
+        with:
+          name: Test Report - Linux Native Image
+          path: 'distributions/linux/**/target/(surefire|failsafe)-reports/TEST-*.xml'
+          reporter: java-junit
+      - name: Archive Native Image
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-native-image
+          path: distributions/linux/target/sourcehawk
+
+  build-linux-distribution:
+    runs-on: ubuntu-latest
+    needs: build-linux-native-image
+    strategy:
+      matrix:
+        dist: ['debian', 'rpm', 'docker']
+    name: Build Linux Distribution - ${{ matrix.dist }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
+      - name: Download Manpages
+        uses: actions/download-artifact@v2
+        with:
+          name: manpages
+          path: gh-pages/manpages
+      - name: Maven Prepare
+        uses: optum/sourcehawk/.github/actions/maven-prepare@main
+        with:
+          cache-key-suffix: build-linux-distribution
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
+      - name: Build Distribution
+        if: success() && (github.event_name == 'pull_request')
+        run: ./mvnw -B -U -D ci.build -D dist.build -pl distributions/${{ matrix.dist }} install
+      - name: Build Distributions and Publish Snapshots
+        if: success() && (github.event_name == 'push')
+        run: ./mvnw -B -U -D ci.build -D ci.deploy -D ci.snapshot -D dist.build -pl distributions/${{ matrix.dist }} deploy
+        env:
+          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Archive Distribution
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-dist-${{ matrix.dist }}
+          path: distributions/${{ matrix.dist }}/target/**
+
+  build-mac-native-image:
+    runs-on: macos-latest
+    needs: build
+    name: Build Native Image - Mac
+    steps:
+      - name: Build
+        uses: optum/sourcehawk/.github/actions/build-native-image@main
+        with:
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Mac Native Image
-        if: success()
-        working-directory: build
-        run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback
-      - name: Create Homebrew Tap Formula Archive
-        if: success()
-        working-directory: build
-        run: |
-          cp sourcehawk-completion.sh sourcehawk-bash-completion.sh
-          cp sourcehawk-completion.sh sourcehawk-zsh-completion.sh
-          gzip sourcehawk*.1 && tar -czvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk sourcehawk-bash-completion.sh sourcehawk-zsh-completion.sh sourcehawk*.1.gz
-      - name: Archive Mac Native Image
-        if: success()
-        continue-on-error: true
-        uses: actions/upload-artifact@v2
-        with:
-          name: mac-native-image
-          path: build/sourcehawk
-      - name: Archive Homebrew Tap Formula Archive
-        if: success()
-        continue-on-error: true
-        uses: actions/upload-artifact@v2
-        with:
-          name: homebrew-tap-formula
-          path: build/sourcehawk-homebrew-tap-formula.tar.gz
-      - name: Smoke Test
-        if: success()
-        working-directory: build
-        run: ./sourcehawk help
+          artifact-name: mac-native-image
+
+  build-homebrew-tap-formula-archive:
+    runs-on: macos-latest
+    needs: build-mac-native-image
+    name: Build Homebrew Tap Formula Archive
+    steps:
+      - name: Build
+        uses: optum/sourcehawk/.github/actions/build-homebrew-tap-formula-archive@main
+
   build-windows-native-image:
     runs-on: windows-latest
     needs: build
-    continue-on-error: true
+    name: Build Native Image - Windows
     steps:
-      - name: Download Native Image JAR
-        uses: actions/download-artifact@v2
+      - name: Build
+        uses: optum/sourcehawk/.github/actions/build-windows-native-image@main
         with:
-          name: native-image-jar
-          path: build
-      - name: Rename Native Image JAR
-        working-directory: build
-        run: ren *.jar native-image.jar
-      - name: Setup GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          version: '20.3.0'
-          java-version: '11'
-          components: 'native-image'
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Windows Native Image
-        if: success()
-        run: native-image.cmd -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
-      - name: Archive Windows Native Image
-        if: success()
-        continue-on-error: true
-        uses: actions/upload-artifact@v2
-        with:
-          name: windows-native-image
-          path: sourcehawk.exe
-      - name: Smoke Test
-        if: success()
-        shell: cmd
-        run: sourcehawk.exe help

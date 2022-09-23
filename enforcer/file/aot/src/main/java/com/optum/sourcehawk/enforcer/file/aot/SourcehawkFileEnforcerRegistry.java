@@ -17,5 +17,5 @@ import java.lang.annotation.Target;
 @Documented
 @Inherited
 @Retention(RetentionPolicy.SOURCE)
-@Target(ElementType.PACKAGE)
+@Target(ElementType.TYPE)
 public @interface SourcehawkFileEnforcerRegistry { }

@@ -8,7 +8,7 @@
     <parent>
         <groupId>com.optum.sourcehawk</groupId>
         <artifactId>sourcehawk-dist</artifactId>
-        <version>0.7.1-SNAPSHOT</version>
+        <version>0.7.2-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -18,6 +18,7 @@
     <packaging>pom</packaging>
 
     <properties>
+        <global.project.license.abbrev>GPL-3</global.project.license.abbrev>
         <debian.build.directory>${project.build.directory}/debian</debian.build.directory>
         <debian.package>${global.project.name}</debian.package>
         <debian.package.version>${project.version}</debian.package.version>

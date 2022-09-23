@@ -1,86 +1,55 @@
 name: Release
+
 on:
   workflow_dispatch:
     inputs:
-      ref:
-        description: 'Github Ref'
-        required: false
-        default: 'main'
-      draft:
-        description: 'Is the release a draft?'
-        required: false
-        default: 'false'
+      version:
+        description: 'Version (tag must exist)'
+        required: true
+        type: string
       prerelease:
         description: 'Is this a pre-release?'
         required: false
         default: 'false'
+        type: boolean
+
+env:
+  PRIMARY_JAVA_VERSION: '11'
+
 jobs:
-  build-java-8:
+
+  build:
     runs-on: ubuntu-latest
+    name: Build Java 11
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v2
         with:
-          ref: ${{ github.event.inputs.ref }}
+          ref: ${{ format('v{0}', github.event.inputs.version) }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0
-      - name: Setup Java and Maven
-        uses: actions/setup-java@v1
+      - name: Maven Prepare
+        id: maven-prepare
+        uses: optum/sourcehawk/.github/actions/maven-prepare@main
         with:
-          java-version: 8
-          server-id: ossrh
-          server-username: SONATYPE_USERNAME
-          server-password: SONATYPE_PASSWORD
+          cache-key-suffix: build
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           gpg-private-key: ${{ secrets.SONATYPE_GPG_PRIVATE_KEY }}
-          gpg-passphrase: SONATYPE_GPG_PASSPHRASE
-      - name: Set Maven Project Version
-        id: set_maven_project_version
-        shell: bash
-        run: |
-          RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
-          [[ "$RELEASE_VERSION" == *"-SNAPSHOT" ]] && RELEASE_VERSION="${RELEASE_VERSION%"-SNAPSHOT"}" && ./mvnw --batch-mode versions:set -D removeSnapshot || true
-          [[ "$(git tag -l $RELEASE_VERSION)" == "$RELEASE_VERSION" ]] && echo "Tag $RELEASE_VERSION already exists" && exit 1
-          echo ::set-output name=RELEASE_VERSION::$RELEASE_VERSION
-      - name: Build Maven Project and Deploy Release
+          build-version: ${{ github.event.inputs.version }}
+      - name: Build Maven Project and Deploy Releases to Sonatype OSSRH
         if: success()
-        run: ./mvnw --batch-mode deploy -D ci.build -D ci.deploy -D ci.release
+        run: ./mvnw -B -D ci.build -D ci.deploy -D ci.release deploy
         env:
-          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
-          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
-          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
           SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
           SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
           SONATYPE_GPG_PASSPHRASE: ${{ secrets.SONATYPE_GPG_PASSPHRASE }}
-  build-java-11:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    outputs:
-      RELEASE_VERSION: ${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}
-      RELEASE_ASSET_UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ github.event.inputs.ref }}
-      - name: Setup Java and Maven
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: Set Maven Project Version
-        id: set_maven_project_version
-        shell: bash
-        run: |
-          RELEASE_VERSION=$(./mvnw help:evaluate -Dexpression=project.version -q -DforceStdout | tail -1 | tr -d '\r\n')
-          [[ "$RELEASE_VERSION" == *"-SNAPSHOT" ]] && RELEASE_VERSION="${RELEASE_VERSION%"-SNAPSHOT"}" && ./mvnw --batch-mode versions:set -D removeSnapshot || true
-          [[ "$(git tag -l $RELEASE_VERSION)" == "$RELEASE_VERSION" ]] && echo "Tag $RELEASE_VERSION already exists" && exit 1
-          echo ::set-output name=RELEASE_VERSION::$RELEASE_VERSION
-      - name: Build Maven Project
+      - name: Archive Github Pages Site
         if: success()
-        run: ./mvnw --batch-mode install -D ci.build -D ci.release
+        uses: actions/upload-artifact@v2
+        with:
+          name: gh-pages-site
+          path: gh-pages
       - name: Archive Native Image JAR
         if: success()
         uses: actions/upload-artifact@v2
@@ -99,51 +68,73 @@ jobs:
         with:
           name: manpages
           path: gh-pages/manpages/sourcehawk*.1
-      - name: Aggregate Coverage Reports
-        id: aggregate_coverage_reports
-        if: success()
-        run: echo ::set-output name=JACOCO_XML_REPORT_PATHS::$(find . -name "jacoco.xml" -printf '%P\n' | tr '\r\n' ',')
-      - name: Generate Changelog
-        if: success()
-        uses: heinrichreimer/github-changelog-generator-action@v2.1.1
-        with:
-          futureRelease: ${{ format('v{0}', steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
-          output: CHANGELOG.md
-          releaseBranch: ${{ github.event.inputs.ref }}
-          stripGeneratorNotice: true
-          token: ${{ secrets.GITHUB_TOKEN }}
-          usernamesAsGithubLogins: true
-      - name: Tag
-        if: success()
-        run: |
-          git config user.name "$GIT_USERNAME" && git config user.email "$GIT_EMAIL"
-          git tag -a "v$RELEASE_VERSION" -m "Release v$RELEASE_VERSION created by @$GITHUB_ACTOR"
-          git push origin --tags
-        env:
-          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
-          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
-          RELEASE_VERSION: ${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}
+
+  create-release:
+    runs-on: ubuntu-latest
+    needs: build
+    name: Create Release
+    outputs:
+      release-asset-upload-url: ${{ steps.create-release.outputs.upload_url }}
+    steps:
       - name: Create Release
         if: success()
-        id: create_release
+        id: create-release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tag_name: ${{ format('v{0}', steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
-          release_name: ${{ format('{0} {1}', github.event.repository.name, steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
-          body_path: CHANGELOG.md
-          draft: ${{ github.event.inputs.draft }}
+          tag_name: ${{ format('v{0}', github.event.inputs.version) }}
+          release_name: ${{ format('{0} {1}', github.event.repository.name, github.event.inputs.version) }}
+          body: 'TODO: fill out changelog'
+          draft: true
           prerelease: ${{ github.event.inputs.prerelease }}
+
+  update-github-pages:
+    runs-on: ubuntu-latest
+    needs: create-release
+    name: Update Github Pages
+    steps:
+      - name: Download Github Pages Site
+        uses: actions/download-artifact@v2
+        with:
+          name: gh-pages-site
+          path: gh-pages
       - name: Publish Github Pages
-        if: success()
         continue-on-error: true
         uses: jamesives/github-pages-deploy-action@3.7.1
         with:
-          COMMIT_MESSAGE: ${{ format('Publishing github pages for release version {0}', steps.set_maven_project_version.outputs.RELEASE_VERSION) }}
+          COMMIT_MESSAGE: ${{ format('Publishing github pages for release version {0}', github.event.inputs.version) }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           BRANCH: gh-pages
           FOLDER: gh-pages
+
+  build-linux-native-image:
+    runs-on: ubuntu-latest
+    needs: create-release
+    name: Build Native Image - Linux
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
+      - name: Download Manpages
+        uses: actions/download-artifact@v2
+        with:
+          name: manpages
+          path: gh-pages/manpages
+      - name: Maven Prepare
+        uses: optum/sourcehawk/.github/actions/maven-prepare@main
+        with:
+          cache-key-suffix: build-linux-native-image
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
+          build-version: ${{ github.event.inputs.version }}
+      - name: Build Native Image
+        if: success()
+        run: ./mvnw -B -D ci.build -D ci.deploy -D ci.release -D dist.build -pl distributions,distributions/linux deploy
+      - name: Archive Native Image
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-native-image
+          path: distributions/linux/target/sourcehawk
       - name: Upload Sourcehawk Linux Executable
         if: success()
         continue-on-error: true
@@ -151,10 +142,57 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
           asset_path: ./distributions/linux/target/sourcehawk
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-linux-x86_64
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-linux-x86_64
           asset_content_type: application/octet-stream
+          
+  build-linux-distribution:
+    runs-on: ubuntu-latest
+    needs: build-linux-native-image
+    strategy:
+      matrix:
+        dist: ['debian', 'rpm', 'docker']
+    name: Build Linux Distribution - ${{ matrix.dist }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v2
+      - name: Download Manpages
+        uses: actions/download-artifact@v2
+        with:
+          name: manpages
+          path: gh-pages/manpages
+      - name: Maven Prepare
+        uses: optum/sourcehawk/.github/actions/maven-prepare@main
+        with:
+          cache-key-suffix: build-linux-distribution
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
+          build-version: ${{ github.event.inputs.version }}
+      - name: Build Distribution
+        if: success() && (github.event_name == 'push')
+        run: ./mvnw -B -D ci.build -D ci.deploy -D ci.release -D dist.build -pl distributions/${{ matrix.dist }} deploy
+        env:
+          BINTRAY_USERNAME: ${{ secrets.BINTRAY_USERNAME }}
+          BINTRAY_API_KEY: ${{ secrets.BINTRAY_API_KEY }}
+          DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+          DOCKER_HUB_PASSWORD: ${{ secrets.DOCKER_HUB_PASSWORD }}
+      - name: Archive Distribution
+        if: success()
+        uses: actions/upload-artifact@v2
+        with:
+          name: linux-dist-${{ matrix.dist }}
+          path: distributions/${{ matrix.dist }}/target/**
+
+  upload-linux-distribution-release-assets:
+    runs-on: ubuntu-latest
+    needs: build-linux-distribution
+    name: Upload Linux Distribution Release Assets
+    steps:
+      - name: Download Debian Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: linux-dist-debian
+          path: debian
       - name: Upload Sourcehawk Debian Buster Package
         if: success()
         continue-on-error: true
@@ -162,9 +200,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./distributions/debian/target/sourcehawk-debian-buster.deb
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-debian-buster-amd64.deb
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ./debian/sourcehawk-debian-buster.deb
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-debian-buster-amd64.deb
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Ubuntu Focal Package
         if: success()
@@ -173,10 +211,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./distributions/debian/target/sourcehawk-ubuntu-focal.deb
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-ubuntu-focal-amd64.deb
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ./debian/sourcehawk-ubuntu-focal.deb
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-ubuntu-focal-amd64.deb
           asset_content_type: application/octet-stream
+      - name: Download RPM Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          name: linux-dist-rpm
+          path: rpm
       - name: Upload Sourcehawk Centos 7 RPM Package
         if: success()
         continue-on-error: true
@@ -184,9 +227,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./distributions/rpm/target/sourcehawk-centos-7.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.el7.x86_64.rpm
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ./rpm/sourcehawk-centos-7.rpm
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-1.el7.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Centos 8 RPM Package
         if: success()
@@ -195,9 +238,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./distributions/rpm/target/sourcehawk-centos-8.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.el8.x86_64.rpm
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ./rpm/sourcehawk-centos-8.rpm
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-1.el8.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Fedora 33 RPM Package
         if: success()
@@ -206,9 +249,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./distributions/rpm/target/sourcehawk-fedora-33.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc33.x86_64.rpm
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ./rpm/sourcehawk-fedora-33.rpm
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-1.fc33.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Fedora 34 RPM Package
         if: success()
@@ -217,9 +260,9 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./distributions/rpm/target/sourcehawk-fedora-34.rpm
-          asset_name: sourcehawk-${{ steps.set_maven_project_version.outputs.RELEASE_VERSION }}-1.fc34.x86_64.rpm
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ./rpm/sourcehawk-fedora-34.rpm
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-1.fc34.x86_64.rpm
           asset_content_type: application/octet-stream
       - name: Upload Sourcehawk Fedora 35 RPM Package
         if: success()
@@ -228,130 +271,94 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./distributions/rpm/target/sourcehawk-fedora-35.rpm
-          asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-1.fc35.x86_64.rpm
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ./rpm/sourcehawk-fedora-35.rpm
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-1.fc35.x86_64.rpm
           asset_content_type: application/octet-stream
+      - name: Publish Github Pages
+        if: success()
+        continue-on-error: true
+        uses: jamesives/github-pages-deploy-action@3.7.1
+        with:
+          COMMIT_MESSAGE: ${{ format('Publishing github pages for release version {0}', github.event.inputs.version) }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages
+          FOLDER: gh-pages
+
   build-mac-native-image:
     runs-on: macos-latest
-    needs: build-java-11
+    needs: create-release
+    name: Build Native Image - Mac
     steps:
-      - name: Download Native Image JAR
-        uses: actions/download-artifact@v2
+      - name: Build
+        uses: optum/sourcehawk/.github/actions/build-native-image@main
+        id: build
         with:
-          name: native-image-jar
-          path: build
-      - name: Download Completion Script
-        uses: actions/download-artifact@v2
-        with:
-          name: completion-script
-          path: build
-      - name: Download Manpages
-        uses: actions/download-artifact@v2
-        with:
-          name: manpages
-          path: build
-      - name: Rename Native Image JAR
-        working-directory: build
-        run: mv *.jar native-image.jar
-      - name: Setup Java
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-      - name: Setup GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          version: '21.3.0'
-          java-version: '11'
-          components: 'native-image'
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Mac Native Image
-        if: success()
-        working-directory: build
-        run: native-image -cp native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime --no-fallback
-      - name: Smoke Test
-        if: success()
-        working-directory: build
-        run: ./sourcehawk help
-      - name: Create Homebrew Tap Formula Archive
-        if: success()
-        working-directory: build
-        run: |
-          cp sourcehawk-completion.sh sourcehawk-bash-completion.sh
-          cp sourcehawk-completion.sh sourcehawk-zsh-completion.sh
-          gzip sourcehawk*.1 && tar -czvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk sourcehawk-bash-completion.sh sourcehawk-zsh-completion.sh sourcehawk*.1.gz
-      - name: Upload Sourcehawk Mac Executable
+          artifact-name: mac-native-image
+      - name: Upload Binary Release Asset
         if: success()
         continue-on-error: true
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build-java-11.outputs.RELEASE_ASSET_UPLOAD_URL }}
-          asset_path: build/sourcehawk
-          asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-darwin-x86_64
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ${{ steps.build.outputs.native-image-path }}
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-darwin-x86_64
           asset_content_type: application/octet-stream
-      - name: Upload Sourcehawk Mac Homebrew Tap Formula Archive
-        id: upload_homebrew_tap_formula_archive
+
+  build-homebrew-tap-formula-archive:
+    runs-on: macos-latest
+    needs: build-mac-native-image
+    name: Build Homebrew Tap Formula Archive
+    outputs:
+      download-url: ${{ steps.upload.outputs.browser_download_url }}
+    steps:
+      - name: Build
+        uses: optum/sourcehawk/.github/actions/build-homebrew-tap-formula-archive@main
+      - name: Upload Homebrew Tap Formula Archive
+        id: upload
         if: success()
-        continue-on-error: true
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build-java-11.outputs.RELEASE_ASSET_UPLOAD_URL }}
-          asset_path: build/sourcehawk-homebrew-tap-formula.tar.gz
-          asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-darwin-x86_64.tar.gz
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: homebrew/sourcehawk-homebrew-tap-formula.tar.gz
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-darwin-x86_64.tar.gz
           asset_content_type: application/octet-stream
-      - name: Update Optum Homebrew Tap Formula
-        uses: mislav/bump-homebrew-formula-action@v1.10
-        continue-on-error: true
-        with:
-          formula-name: sourcehawk
-          tag-name: ${{ needs.build-java-11.outputs.RELEASE_VERSION }}
-          homebrew-tap: optum/homebrew-tap
-          base-branch: main
-          download-url: ${{ steps.upload_homebrew_tap_formula_archive.outputs.browser_download_url }}
-          commit-message: |
-            Sourcehawk ${{ needs.build-java-11.outputs.RELEASE_VERSION }}
-            
-            Updating sourcehawk formula to latest release version
-        env:
-          COMMITTER_TOKEN: ${{ secrets.GIT_COMMITTER_TOKEN }}
+
+  update-homebrew-tap-formula:
+    uses: optum/sourcehawk/.github/workflows/update-homebrew-tap-formula.yml@main
+    needs: build-homebrew-tap-formula-archive
+    name: Update Homebrew Tap Formula
+    with:
+      version: ${{ github.event.inputs.version }}
+      download-url: ${{ needs.build-homebrew-tap-formula-archive.outputs.download-url }}
+    secrets:
+      git-committer-token: ${{ secrets.GIT_COMMITTER_TOKEN }}
+
   build-windows-native-image:
     runs-on: windows-latest
-    needs: build-java-11
+    needs: create-release
+    name: Build Native Image - Windows
     steps:
-      - name: Download Native Image JAR
-        uses: actions/download-artifact@v2
+      - name: Build
+        uses: optum/sourcehawk/.github/actions/build-windows-native-image@main
+        id: build
         with:
-          name: native-image-jar
-          path: build
-      - name: Rename Native Image JAR
-        working-directory: build
-        run: ren *.jar native-image.jar
-      - name: Setup GraalVM
-        uses: graalvm/setup-graalvm@v1
-        with:
-          version: '20.3.0'
-          java-version: '11'
-          components: 'native-image'
+          java-version: ${{ env.PRIMARY_JAVA_VERSION }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Windows Native Image
-        if: success()
-        run: native-image.cmd -cp .\build\native-image.jar -H:+ReportExceptionStackTraces --report-unsupported-elements-at-runtime
-      - name: Smoke Test
-        if: success()
-        shell: cmd
-        run: sourcehawk.exe help
-      - name: Upload Sourcehawk Windows Executable
+      - name: Upload Binary Release Asset
         if: success()
         continue-on-error: true
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ needs.build-java-11.outputs.RELEASE_ASSET_UPLOAD_URL }}
-          asset_path: sourcehawk.exe
-          asset_name: sourcehawk-${{ needs.build-java-11.outputs.RELEASE_VERSION }}-windows-x86_64.exe
+          upload_url: ${{ needs.create-release.outputs.release-asset-upload-url }}
+          asset_path: ${{ steps.build.outputs.native-image-path }}
+          asset_name: sourcehawk-${{ github.event.inputs.version }}-windows-x86_64.exe
           asset_content_type: application/octet-stream

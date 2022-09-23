@@ -1,0 +1,87 @@
+name: 'Prepare Maven'
+description: 'Prepare maven for the build'
+
+inputs:
+  cache-key-suffix:
+    description: 'Cache Key Suffix for maven caching'
+    required: true
+  primary-java-version:
+    description: 'Primary Java Version'
+    required: true
+    default: '11'
+  java-version:
+    description: 'Java Version'
+    required: true
+  gpg-private-key:
+    description: 'GPG Private Key (required for releases being deployed to Sonatype OSSRH)'
+    required: false
+  build-version:
+    description: 'Build version (required for releases)'
+    required: false
+
+outputs:
+  build-version:
+    description: "Build Version"
+    value: ${{ steps.set-maven-project-version.outputs.build-version }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Setup Maven Cache
+      uses: actions/cache@v2
+      with:
+        path: ~/.m2
+        key: ${{ runner.os }}-maven-${{ inputs.java-version }}-${{ inputs.cache-key-suffix }}-${{ hashFiles('**/pom.xml') }}
+        restore-keys: |
+          ${{ runner.os }}-maven-${{ inputs.java-version }}-${{ inputs.cache-key-suffix }}
+          ${{ runner.os }}-maven-${{ inputs.java-version }}-
+    - name: Setup Sonar Cache
+      if: (github.event_name == 'push' && inputs.java-version == inputs.primary-java-version)
+      uses: actions/cache@v2
+      with:
+        path: ~/.sonar/cache
+        key: ${{ runner.os }}-sonar
+        restore-keys: ${{ runner.os }}-sonar
+    - name: Setup Java and Maven
+      uses: actions/setup-java@v2
+      with:
+        java-version: ${{ inputs.java-version }}
+        distribution: 'adopt'
+        architecture: x64
+        server-id: ossrh
+        server-username: SONATYPE_USERNAME
+        server-password: SONATYPE_PASSWORD
+        gpg-private-key: ${{ inputs.gpg-private-key || '' }}
+        gpg-passphrase: SONATYPE_GPG_PASSPHRASE
+    - name: Parse Version From Maven Pom
+      id: parse-version
+      if: ${{ inputs.build-version == '' }}
+      shell: bash
+      run: |
+        POM_VERSION="$(./mvnw -q -D expression=project.version -D forceStdout help:evaluate | tail -1 | tr -d '\r\n')"
+        echo ::set-output name=pom-version::$POM_VERSION
+    - name: Set Maven Project Version
+      id: set-maven-project-version
+      shell: bash
+      run: |
+        if [[ "$RELEASE_BUILD" = true ]];
+        then
+          ./mvnw -B -D newVersion="$BUILD_VERSION" versions:set || true
+          echo "Updated Pom project version for release: $BUILD_VERSION"
+          [[ "$(git tag -l $BUILD_VERSION)" == "$BUILD_VERSION" ]] && echo "Tag $BUILD_VERSION already exists, will overwrite"
+        else
+          if [[ "$POM_VERSION" != *"-SNAPSHOT" ]]; 
+          then
+            BUILD_VERSION="$POM_VERSION-SNAPSHOT"
+            ./mvnw -B -D newVersion="$BUILD_VERSION" versions:set || true
+          echo "Updated Pom project version for snapshot: $BUILD_VERSION"
+          else
+            BUILD_VERSION="$POM_VERSION"
+          fi
+        fi
+        echo "Project will be built with version: $BUILD_VERSION"
+        echo ::set-output name=build-version::$BUILD_VERSION
+      env:
+        POM_VERSION: ${{ steps.parse-version.outputs.pom-version }}
+        RELEASE_BUILD: ${{ inputs.build-version != '' }}
+        BUILD_VERSION: ${{ inputs.build-version }}

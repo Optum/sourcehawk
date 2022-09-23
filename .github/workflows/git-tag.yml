@@ -1,0 +1,46 @@
+name: Git Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Github Branch'
+        required: false
+        default: 'main'
+      version:
+        description: 'Version (defaults to version in pom.xml)'
+        required: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.inputs.branch }}
+      - name: Setup Java
+        uses: actions/setup-java@v2
+        if: ${{ github.event.inputs.version == '' }}
+        with:
+          java-version: 11
+          distribution: adopt
+          architecture: x64
+      - name: Parse Version From Maven Pom
+        id: parse-version
+        if: ${{ github.event.inputs.version == '' }}
+        shell: bash
+        run: |
+          POM_VERSION="$(./mvnw -q -D expression=project.version -D forceStdout help:evaluate | tail -1 | tr -d '\r\n')"
+          VERSION="${POM_VERSION//-SNAPSHOT/}"
+          echo ::set-output name=version::$VERSION
+      - name: Push Git Tag
+        if: success()
+        run: |
+          git config user.name "$GIT_USERNAME" && git config user.email "$GIT_EMAIL"
+          git tag -a "v$TAG_VERSION" -m "Release v$RELEASE_VERSION created by @$GITHUB_ACTOR"
+          git push origin --tags
+        env:
+          GIT_USERNAME: ${{ secrets.GIT_USERNAME }}
+          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+          TAG_VERSION: ${{ github.event.inputs.version || steps.parse-version.outputs.version }}

@@ -1,0 +1,52 @@
+name: 'Build Homebrew Tap Formula Archive'
+description: 'Build formula to be uploaded to Homebrew tap distribution'
+
+inputs:
+  native-image-artifact-name:
+    description: 'Name of the native image artifact'
+    default: 'mac-native-image'
+    required: true
+  completion-script-artifact-name:
+    description: 'Name of the completion script artifact'
+    default: 'completion-script'
+    required: true
+  manpages-artifact-name:
+    description: 'Name of the manpages artifact'
+    default: 'manpages'
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download Mac Native Image
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{ inputs.native-image-artifact-name }}
+        path: build
+    - name: Download Completion Script
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{ inputs.completion-script-artifact-name }}
+        path: build
+    - name: Download Manpages
+      uses: actions/download-artifact@v2
+      with:
+        name: ${{ inputs.manpages-artifact-name }}
+        path: build
+    - name: Create Homebrew Tap Formula Archive
+      if: success()
+      working-directory: build
+      shell: sh
+      run: |
+        chmod +x sourcehawk
+        cp sourcehawk-completion.sh sourcehawk-bash-completion.sh
+        cp sourcehawk-completion.sh sourcehawk-zsh-completion.sh
+        chmod +x *.sh
+        gzip sourcehawk*.1
+        tar -cvf sourcehawk-homebrew-tap-formula.tar.gz sourcehawk*
+    - name: Archive Homebrew Tap Formula Archive
+      if: success()
+      uses: actions/upload-artifact@v2
+      with:
+        name: homebrew-tap-formula-archive
+        path: build/sourcehawk-homebrew-tap-formula.tar.gz
