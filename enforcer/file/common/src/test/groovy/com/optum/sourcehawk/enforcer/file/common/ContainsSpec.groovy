@@ -43,6 +43,27 @@ class ContainsSpec extends Specification {
     }
 
     @Unroll
+    def "enforce - NOT #expectedSubstring (passed)"() {
+        given:
+        Contains contains = Contains.substring(expectedSubstring)
+        InputStream fileInputStream = IoUtil.getResourceAsStream('/file.txt')
+
+        when:
+        EnforcerResult result = contains.enforce(fileInputStream)
+
+        then:
+        result
+        !result.passed
+        result.messages
+
+        where:
+        expectedSubstring << [
+                '![character]',
+                '![I should include]'
+        ]
+    }
+
+    @Unroll
     def "enforce - #expectedSubstring (failed)"() {
         given:
         Contains contains = Contains.substring(expectedSubstring)
@@ -55,7 +76,7 @@ class ContainsSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0] == "File does not contain the sub string [$expectedSubstring]"
+        result.messages[0] == "File contain the sub string [$expectedSubstring] failed"
 
         where:
         expectedSubstring << [

@@ -47,6 +47,8 @@ class JsonValueEqualsSpec extends Specification {
         '/make'           | 'Raleigh'
         '/size/value'     | 60
         '/components/0'   | 'handlebars'
+        '/components/0'   | 'handle.*'
+        '/components/0'   | '^(?:(?!pedals).)*$'
     }
 
     @Unroll

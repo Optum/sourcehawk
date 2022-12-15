@@ -10,6 +10,7 @@ import lombok.val;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.regex.Pattern;
 
 /**
  * An enforcer which is responsible for enforcing that file contains a string
@@ -21,7 +22,7 @@ import java.io.InputStream;
 @AllArgsConstructor(staticName = "substring")
 public class Contains extends AbstractFileEnforcer {
 
-    private static final String MESSAGE_TEMPLATE = "File does not contain the sub string [%s]";
+    private static final String MESSAGE_TEMPLATE = "File contain the sub string [%s] failed";
 
     /**
      * The substring that is expected to be found in the file
@@ -32,8 +33,8 @@ public class Contains extends AbstractFileEnforcer {
     /** {@inheritDoc} */
     @Override
     public EnforcerResult enforceInternal(@NonNull final InputStream actualFileInputStream) throws IOException {
-        val actualFileContent = toString(actualFileInputStream);
-        if (!actualFileContent.contains(expectedSubstring)) {
+        val p = Pattern.compile(expectedSubstring);
+        if (!p.matcher(toString(actualFileInputStream)).find()) {
             return EnforcerResult.failed(String.format(MESSAGE_TEMPLATE, expectedSubstring));
         }
         return EnforcerResult.passed();

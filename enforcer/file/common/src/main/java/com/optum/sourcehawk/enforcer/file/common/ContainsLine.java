@@ -13,6 +13,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.regex.Pattern;
 
 /**
  * An enforcer which is responsible for enforcing that file contains an entire line
@@ -24,14 +25,16 @@ import java.io.InputStreamReader;
 @AllArgsConstructor(staticName = "contains")
 public class ContainsLine extends AbstractFileEnforcer {
 
-    private static final String MESSAGE_TEMPLATE = "File does not contain the line [%s]";
+    private static final String MESSAGE_TEMPLATE = "File contains line [%s] failed";
 
     /**
      * The line that is expected to be found in the file
      */
     protected final String expectedLine;
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnforcerResult enforceInternal(@NonNull final InputStream actualFileInputStream) throws IOException {
         try (val bufferedFileReader = new BufferedReader(new InputStreamReader((actualFileInputStream)))) {
