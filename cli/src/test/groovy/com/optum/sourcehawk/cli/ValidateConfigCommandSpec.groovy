@@ -267,7 +267,8 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         String errorMessage = ValidateConfigCommand.deriveErrorMessage(context, e)
 
         then:
-        errorMessage == "Parse error [Source: UNKNOWN; line: -1, column: -1] ${context}"
+        errorMessage.startsWith("Parse error [Source: UNKNOWN;")
+        errorMessage.endsWith("] ${context}")
     }
 
     def "deriveErrorMessage - cause JsonProcessingException"() {
@@ -279,7 +280,8 @@ class ValidateConfigCommandSpec extends CliBaseSpecification {
         String errorMessage = ValidateConfigCommand.deriveErrorMessage(context, e)
 
         then:
-        errorMessage == "Parse error [Source: UNKNOWN; line: -1, column: -1] ${context}"
+        errorMessage.startsWith("Parse error [Source: UNKNOWN;")
+        errorMessage.endsWith("] ${context}")
     }
 
     def "deriveErrorMessage - Exception"() {

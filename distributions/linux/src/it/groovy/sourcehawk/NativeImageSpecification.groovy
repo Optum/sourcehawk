@@ -7,16 +7,17 @@ class NativeImageSpecification extends Specification {
 
     @Shared
     protected String moduleRoot = new File(NativeImageSpecification.classLoader.getResource("marker").toURI())
-            .getParentFile() // test
-            .getParentFile() // src
-            .getParentFile() // linux
-            .getAbsolutePath()
+        .getParentFile() // test
+        .getParentFile() // src
+        .getParentFile() // linux
+        .getAbsolutePath()
 
     @Shared
     protected String resourcesRoot = new File(NativeImageSpecification.classLoader.getResource("marker").toURI())
-            .getParentFile()
-            .getAbsolutePath()
+        .getParentFile()
+        .getAbsolutePath()
 
-    protected String executable = "${moduleRoot}/target/sourcehawk".toString()
+    protected String executable = Optional.ofNullable(System.getProperty("native.image.path"))
+        .orElse("${moduleRoot}/sourcehawk".toString())
 
 }
