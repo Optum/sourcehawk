@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.regex.Pattern;
 
 /**
  * An enforcer which is responsible for enforcing that SHA-256 checksum of a file's contents match
@@ -36,7 +37,8 @@ public class Sha256ChecksumEquals extends AbstractFileEnforcer {
     @Override
     public EnforcerResult enforceInternal(@NonNull final InputStream actualFileInputStream) throws IOException {
         val actualChecksum = checksum(actualFileInputStream);
-        if (expectedChecksum.equals(actualChecksum)) {
+        val pattern = Pattern.compile(expectedChecksum);
+        if (expectedChecksum.equals(actualChecksum) || pattern.matcher(actualChecksum).matches()) {
             return EnforcerResult.passed();
         }
         return EnforcerResult.failed(DEFAULT_MESSAGE);

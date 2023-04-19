@@ -41,6 +41,8 @@ class YamlValueEqualsSpec extends Specification {
         '/make'           | 'Raleigh'
         '/size/value'     | 60
         '/components/0'   | 'handlebars'
+        '/components/0'   | 'handle.*'
+        '/components/0'   | '^(?:(?!pedals).)*$'
     }
 
     def "enforce - map (passed)"() {

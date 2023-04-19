@@ -11,7 +11,7 @@
     </parent>
 
     <artifactId>sourcehawk</artifactId>
-    <version>0.7.2-SNAPSHOT</version>
+    <version>0.8.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>Sourcehawk</name>
@@ -22,7 +22,8 @@
         <jacoco.coverage.minimum>0.97</jacoco.coverage.minimum> <!-- jacoco-maven-plugin -->
 
         <!-- Versions -->
-        <slf4j.version>1.7.32</slf4j.version>
+        <slf4j.version>1.7.36</slf4j.version>
+        <lombok.version>1.18.24</lombok.version>
 
         <!-- Sonar Configurations -->
         <sonar.issue.ignore.multicriteria>e1</sonar.issue.ignore.multicriteria>
@@ -34,9 +35,8 @@
     <developers>
         <developer>
             <id>brianwyka</id>
-            <name>Brian Wyka}</name>
-            <email>brian.wyka@optum.com</email>
-            <organization>Optum</organization>
+            <name>Brian Wyka</name>
+            <email>brian.wyka@gmail.com</email>
             <roles>
                 <role>Project Lead</role>
             </roles>
@@ -44,8 +44,7 @@
         <developer>
             <id>ctoestreich</id>
             <name>Christian Oestreich</name>
-            <email>christian.oestreich@optum.com</email>
-            <organization>Optum</organization>
+            <email>acetrike@yahoo.com</email>
             <roles>
                 <role>Project Lead</role>
             </roles>
@@ -95,7 +94,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
-                <version>2.12.5</version>
+                <version>2.12.7.20221012</version>
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>

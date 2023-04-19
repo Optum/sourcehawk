@@ -35,6 +35,36 @@ class Sha256ChecksumEqualsSpec extends Specification {
         !enforcerResult.messages
     }
 
+    def "enforce regex (passed))"() {
+        given:
+        String expectedChecksum = "a6179a.*"
+        Sha256ChecksumEquals sha256ChecksumEquals = Sha256ChecksumEquals.equals(expectedChecksum)
+        InputStream fileInputStream = IoUtil.getResourceAsStream("/checksum.txt")
+
+        when:
+        EnforcerResult enforcerResult = sha256ChecksumEquals.enforce(fileInputStream)
+
+        then:
+        enforcerResult
+        enforcerResult.passed
+        !enforcerResult.messages
+    }
+
+    def "enforce regex negate (passed))"() {
+        given:
+        String expectedChecksum = "^(?:(?!abc123).)*\$"
+        Sha256ChecksumEquals sha256ChecksumEquals = Sha256ChecksumEquals.equals(expectedChecksum)
+        InputStream fileInputStream = IoUtil.getResourceAsStream("/checksum.txt")
+
+        when:
+        EnforcerResult enforcerResult = sha256ChecksumEquals.enforce(fileInputStream)
+
+        then:
+        enforcerResult
+        enforcerResult.passed
+        !enforcerResult.messages
+    }
+
     def "enforce (failed))"() {
         given:
         String expectedChecksum = "123"

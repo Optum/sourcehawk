@@ -26,6 +26,7 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -48,7 +49,7 @@ public class JsonValueEquals extends AbstractFileEnforcer implements FileResolve
 
     /**
      * Key: The JsonPointer expression to retrieve the value
-     *
+     * <p>
      * Value: The expected value which the query should evaluate to
      */
     private final Map<String, Object> expectations;
@@ -57,14 +58,16 @@ public class JsonValueEquals extends AbstractFileEnforcer implements FileResolve
      * Create with a single path query and expected value
      *
      * @param jsonPointerExpression the JSON pointer expression
-     * @param expectedValue the expected value
+     * @param expectedValue         the expected value
      * @return the enforcer
      */
     public static JsonValueEquals equals(final String jsonPointerExpression, final Object expectedValue) {
         return JsonValueEquals.equals(Collections.singletonMap(jsonPointerExpression, expectedValue));
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public EnforcerResult enforceInternal(@NonNull final InputStream actualFileInputStream) {
         final JsonNode jsonNode;
@@ -85,9 +88,9 @@ public class JsonValueEquals extends AbstractFileEnforcer implements FileResolve
     /**
      * Enforce individual json path queries with expected value
      *
-     * @param jsonNode the JSON node
-     * @param jsonPointerExpression  the JSON pointer expression
-     * @param expectedValue the expected value
+     * @param jsonNode              the JSON node
+     * @param jsonPointerExpression the JSON pointer expression
+     * @param expectedValue         the expected value
      * @return The message to be added, otherwise {@link Optional#empty()}
      */
     private static Optional<String> enforce(final JsonNode jsonNode, final String jsonPointerExpression, final Object expectedValue) {
@@ -99,13 +102,15 @@ public class JsonValueEquals extends AbstractFileEnforcer implements FileResolve
             if (jsonNodeValueEquals(actualJsonNode, expectedValue)) {
                 return Optional.empty();
             }
-            return Optional.of(String.format(NOT_EQUAL_MESSAGE_TEMPLATE, jsonPointerExpression,  actualJsonNode.asText(), expectedValue));
+            return Optional.of(String.format(NOT_EQUAL_MESSAGE_TEMPLATE, jsonPointerExpression, actualJsonNode.asText(), expectedValue));
         } catch (final Exception e) {
             return Optional.of(String.format(QUERY_ERROR_TEMPLATE, jsonPointerExpression, e.getMessage()));
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public ResolverResult resolve(final @NonNull InputStream actualFileInputStream, final @NonNull Writer outputFileWriter) throws IOException {
         final JsonNode rootJsonNode;
@@ -126,9 +131,9 @@ public class JsonValueEquals extends AbstractFileEnforcer implements FileResolve
     /**
      * Resolve an individual json path query with the expected value
      *
-     * @param rootJsonNode the root JSON node
+     * @param rootJsonNode          the root JSON node
      * @param jsonPointerExpression the JSON pointer expression
-     * @param expectedValue the expected value
+     * @param expectedValue         the expected value
      * @return the resolver result
      */
     private static ResolverResult resolve(final JsonNode rootJsonNode, final String jsonPointerExpression, final Object expectedValue) {
@@ -162,8 +167,8 @@ public class JsonValueEquals extends AbstractFileEnforcer implements FileResolve
      * Update the actual node with the expected value
      *
      * @param parentObjectNode the parent object node
-     * @param childNodeName the child node name
-     * @param expectedValue the expected value
+     * @param childNodeName    the child node name
+     * @param expectedValue    the expected value
      */
     private static void updateObjectNodeValue(final ObjectNode parentObjectNode, final String childNodeName, final Object expectedValue) {
         if (expectedValue instanceof Boolean) {
@@ -188,8 +193,8 @@ public class JsonValueEquals extends AbstractFileEnforcer implements FileResolve
      *
      * @param parentArrayNode the parent object node
      * @param actualNodeIndex the actual node index in the array
-     * @param expectedValue the expected value
-     * @param missing true if node does not currently exist, false otherwise
+     * @param expectedValue   the expected value
+     * @param missing         true if node does not currently exist, false otherwise
      */
     @SuppressWarnings("squid:S3776")
     private static void updateArrayNodeValue(final ArrayNode parentArrayNode, final int actualNodeIndex, final Object expectedValue, final boolean missing) {
@@ -241,15 +246,20 @@ public class JsonValueEquals extends AbstractFileEnforcer implements FileResolve
     /**
      * Determine if the {@code jsonNode} value equals that of the {@code expectedValue}
      *
-     * @param jsonNode the JSON node to retrieve the value from
+     * @param jsonNode      the JSON node to retrieve the value from
      * @param expectedValue the expected value
      * @return true if they are equal, false otherwise
      */
     private static boolean jsonNodeValueEquals(final JsonNode jsonNode, final Object expectedValue) {
-        return (expectedValue instanceof CharSequence && StringUtils.equals((CharSequence) expectedValue, jsonNode.textValue()))
+        return (expectedValue instanceof CharSequence && equalsOrMatches(jsonNode, (CharSequence) expectedValue))
                 || (expectedValue instanceof Number && expectedValue == jsonNode.numberValue())
                 || (expectedValue instanceof Boolean && (boolean) expectedValue == jsonNode.booleanValue())
-                || Objects.equals(expectedValue.toString(), jsonNode.asText());
+                || Objects.equals(expectedValue.toString(), jsonNode.asText())
+                || Pattern.compile(jsonNode.asText()).matcher(expectedValue.toString()).matches();
     }
 
+    private static boolean equalsOrMatches(JsonNode jsonNode, CharSequence expectedValue) {
+        return StringUtils.equals(expectedValue, jsonNode.textValue())
+                || Pattern.compile(expectedValue.toString()).matcher(jsonNode.textValue()).matches();
+    }
 }

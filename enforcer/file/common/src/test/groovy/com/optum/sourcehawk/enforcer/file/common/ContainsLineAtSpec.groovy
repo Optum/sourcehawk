@@ -41,8 +41,31 @@ class ContainsLineAtSpec extends Specification {
 
         where:
         expectedLine                                                     | expectedLineNumber
+        '^(?:(?!include).)*$'                                            | 5
         '^ Here is a special character: $'                               | 5
         'Perhaps I should include a double " and a single \' as well...' | 7
+        '.*I should include a double " and a single \' as well.*'        | 7
+    }
+
+    @Unroll
+    def "enforce - NOT #expectedLine - #expectedLineNumber (passed)"() {
+        given:
+        ContainsLineAt containsLineAt = ContainsLineAt.containsAt(expectedLine, expectedLineNumber)
+        InputStream fileInputStream = IoUtil.getResourceAsStream('/file.txt')
+
+        when:
+        EnforcerResult result = containsLineAt.enforce(fileInputStream)
+
+        then:
+        result
+        !result.passed
+        result.messages
+
+        where:
+        expectedLine                                                        | expectedLineNumber
+        '![\\^ Here is a special character: \\$]'                           | 5
+        '^(?:(?!special character).)*$'                                     | 5
+        '![Perhaps I should include a double " and a single \' as well...]' | 7
     }
 
     @Unroll
@@ -58,7 +81,7 @@ class ContainsLineAtSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0] == "File does not contain the line [$expectedLine] at line number [$expectedLineNumber]"
+        result.messages[0] == "File contains line [$expectedLine] at line number [$expectedLineNumber] failed"
 
         where:
         expectedLine                                                     | expectedLineNumber

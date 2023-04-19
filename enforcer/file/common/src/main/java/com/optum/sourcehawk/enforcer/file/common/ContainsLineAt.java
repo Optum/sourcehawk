@@ -19,6 +19,7 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.regex.Pattern;
 
 /**
  * An enforcer which is responsible for enforcing that file contains an entire line at a specific line number.
@@ -30,7 +31,7 @@ import java.util.function.Predicate;
 @AllArgsConstructor(staticName = "containsAt")
 public class ContainsLineAt extends AbstractFileEnforcer implements FileResolver {
 
-    private static final String MESSAGE_TEMPLATE = "File does not contain the line [%s] at line number [%d]";
+    private static final String MESSAGE_TEMPLATE = "File contains line [%s] at line number [%d] failed";
     private static final String UPDATE_MESSAGE_TEMPLATE = "File line number [%d] has been updated to value [%s]";
 
     /**
@@ -51,7 +52,8 @@ public class ContainsLineAt extends AbstractFileEnforcer implements FileResolver
     }
 
     private Predicate<String> getPredicate() {
-        return actual -> StringUtils.equals(StringUtils.removeNewLines(expectedLine), StringUtils.removeNewLines(actual));
+        val pattern = Pattern.compile(expectedLine);
+        return actual -> StringUtils.equals(StringUtils.removeNewLines(expectedLine), StringUtils.removeNewLines(actual)) || pattern.matcher(actual).matches();
     }
 
     /**

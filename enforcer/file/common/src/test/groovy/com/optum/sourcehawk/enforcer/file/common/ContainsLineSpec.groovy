@@ -55,11 +55,11 @@ class ContainsLineSpec extends Specification {
         result
         !result.passed
         result.messages
-        result.messages[0] == "File does not contain the line [$expectedLine]"
+        result.messages[0] == "File contains line [$expectedLine] failed"
 
         where:
         expectedLine << [
-                'Here is a special character: $',
+                'Here is a special character: \\$',
                 'Perhaps I should include a double " and a single \' as well'
         ]
     }
