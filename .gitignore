@@ -6,6 +6,7 @@ target/
 log
 logs
 *.bak
+.DS_Store
 
 ### STS ###
 .apt_generated

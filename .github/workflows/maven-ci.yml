@@ -137,7 +137,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: linux-native-image
-          path: distributions/linux/target/sourcehawk
+          path: ${{ steps.build.outputs.native-image-path }}
 
   build-linux-distribution:
     runs-on: ubuntu-latest
