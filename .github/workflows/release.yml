@@ -95,7 +95,7 @@ jobs:
     name: Update Github Pages
     steps:
       - name: Download Github Pages Site
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: gh-pages-site
           path: gh-pages
@@ -116,7 +116,7 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v2
       - name: Download Manpages
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: manpages
           path: gh-pages/manpages
@@ -158,7 +158,7 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v2
       - name: Download Manpages
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: manpages
           path: gh-pages/manpages
@@ -189,7 +189,7 @@ jobs:
     name: Upload Linux Distribution Release Assets
     steps:
       - name: Download Debian Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: linux-dist-debian
           path: debian
@@ -216,7 +216,7 @@ jobs:
           asset_name: sourcehawk-${{ github.event.inputs.version }}-ubuntu-focal-amd64.deb
           asset_content_type: application/octet-stream
       - name: Download RPM Artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v4.1.7
         with:
           name: linux-dist-rpm
           path: rpm
